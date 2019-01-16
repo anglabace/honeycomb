@@ -1,5 +1,11 @@
 package com.cmaple.honeycomb.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.util.Date;
 
 /**
@@ -15,6 +21,9 @@ import java.util.Date;
  * 修改日期：
  */
 
+@Data
+@TableName("BS_USER")
+@Accessors(chain = true)
 public class User {
 
     /**
@@ -24,6 +33,7 @@ public class User {
      * 自动递增
      * 主键
      **/
+    @TableId(value = "id", type = IdType.AUTO)
     private int id;
     /**
      * 用户登录id
@@ -115,132 +125,4 @@ public class User {
      * 是否为null：Y
      **/
     private String manage;
-
-    public int getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getUsertype() {
-        return usertype;
-    }
-
-    public int getUseraffairs() {
-        return useraffairs;
-    }
-
-    public double getUserbalance() {
-        return userbalance;
-    }
-
-    public String getIdcard() {
-        return idcard;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUseraddress() {
-        return useraddress;
-    }
-
-    public int getTelephonenumber() {
-        return telephonenumber;
-    }
-
-    public String getUseremail() {
-        return useremail;
-    }
-
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public Date getClosetime() {
-        return closetime;
-    }
-
-    public String getUsersign() {
-        return usersign;
-    }
-
-    public String getPetname() {
-        return petname;
-    }
-
-    public String getManage() {
-        return manage;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setUsertype(String usertype) {
-        this.usertype = usertype;
-    }
-
-    public void setUseraffairs(int useraffairs) {
-        this.useraffairs = useraffairs;
-    }
-
-    public void setUserbalance(double userbalance) {
-        this.userbalance = userbalance;
-    }
-
-    public void setIdcard(String idcard) {
-        this.idcard = idcard;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUseraddress(String useraddress) {
-        this.useraddress = useraddress;
-    }
-
-    public void setTelephonenumber(int telephonenumber) {
-        this.telephonenumber = telephonenumber;
-    }
-
-    public void setUseremail(String useremail) {
-        this.useremail = useremail;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
-    public void setClosetime(Date closetime) {
-        this.closetime = closetime;
-    }
-
-    public void setUsersign(String usersign) {
-        this.usersign = usersign;
-    }
-
-    public void setPetname(String petname) {
-        this.petname = petname;
-    }
-
-    public void setManage(String manage) {
-        this.manage = manage;
-    }
 }

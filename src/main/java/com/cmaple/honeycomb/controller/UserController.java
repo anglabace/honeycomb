@@ -1,7 +1,7 @@
 package com.cmaple.honeycomb.controller;
 
 
-import com.cmaple.honeycomb.mapper.UserMapper;
+import com.cmaple.honeycomb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +28,8 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
+
 
     /**
      * 函数名：登录函数- - login（）
@@ -48,23 +49,8 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> login(@RequestParam(value = "username", required = true) String username, @RequestParam(value = "password", required = true) String password) {
         Map<String, Object> map = new HashMap<String, Object>();
-        System.out.println(("----- selectAll method test ------"));
-        //查询
-//        List<User> userList = userMapper.selectList(null);
-//        for (int i =0;i<userList.size();i++){
-//            System.out.println(userList.get(i));
-//        }
-        //注册
-//        User user = new User();
-//        user.setUsername("congfeng");
-//        user.setPassword("123456");
-//        user.setUsertype("999");
-//        user.setUseraddress("0");
-//        user.setUserbalance(0.0);
-//        user.setCreatetime(new Date());
-//        int a = userMapper.insert(user);
-//        map.put("msg",user);
-//        map.put("int",a);
+        Integer num = userService.hasUsername(username);
+        map.put("msg",num);
         return map;
     }
 
