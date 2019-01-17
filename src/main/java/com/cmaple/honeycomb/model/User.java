@@ -120,9 +120,9 @@ public class User {
      **/
     private String petname;
     /**
-     * 管理密钥
-     * 长度：100
-     * 是否为null：Y
+     * 错误登录次数
+     * 长度：1
+     * 是否为null：N
      **/
-    private String manage;
+    private int errortry;
 }

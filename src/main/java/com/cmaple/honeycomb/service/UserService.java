@@ -128,17 +128,34 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 函数名：插入函数-插入用户信息 - insertUser（）
      * 功能描述： 插入新的账户信息
      *
-     * @param user       用户实体类
-     *                   返回值：int
-     *                   异    常：无
-     *                   创建人：CMAPLE
-     *                   日期：2019-01-17
-     *                   修改人：
-     *                   级别：普通用户
-     *                   日期：
+     * @param user 用户实体类
+     *             返回值：int
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             日期：2019-01-17
+     *             修改人：
+     *             级别：普通用户
+     *             日期：
      */
-    public int insertUser(User user){
+    public int insertUser(User user) {
         return userMapper.insert(user);
+    }
+
+    /**
+     * 函数名：修改函数-修改用户信息 - updateUser（）
+     * 功能描述： 插入新的账户信息
+     *
+     * @param user 用户实体类
+     *             返回值：int
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             日期：2019-01-17
+     *             修改人：
+     *             级别：普通用户
+     *             日期：
+     */
+    public int updateUser(User user) {
+        return userMapper.update(user, new QueryWrapper<User>().lambda().eq(User::getUsername, user.getUsername()));
     }
 
 }

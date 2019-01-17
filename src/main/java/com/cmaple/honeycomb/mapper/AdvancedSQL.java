@@ -85,7 +85,7 @@ public class AdvancedSQL {
         } else if ("103".equals(lousertype)) {
             result += "\nWHERE usertype <> '999' AND usertype <> '103'"; // 管理员查看
         } else {
-            result += "\nWHERE usertype = '000'"; // 其他级别
+            result += "\nWHERE usertype = '000'"; // 其他级别屏蔽查询结果
         }
         return result;
     }
