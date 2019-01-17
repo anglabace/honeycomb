@@ -124,4 +124,21 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return userMapper.queryUserCountByParams(list, params, lousertype);
     }
 
+    /**
+     * 函数名：插入函数-插入用户信息 - insertUser（）
+     * 功能描述： 插入新的账户信息
+     *
+     * @param user       用户实体类
+     *                   返回值：int
+     *                   异    常：无
+     *                   创建人：CMAPLE
+     *                   日期：2019-01-17
+     *                   修改人：
+     *                   级别：普通用户
+     *                   日期：
+     */
+    public int insertUser(User user){
+        return userMapper.insert(user);
+    }
+
 }
