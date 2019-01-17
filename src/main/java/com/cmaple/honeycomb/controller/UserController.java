@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.controller;
 
 
+import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +40,7 @@ public class UserController {
      * 输入参数：<按照参数定义顺序>
      *
      * @param username String类型的用户名
-     * @param password String类型的密码
+
      *                 返回值：User(json)
      *                 异    常：无
      *                 创建人：CMAPLE
@@ -47,10 +50,12 @@ public class UserController {
      *                 修改日期：null
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> login(@RequestParam(value = "username", required = true) String username, @RequestParam(value = "password", required = true) String password) {
+    public Map<String, Object> login(@RequestParam(value = "username", required = true) String username, @RequestParam(value = "lousertype", required = true) String lousertype, @RequestParam(value = "page", required = true) int page, @RequestParam(value = "num", required = true) int num) {
         Map<String, Object> map = new HashMap<String, Object>();
-        Integer num = userService.hasUsername(username);
-        map.put("msg",num);
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        List list = new ArrayList();
+        List<User> users = userService.getUsersByParams(list,map1,lousertype,page,num);
+        map.put("msg", users);
         return map;
     }
 
