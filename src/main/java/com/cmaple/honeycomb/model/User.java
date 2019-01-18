@@ -3,7 +3,9 @@ package com.cmaple.honeycomb.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
@@ -21,9 +23,11 @@ import java.util.Date;
  * 修改日期：
  */
 
-@Data
-@TableName("BS_USER")
-@Accessors(chain = true)
+@Data //给实体提供读写属性, 此外还提供了 equals()、hashCode()、toString() 方法
+@TableName("BS_USER")  //对应数据库表名称
+@Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象(可以控制getter和setter方法的形式)
+@NoArgsConstructor  //提供无参构造器
+@AllArgsConstructor //提供全参构造器
 public class User {
 
     /**
