@@ -92,7 +92,11 @@ public class AdvancedSQL {
 
     private String sqlPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
-            result += " and " + list.get(i) + "=" + params.get(list.get(i));
+            if ("username".equals(list.get(i)) || "name".equals(list.get(i)) || "petname".equals(list.get(i))) {
+                result += " and " + list.get(i) + " LIKE '%" + params.get(list.get(i)) + "%'";
+            } else {
+                result += " and " + list.get(i) + " = " + params.get(list.get(i));
+            }
         }
         return result;
     }

@@ -3,6 +3,7 @@ package com.cmaple.honeycomb.controller;
 
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.UserService;
+import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +46,7 @@ public class UserController {
      * 输入参数：<按照参数定义顺序>
      *
      * @param username String类型的用户名
-     *                 <p>
+     * @param password String类型的用户密码
      *                 返回值：map
      *                 异    常：无
      *                 创建人：CMAPLE
@@ -53,7 +56,8 @@ public class UserController {
      *                 修改日期：2019-01-18
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> login(@RequestParam(value = "username", required = true) String username, @RequestParam(value = "password", required = true) String password) {
+    public Map<String, Object> login(@RequestParam(value = "username", required = true) String username,
+                                     @RequestParam(value = "password", required = true) String password) {
         Map<String, Object> map = new HashMap<String, Object>();
         //判断此用户名是否存在
         if (1 != userService.hasUsername(username)) {
@@ -159,6 +163,77 @@ public class UserController {
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
         map.put("RTDATA", returnuser);
+        return map;
+    }
+
+    /**
+     * 函数名：获取详细的用户信息 - getUser（）
+     * 功能描述：根据用户名获取相应的用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param username String类型的用户名
+     *                 返回值：map
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-01-18
+     *                 修改人：
+     *                 级别：普通用户及以上
+     *                 修改日期：
+     */
+    @RequestMapping(value = "/getUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getUser(@RequestParam(value = "username", required = true) String username) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (1 != userService.hasUsername(username)) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "不存在【" + username + "】用户！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "获取用户信息成功！");
+        map.put("RTDATA", userService.getUserByUsername(username).setPassword(null));
+        return map;
+    }
+
+    /**
+     * 函数名：根据条件获取用户列表 - getListUser（）
+     * 功能描述：根据用户名获取相应的用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param username String类型的用户名
+     *                 返回值：map
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-01-18
+     *                 修改人：
+     *                 级别：普通用户及以上
+     *                 修改日期：
+     */
+    @RequestMapping(value = "/getListUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getListUser(
+            @RequestParam(value = "lousertype", required = true) String lousertype
+            , @RequestParam(value = "username", required = false) String username
+            , @RequestParam(value = "usertype", required = false) String usertype
+            , @RequestParam(value = "useraffairs", required = false) int useraffairs
+            , @RequestParam(value = "name", required = false) String name
+            , @RequestParam(value = "petname", required = false) String petname
+            , @RequestParam(value = "page", required = false) int page
+            , @RequestParam(value = "num", required = false) int num
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<String> list = new ArrayList<String>();
+        Map<String, Object> params = new HashMap<String, Object>();
+        //条件整理
+        list.add("username");
+        list.add("usertype");
+        list.add("useraffairs");
+        list.add("name");
+        list.add("petname");
+        list.add("errortry");
+        Map<String, Object> returnmap = ParamsTools.getPageTools().getParamsToMap(list, username, usertype, useraffairs, name, petname);
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "获取用户信息成功！");
+        map.put("RTDATA", userService.getUsersByParams((List<String>) returnmap.get("list"), (Map<String, Object>) returnmap.get("map"), lousertype, ParamsTools.getPageTools().getPageByNum(page, num), num));
         return map;
     }
 

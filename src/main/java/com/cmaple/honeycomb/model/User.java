@@ -25,7 +25,7 @@ import java.util.Date;
 
 @Data //给实体提供读写属性, 此外还提供了 equals()、hashCode()、toString() 方法
 @TableName("BS_USER")  //对应数据库表名称
-@Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象(可以控制getter和setter方法的形式)
+@Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象()
 @NoArgsConstructor  //提供无参构造器
 @AllArgsConstructor //提供全参构造器
 public class User {
