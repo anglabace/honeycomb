@@ -60,4 +60,6 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @SelectProvider(type = AdvancedSQL.class, method = "getUserCountByParams")
     int queryUserCountByParams(List<String> list, Map<String, Object> params, String lousertype);
+
+
 }

@@ -48,6 +48,60 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
 
     /**
+     * 函数名：查询函数-查询此电话号码是否已经存在 - hasTelephonenumber（）
+     * 功能描述： 根据非空的电话号码查询此电话号码是否存在
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param telephonenumber String类型的用户名
+     *                 返回值：int
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 日期：2019-01-16
+     *                 修改人：
+     *                 级别：普通用户
+     *                 日期：
+     */
+    public Integer hasTelephonenumber(String telephonenumber) {
+        return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getTelephonenumber, telephonenumber));
+    }
+
+    /**
+     * 函数名：查询函数-查询此身份证号码是否注册 - hasIdcard（）
+     * 功能描述： 查询此身份证号码是否注册
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param idcard String类型的用户名
+     *                 返回值：int
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 日期：2019-01-16
+     *                 修改人：
+     *                 级别：普通用户
+     *                 日期：
+     */
+    public Integer hasIdcard(String idcard) {
+        return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getIdcard, idcard));
+    }
+
+    /**
+     * 函数名：查询函数-查询此电子邮箱是否注册 - hasEmail（）
+     * 功能描述： 查询此身份证号码是否注册
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param email String类型的用户名
+     *                 返回值：int
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 日期：2019-01-16
+     *                 修改人：
+     *                 级别：普通用户
+     *                 日期：
+     */
+    public Integer hasEmail(String email) {
+        return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getUseremail, email));
+    }
+
+    /**
      * 函数名：查询函数-根据用户名、密码查询用户是否存在 - hasByUsernameAndPassword（）
      * 功能描述： 根据账户名、密码获取当前用户是否存在
      * 输入参数：<按照参数定义顺序>

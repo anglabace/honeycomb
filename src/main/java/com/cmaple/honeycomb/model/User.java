@@ -92,7 +92,7 @@ public class User {
      * 长度：11
      * 是否为null：N
      **/
-    private int telephonenumber;
+    private String telephonenumber;
     /**
      * 用户电子邮箱
      * 长度：48
