@@ -46,7 +46,7 @@ public class ManageKey {
      * 修改日期：
      */
     public String obtainManageKey() {
-        return "SUNYARD-" + RandomData.getRandomData().getRandomData(13) + "-" + FormatTime.getFormatTime().formatYMDToString() + "-" + FormatTime.getFormatTime().formatHMSMSToString();
+        return "CMAPLE-" + RandomData.getRandomData().getRandomData(13) + "-" + FormatTime.getFormatTime().formatYMDToString() + "-" + FormatTime.getFormatTime().formatHMSMSToString();
     }
 
     /**
@@ -64,8 +64,8 @@ public class ManageKey {
      *                  级别：NULL
      *                  修改日期：
      */
-    public String getUserMangerKey(String mangerkey, String username) {
-        return Enciphered.getEnciphered().stringSHAEncoder(Enciphered.getEnciphered().stringMankeyUserEncoder(mangerkey, username));
+    public String getUserMangerKey(String mangerkey, String username, String usertype) {
+        return Enciphered.getEnciphered().stringSHAEncoder(Enciphered.getEnciphered().stringMankeyUserEncoder(mangerkey, username, usertype));
     }
 
     /**
@@ -83,9 +83,9 @@ public class ManageKey {
      *                 级别：NULL
      *                 修改日期：
      */
-    public boolean checkManageKeys(String db_key, String username, String user_key) {
+    public boolean checkManageKeys(String db_key, String username, String usertype, String user_key) {
         boolean istrue = false;
-        if (user_key.equals(getUserMangerKey(db_key, username))) {
+        if (user_key.equals(getUserMangerKey(db_key, username, usertype))) {
             istrue = true;
         }
         return istrue;

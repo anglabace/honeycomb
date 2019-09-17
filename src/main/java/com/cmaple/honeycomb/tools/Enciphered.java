@@ -162,8 +162,8 @@ public class Enciphered {
      *                  级别：NULL
      *                  修改日期：
      */
-    public String stringMankeyUserEncoder(String mangerkey, String username) {
-        return stringBase64Encoder(mangerkey + username);
+    public String stringMankeyUserEncoder(String mangerkey, String username,String usertype) {
+        return stringBase64Encoder(mangerkey + username + usertype);
     }
 
 }

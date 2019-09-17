@@ -28,15 +28,15 @@ public class AdvancedSQL {
     public String usersBaseDatas(List<String> list, Map<String, Object> params, String lousertype, int page, int num) {
         String result = new SQL() {
             {
-                SELECT("username,usertype,useraffairs,userbalance,useraddress,telephonenumber,useremail,createtime,closetime,petname");
-                FROM("BS_USER");
+                SELECT("username,usertype,useraffairs,userbalance,useraddress,telephonenumber,useremail,createtime,petname,commonip,lastplace,permissions");
+                FROM("CS_User");
             }
         }.toString();
         //添加WHERE条件
         result = userBDPutWhere(result, lousertype);
         //判断添加请求条件
         if (0 != list.size()) {
-            result = sqlPutAnd(result, list, params);
+            result = sqlUserPutAnd(result, list, params);
         }
         //添加排序
         result = sqlPutOrderBy(result, "username");
@@ -65,32 +65,109 @@ public class AdvancedSQL {
         String result = new SQL() {
             {
                 SELECT("count(*)");
-                FROM("BS_USER");
+                FROM("CS_User");
             }
         }.toString();
         //添加WHERE条件
         result = userBDPutWhere(result, lousertype);
         //判断添加请求条件
         if (0 != list.size()) {
-            result = sqlPutAnd(result, list, params);
+            result = sqlUserPutAnd(result, list, params);
         }
         return result;
     }
 
+
+    /**
+     * 函数名：复杂查询函数-根据条件查询日志信息- getOperationLogCountByParams（）
+     * 功能描述： 根据条件查询日志信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
+    public String getOperationLogByParams(List<String> list, Map<String, Object> params) {
+        String result = new SQL() {
+            {
+                SELECT("id,serialnumber,date,operator,logstype,operatetype,content");
+                FROM("CS_OperationLog WHERE 1 = 1 ");
+            }
+        }.toString();
+        //判断添加请求条件
+        if (0 != list.size()) {
+            result = sqlOperationLogPutAnd(result, list, params);
+        }
+        return result;
+    }
+
+    /**
+     * 函数名：复杂查询函数-根据条件查询条件下的用户总数量- getOperationLogCountByParams（）
+     * 功能描述： 根据相应条件拼接查询符合条件的用户数量
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
+    public String getOperationLogCountByParams(List<String> list, Map<String, Object> params) {
+        String result = new SQL() {
+            {
+                SELECT("count(*)");
+                FROM("CS_OperationLog WHERE 1 = 1 ");
+            }
+        }.toString();
+        //判断添加请求条件
+        if (0 != list.size()) {
+            result = sqlOperationLogPutAnd(result, list, params);
+        }
+        return result;
+    }
+
+    /**
+     * -----------------------------------------------------------------------------------------------------------------------------
+     */
 
     private String userBDPutWhere(String result, String lousertype) {
         //判断用户类别
-        if ("999".equals(lousertype)) {
-            result += "\nWHERE usertype <> '999'"; // 超级管理员查看
-        } else if ("103".equals(lousertype)) {
-            result += "\nWHERE usertype <> '999' AND usertype <> '103'"; // 管理员查看
+        if ("superadmin".equals(lousertype)) {
+            result += "\nWHERE usertype <> 'superadmin'"; // 超级管理员查看
+        } else if ("admin".equals(lousertype)) {
+            result += "\nWHERE usertype <> 'superadmin' AND usertype <> 'admin'"; // 管理员查看
         } else {
-            result += "\nWHERE usertype = '000'"; // 其他级别屏蔽查询结果
+            result += "\nWHERE usertype = 'member'"; // 其他级别屏蔽查询结果
         }
         return result;
     }
 
-    private String sqlPutAnd(String result, List<String> list, Map<String, Object> params) {
+    private String sqlOperationLogPutAnd(String result, List<String> list, Map<String, Object> params) {
+        for (int i = 0; i < list.size(); i++) {
+            if (params.containsKey(list.get(i))) {
+                if ("logstype".equals(list.get(i)) || "operatetype".equals(list.get(i))) {
+                    result += " and " + list.get(i) + " = " + params.get(list.get(i));
+                } else if ("timeaxisdate".equals(list.get(i))) {
+                    result += " and DATE_FORMAT( date, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( date , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                } else {
+                    result += " and content LIKE '%" + params.get(list.get(i)) + "%'";
+                }
+            }
+        }
+        return result;
+    }
+
+    private String sqlUserPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if ("username".equals(list.get(i)) || "name".equals(list.get(i)) || "petname".equals(list.get(i))) {
                 result += " and " + list.get(i) + " LIKE '%" + params.get(list.get(i)) + "%'";

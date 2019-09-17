@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
- * 类名：跨域请求配置类 - User
+ * 类名：用户实体类 - User
  * 功能描述： 用户实体类
  * 输入参数：NULL
  * 返回值：NULL
@@ -24,7 +24,7 @@ import java.util.Date;
  */
 
 @Data //给实体提供读写属性, 此外还提供了 equals()、hashCode()、toString() 方法
-@TableName("BS_USER")  //对应数据库表名称
+@TableName("CS_User")  //对应数据库表名称
 @Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象()
 @NoArgsConstructor  //提供无参构造器
 @AllArgsConstructor //提供全参构造器
@@ -52,17 +52,17 @@ public class User {
      **/
     private String password;
     /**
-     * 账户级别:{101:普通会员/102：付费会员/103:程序三级管理员/999：超级管理员}
-     * 长度：3
+     * 用户的账户类型{超级管理员：superadmin、管理员：admin、普通会员：member}
+     * 长度：12
      * 是否为null：N
      **/
     private String usertype;
     /**
-     * 账户状态{0:正常状态/1账户非法操作标记/2:账户删除标记 }
+     * 账户状态{正常：normal、锁定：lock 、异常：abnormal、删除：del}
      * 长度：1
      * 是否为null：N
      **/
-    private int useraffairs;
+    private String useraffairs;
     /**
      * 账户余额
      * 长度：10
@@ -106,12 +106,6 @@ public class User {
      **/
     private Date createtime;
     /**
-     * 账户作废时间
-     * 长度：
-     * 是否为null：Y
-     **/
-    private Date closetime;
-    /**
      * 账户个性签名
      * 长度：32
      * 是否为null：Y
@@ -129,4 +123,23 @@ public class User {
      * 是否为null：N
      **/
     private int errortry;
+    /**
+     * 经常使用的ip地址
+     * 长度：24
+     * 是否为null：N
+     **/
+    private String commonip;
+    /**
+     * 最后登录地点
+     * 长度：124
+     * 是否为null：N
+     **/
+    private String lastplace;
+    /**
+     * 权限列表
+     * 长度：124
+     * 是否为null：N
+     **/
+    private String permissions;
+
 }

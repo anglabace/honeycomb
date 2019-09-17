@@ -53,13 +53,18 @@ public class UserController {
      *                 修改日期：2019-01-18
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> login(@RequestParam(value = "username", required = true) String username,
-                                     @RequestParam(value = "password", required = true) String password) {
+    public Map<String, Object> login(
+            @RequestParam(value = "username", required = true) String username,
+            @RequestParam(value = "password", required = true) String password
+
+    ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> returnmap = new HashMap<String, Object>();
         //判断此用户名是否存在
         if (1 != userService.hasUsername(username)) {
             map.put("RTCODE", "error");
             map.put("RTMSG", "用户名不存在，请注册后登录！");
+            map.put("RTDATA", null);
             return map;
         }
         //获取用户信息
@@ -74,8 +79,8 @@ public class UserController {
                 map.put("RTDATA", null);
             } else {
                 //5次锁定账号
-                if (1 != user.getUseraffairs()) {
-                    user.setUseraffairs(1);
+                if (!"lock".equals(user.getUseraffairs())) {
+                    user.setUseraffairs("lock");
                     userService.updateUser(user);
                 }
                 map.put("RTCODE", "error");
@@ -84,11 +89,11 @@ public class UserController {
             }
             return map;
         } else {
-            if (1 == user.getUseraffairs()) {
+            if ("lock".equals(user.getUseraffairs())) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "账户已锁定，请进行账号申诉解锁！");
                 map.put("RTDATA", null);
-            } else if (2 == user.getUseraffairs()) {
+            } else if ("del".equals(user.getUseraffairs())) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "账户已删除，请进行账号申诉恢复！");
                 map.put("RTDATA", null);
@@ -98,17 +103,26 @@ public class UserController {
                     user.setErrortry(0);
                     userService.updateUser(user);
                 }
-                User returnuser = new User(0, user.getUsername(), null, user.getUsertype(), 0, user.getUserbalance(), null, null, null, user.getTelephonenumber(), null, null, null, user.getUsersign(), user.getPetname(), 0);
+                User returnuser = new User(0, user.getUsername(), null, user.getUsertype(), "normal", user.getUserbalance(), user.getIdcard(), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
+                //设置登录权限密钥
+//                String key = ManageKey.getManageKey().obtainManageKey();
+//                String returnkey = ManageKey.getManageKey().getUserMangerKey(key, "cmaplesuper", "superadmin");
+//                returnmap.put("key", returnkey);
+//                returnmap.put("user", returnuser);
                 //设置返回信息
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "登录成功！");
                 map.put("RTDATA", returnuser);
                 //将登录信息存储在session中
                 HttpSession session = request.getSession(true);
-                session.setAttribute("SSUSER", returnuser);
+                session.setAttribute("SSUSER", returnmap);
+//                session.setAttribute("SSKEY", key);
             }
         }
-        user = null; //删除强引用，释放相应内存空间，减少内存溢出风险
+        //删除强引用，释放相应内存空间，减少内存溢出风险
+        user = null;
+//        returnmap = null;
+        //返回消息
         return map;
     }
 
@@ -129,6 +143,7 @@ public class UserController {
     @RequestMapping(value = "/logOut", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> logOut() {
         Map<String, Object> map = new HashMap<String, Object>();
+
         HttpSession session = request.getSession();
         session.setAttribute("SSUSER", null);
         map.put("RTCODE", "success");
@@ -154,17 +169,20 @@ public class UserController {
     @RequestMapping(value = "/getUserSession", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getUserSession() {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> sessionmap = new HashMap<String, Object>();
         HttpSession session = request.getSession();
-        User returnuser = (User) session.getAttribute("SSUSER");
-        if (null == returnuser) {
+        sessionmap = (Map<String, Object>) session.getAttribute("SSUSER");
+        if (null == sessionmap) {
             map.put("RTCODE", "error");
-            map.put("RTMSG", "获取用户信息失败！");
+            map.put("RTMSG", "获取用户信息失败！账户已注销登录！");
             map.put("RTDATA", null);
             return map;
         }
+        //获取授权公钥
+//        sessionmap.put("SSKEY",session.getAttribute("SSKEY"));
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
-        map.put("RTDATA", returnuser);
+        map.put("RTDATA", sessionmap);
         return map;
     }
 
@@ -232,7 +250,8 @@ public class UserController {
         list.add("name");
         list.add("petname");
         list.add("errortry");
-        Map<String, Object> returnmap = ParamsTools.getPageTools().getParamsToMap(list, username, usertype, useraffairs, name, petname);
+
+        Map<String, Object> returnmap = ParamsTools.getPageTools().getParamsToMap(list, params);
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
         map.put("RTDATA", userService.getUsersByParams((List<String>) returnmap.get("list"), (Map<String, Object>) returnmap.get("map"), lousertype, ParamsTools.getPageTools().getPageByNum(page, num), num));
@@ -301,7 +320,7 @@ public class UserController {
                 return map;
             }
         }
-        int insertreturn = userService.insertUser(new User(0, username, password, usertype, 0, 0.0, idcard, name, useraddress, telephonenumber, useremail, new Date(), null, usersign, petname, 0));
+        int insertreturn = userService.insertUser(new User(0, username, password, usertype, "", 0.0, idcard, name, useraddress, telephonenumber, useremail, new Date(), usersign, petname, 0, "", "", ""));
         if (1 == insertreturn) {
             map.put("RTCODE", "success");
             map.put("RTMSG", "用户注册成功！");
@@ -335,7 +354,7 @@ public class UserController {
             , @RequestParam(value = "username", required = true) String username
             , @RequestParam(value = "password", required = true) String password
             , @RequestParam(value = "usertype", required = true) String usertype
-            , @RequestParam(value = "useraffairs", required = false) int useraffairs
+            , @RequestParam(value = "useraffairs", required = false) String useraffairs
             , @RequestParam(value = "userbalance", required = false) double userbalance
             , @RequestParam(value = "name", required = false) String name
             , @RequestParam(value = "idcard", required = false) String idcard
@@ -344,10 +363,13 @@ public class UserController {
             , @RequestParam(value = "useremail", required = false) String useremail
             , @RequestParam(value = "usersign", required = false) String usersign
             , @RequestParam(value = "petname", required = false) String petname
+            , @RequestParam(value = "commonip", required = false) String commonip
+            , @RequestParam(value = "lastplace", required = false) String lastplace
+            , @RequestParam(value = "permissions", required = false) String permissions
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         User user = userService.getUserByUsername(username);
-        if (2 == useraffairs) {
+        if ("del".equals(useraffairs)) {
             if (1 != userService.updateUser(new User(
                     id                         //用户编号
                     , username                 //用户登录名
@@ -361,11 +383,13 @@ public class UserController {
                     , telephonenumber          //用户电话
                     , useremail                //用户电子邮箱
                     , user.getCreatetime()     //用户创建时间
-                    , new Date()               //用户关闭时间
                     , usersign                 //用户签名
                     , petname                  //用户昵称
-                    , user.getErrortry()))     //用户密码连续输入错误次数
-                    ) {
+                    , user.getErrortry()    //用户密码连续输入错误次数
+                    , commonip                 //常用ip
+                    , lastplace                //最后登录地点
+                    , permissions              //权限列表
+            ))) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "用户删除失败！");
                 map.put("RTDATA", null);
@@ -385,11 +409,13 @@ public class UserController {
                     , telephonenumber          //用户电话
                     , useremail                //用户电子邮箱
                     , user.getCreatetime()     //用户创建时间
-                    , null            //用户关闭时间
                     , usersign                 //用户签名
                     , petname                  //用户昵称
-                    , user.getErrortry()))     //用户密码连续输入错误次数
-                    ) {
+                    , user.getErrortry()     //用户密码连续输入错误次数
+                    , commonip                 //常用ip
+                    , lastplace                //最后登录地点
+                    , permissions              //权限列表
+            ))) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "用户信息更新失败！");
                 map.put("RTDATA", null);
@@ -401,7 +427,6 @@ public class UserController {
         map.put("RTDATA", null);
         return map;
     }
-
 
 
 }

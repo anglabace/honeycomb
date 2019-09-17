@@ -1,6 +1,5 @@
 package com.cmaple.honeycomb.tools;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,39 +62,25 @@ public class ParamsTools {
      * 功能描述：根据传入条件将条件进行整理
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list     页数
-     * @param username 数量
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-18
-     *                 修改人：
-     *                 级别：普通用户及以上
-     *                 修改日期：
+     * @param list 条件列表
+     * @param map  条件
+     *             返回值：map
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             创建日期：2019-01-18
+     *             修改人：CMAPLE
+     *             级别：普通用户及以上
+     *             修改日期：2019-09-11
      */
-    public Map<String, Object> getParamsToMap(List<String> list, String username, String usertype, int useraffairs, String name, String petname) {
+    public Map<String, Object> getParamsToMap(List<String> list, Map<String, Object> map) {
         Map<String, Object> returnmap = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<String, Object>();
-        List<String> bufferlist = new ArrayList<String>();
-        params.put("username", username);
-        params.put("usertype", usertype);
-        params.put("useraffairs", useraffairs);
-        params.put("name", name);
-        params.put("petname", petname);
-        int listsize = list.size();
-        for (int i = 0; i < listsize; i++) {
-            if (null == params.get(list.get(i)) || "".equals(params.get(list.get(i)))) {
-                params.remove(list.get(i));
-                bufferlist.add(list.get(i));
-            } else {
-                if (list.get(i).equals("useraffairs") && 3 == (int) params.get(list.get(i))) {
-                    params.remove(list.get(i));
-                    bufferlist.add(list.get(i));
-                }
+        //更新条件列表
+        for (int i = 0; i < list.size(); i++) {
+            if (!map.containsKey(list.get(i))) {
+                params.put(list.get(i), map.get(list.get(i)));
+                list.remove(list.get(i));
             }
-        }
-        for (int i = 0; i < bufferlist.size(); i++) {
-            list.remove(bufferlist.get(i));
         }
         returnmap.put("map", params);
         returnmap.put("list", list);
