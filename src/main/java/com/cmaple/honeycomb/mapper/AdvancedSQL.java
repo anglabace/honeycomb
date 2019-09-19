@@ -138,17 +138,12 @@ public class AdvancedSQL {
 
     /**
      * -----------------------------------------------------------------------------------------------------------------------------
+     * 内蒙古西南梦扎赉特旗音德尔镇团结路五四街建设小区6号楼3单元401号
      */
 
     private String userBDPutWhere(String result, String lousertype) {
         //判断用户类别
-        if ("superadmin".equals(lousertype)) {
-            result += "\nWHERE usertype <> 'superadmin'"; // 超级管理员查看
-        } else if ("admin".equals(lousertype)) {
-            result += "\nWHERE usertype <> 'superadmin' AND usertype <> 'admin'"; // 管理员查看
-        } else {
-            result += "\nWHERE usertype = 'member'"; // 其他级别屏蔽查询结果
-        }
+        result += "\nWHERE usertype = '" + lousertype + "'";
         return result;
     }
 

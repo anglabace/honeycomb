@@ -59,7 +59,6 @@ public class UserController {
 
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        Map<String, Object> returnmap = new HashMap<String, Object>();
         //判断此用户名是否存在
         if (1 != userService.hasUsername(username)) {
             map.put("RTCODE", "error");
@@ -104,24 +103,17 @@ public class UserController {
                     userService.updateUser(user);
                 }
                 User returnuser = new User(0, user.getUsername(), null, user.getUsertype(), "normal", user.getUserbalance(), user.getIdcard(), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
-                //设置登录权限密钥
-//                String key = ManageKey.getManageKey().obtainManageKey();
-//                String returnkey = ManageKey.getManageKey().getUserMangerKey(key, "cmaplesuper", "superadmin");
-//                returnmap.put("key", returnkey);
-//                returnmap.put("user", returnuser);
                 //设置返回信息
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "登录成功！");
                 map.put("RTDATA", returnuser);
                 //将登录信息存储在session中
                 HttpSession session = request.getSession(true);
-                session.setAttribute("SSUSER", returnmap);
-//                session.setAttribute("SSKEY", key);
+                session.setAttribute("SSUSER", returnuser);
             }
         }
         //删除强引用，释放相应内存空间，减少内存溢出风险
         user = null;
-//        returnmap = null;
         //返回消息
         return map;
     }
@@ -178,8 +170,6 @@ public class UserController {
             map.put("RTDATA", null);
             return map;
         }
-        //获取授权公钥
-//        sessionmap.put("SSKEY",session.getAttribute("SSKEY"));
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
         map.put("RTDATA", sessionmap);

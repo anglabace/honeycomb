@@ -33,6 +33,9 @@ public class OperationLogService {
      * 输入参数：<按照参数定义顺序>
      *
      * @param list String类型的用户名
+     * @param params String类型的用户名
+     * @param page String类型的用户名
+     * @param num String类型的用户名
      *             返回值：List
      *             异    常：无
      *             创建人：CMAPLE
