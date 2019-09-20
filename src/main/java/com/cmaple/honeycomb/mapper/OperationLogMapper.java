@@ -2,10 +2,6 @@ package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cmaple.honeycomb.model.OperationLog;
-import org.apache.ibatis.annotations.SelectProvider;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 类名：mybatis plus 映射用户接口 - OperationLogMapper
@@ -38,6 +34,6 @@ public interface OperationLogMapper extends BaseMapper<OperationLog> {
      *                   级别：普通用户
      *                   日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "getOperationLogByParams")
-    List<OperationLog> queryOperationLogByParams(List<String> list, Map<String, Object> params, int page, int num);
+//    @SelectProvider(type = AdvancedSQL.class, method = "getOperationLogByParams")
+//    List<OperationLog> queryOperationLogByParams(List<String> list, Map<String, Object> params, int page, int num);
 }

@@ -53,13 +53,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 输入参数：<按照参数定义顺序>
      *
      * @param telephonenumber String类型的用户名
-     *                 返回值：int
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-16
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
+     *                        返回值：int
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        日期：2019-01-16
+     *                        修改人：
+     *                        级别：普通用户
+     *                        日期：
      */
     public Integer hasTelephonenumber(String telephonenumber) {
         return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getTelephonenumber, telephonenumber));
@@ -71,13 +71,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 输入参数：<按照参数定义顺序>
      *
      * @param idcard String类型的用户名
-     *                 返回值：int
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-16
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
+     *               返回值：int
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-16
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
      */
     public Integer hasIdcard(String idcard) {
         return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getIdcard, idcard));
@@ -89,13 +89,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 输入参数：<按照参数定义顺序>
      *
      * @param email String类型的用户名
-     *                 返回值：int
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-16
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
+     *              返回值：int
+     *              异    常：无
+     *              创建人：CMAPLE
+     *              日期：2019-01-16
+     *              修改人：
+     *              级别：普通用户
+     *              日期：
      */
     public Integer hasEmail(String email) {
         return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getUseremail, email));
@@ -142,21 +142,20 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 函数名：复杂查询函数-根据条件查询用户列表 - getUsersByParams（）
      * 功能描述： 根据条件查询用户列表
      *
-     * @param list       条件列表
-     * @param params     字段及数值集合
-     * @param lousertype 操作用户级别
-     * @param page       分页查询PAGE条件
-     * @param num        分页查询NUM条件
-     *                   返回值：List<User>
-     *                   异    常：无
-     *                   创建人：CMAPLE
-     *                   日期：2019-01-17
-     *                   修改人：
-     *                   级别：普通用户
-     *                   日期：
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     * @param page   分页查询PAGE条件
+     * @param num    分页查询NUM条件
+     *               返回值：List<User>
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
      */
-    public List<User> getUsersByParams(List<String> list, Map<String, Object> params, String lousertype, int page, int num) {
-        return userMapper.queryUserByParams(list, params, lousertype, page, num);
+    public List<User> getUsersByParams(List<String> list, Map<String, Object> params, int page, int num) {
+        return userMapper.queryUserByParams(list, params, page, num);
     }
 
     /**

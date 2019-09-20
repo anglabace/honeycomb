@@ -1,12 +1,8 @@
 package com.cmaple.honeycomb.service;
 
 import com.cmaple.honeycomb.mapper.OperationLogMapper;
-import com.cmaple.honeycomb.model.OperationLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 类名：日志功能服务类 - OperationLogService
@@ -44,9 +40,9 @@ public class OperationLogService {
      *             级别：普通用户
      *             日期：
      */
-    public List<OperationLog> getUsersByParams(List<String> list, Map<String, Object> params, int page, int num) {
-        return operationLogMapper.queryOperationLogByParams(list, params, page, num);
-    }
+//    public List<OperationLog> getUsersByParams(List<String> list, Map<String, Object> params, int page, int num) {
+//        return operationLogMapper.queryOperationLogByParams(list, params, page, num);
+//    }
 
 
 }

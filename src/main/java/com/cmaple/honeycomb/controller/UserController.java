@@ -160,19 +160,21 @@ public class UserController {
      */
     @RequestMapping(value = "/getUserSession", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getUserSession() {
+        //设置参数
         Map<String, Object> map = new HashMap<String, Object>();
-        Map<String, Object> sessionmap = new HashMap<String, Object>();
         HttpSession session = request.getSession();
-        sessionmap = (Map<String, Object>) session.getAttribute("SSUSER");
-        if (null == sessionmap) {
+        //获取信息
+        User sessionuser = (User) session.getAttribute("SSUSER");
+        //信息判断
+        if (null == sessionuser) {
             map.put("RTCODE", "error");
             map.put("RTMSG", "获取用户信息失败！账户已注销登录！");
             map.put("RTDATA", null);
-            return map;
+        } else {
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "获取用户信息成功！");
+            map.put("RTDATA", sessionuser);
         }
-        map.put("RTCODE", "success");
-        map.put("RTMSG", "获取用户信息成功！");
-        map.put("RTDATA", sessionmap);
         return map;
     }
 
@@ -197,11 +199,11 @@ public class UserController {
             map.put("RTCODE", "error");
             map.put("RTMSG", "不存在【" + username + "】用户！");
             map.put("RTDATA", null);
-            return map;
+        } else {
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "获取用户信息成功！");
+            map.put("RTDATA", userService.getUserByUsername(username).setPassword(null));
         }
-        map.put("RTCODE", "success");
-        map.put("RTMSG", "获取用户信息成功！");
-        map.put("RTDATA", userService.getUserByUsername(username).setPassword(null));
         return map;
     }
 
@@ -210,41 +212,55 @@ public class UserController {
      * 功能描述：根据用户名获取相应的用户信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param username String类型的用户名
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-18
-     *                 修改人：
-     *                 级别：普通用户及以上
-     *                 修改日期：
+     * @param usertype     String类型的用户类型
+     * @param useraffairs  String类型 用户状态
+     * @param content      String类型 搜索内容
+     * @param timeaxisdate List类型 搜索内容
+     *                     返回值：map
+     *                     异    常：无
+     *                     创建人：CMAPLE
+     *                     创建日期：2019-01-18
+     *                     修改人：
+     *                     级别：普通用户及以上
+     *                     修改日期：
      */
     @RequestMapping(value = "/getListUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getListUser(
-            @RequestParam(value = "lousertype", required = true) String lousertype
-            , @RequestParam(value = "username", required = false) String username
-            , @RequestParam(value = "usertype", required = false) String usertype
-            , @RequestParam(value = "useraffairs", required = false) int useraffairs  //3表示不限制此条件
-            , @RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "petname", required = false) String petname
-            , @RequestParam(value = "page", required = false) int page
-            , @RequestParam(value = "num", required = false) int num
+            @RequestParam(value = "usertype", required = true) String usertype
+            , @RequestParam(value = "useraffairs", required = true) String useraffairs
+            , @RequestParam(value = "content", required = false) String content
+            , @RequestParam(value = "timeaxisdate", required = false) List timeaxisdate
+            , @RequestParam(value = "page", required = true) int page
+            , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<String> list = new ArrayList<String>();
         Map<String, Object> params = new HashMap<String, Object>();
         //条件整理
-        list.add("username");
         list.add("usertype");
+        params.put("usertype", usertype);
         list.add("useraffairs");
-        list.add("name");
-        list.add("petname");
-        list.add("errortry");
-
-        Map<String, Object> returnmap = ParamsTools.getPageTools().getParamsToMap(list, params);
+        params.put("useraffairs", useraffairs);
+        if (null != content) {
+            list.add("content");
+            params.put("content", content);
+        }
+        if (null != timeaxisdate) {
+            list.add("timeaxisdate");
+            params.put("timeaxisdate", timeaxisdate);
+        }
+        List<User> returnusers = null;
+        try {
+            returnusers = userService.getUsersByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+        } catch (Exception e) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "获取用户信息失败！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
-        map.put("RTDATA", userService.getUsersByParams((List<String>) returnmap.get("list"), (Map<String, Object>) returnmap.get("map"), lousertype, ParamsTools.getPageTools().getPageByNum(page, num), num));
+        map.put("RTDATA", returnusers);
         return map;
     }
 
