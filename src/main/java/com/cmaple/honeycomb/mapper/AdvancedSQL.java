@@ -28,7 +28,7 @@ public class AdvancedSQL {
     public String usersBaseDatas(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,username ,usertype ,useraffairs ,userbalance ,idcard ,name ,useraddress ,telephonenumber ,useremail ,createtime ,usersign ,petname ,errortry ,commonip ,lastplace ,permissions");
+                SELECT("id ,usertype ,useraffairs ,userbalance ,idcard ,name ,useraddress ,telephonenumber ,useremail ,createtime ,usersign ,petname ,errortry ,commonip ,lastplace ,permissions");
                 FROM("CS_User");
             }
         }.toString();
@@ -50,18 +50,17 @@ public class AdvancedSQL {
      * 功能描述： 根据相应条件拼接查询符合条件的用户数量
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list       条件列表
-     * @param params     字段及数值集合
-     * @param lousertype 操作用户级别
-     *                   返回值：string
-     *                   异    常：无
-     *                   创建人：CMAPLE
-     *                   日期：2019-01-17
-     *                   修改人：
-     *                   级别：普通用户
-     *                   日期：
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
      */
-    public String getUserCountByParams(List<String> list, Map<String, Object> params, String lousertype) {
+    public String getUserCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
         String result = new SQL() {
             {
                 SELECT("count(*)");
@@ -69,7 +68,7 @@ public class AdvancedSQL {
             }
         }.toString();
         //添加WHERE条件
-        result = userBDPutWhere(result, lousertype);
+        result = userBDPutWhere(result, (String) params.get("usertype"));
         //判断添加请求条件
         if (0 != list.size()) {
             result = sqlUserPutAnd(result, list, params);
@@ -85,6 +84,8 @@ public class AdvancedSQL {
      *
      * @param list   条件列表
      * @param params 字段及数值集合
+     * @param page   分页查询PAGE条件
+     * @param num    分页查询NUM条件
      *               返回值：string
      *               异    常：无
      *               创建人：CMAPLE
@@ -93,7 +94,7 @@ public class AdvancedSQL {
      *               级别：普通用户
      *               日期：
      */
-    public String getOperationLogByParams(List<String> list, Map<String, Object> params) {
+    public String getOperationLogByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
                 SELECT("id,serialnumber,date,operator,logstype,operatetype,content");
@@ -104,6 +105,10 @@ public class AdvancedSQL {
         if (0 != list.size()) {
             result = sqlOperationLogPutAnd(result, list, params);
         }
+        //添加排序
+        result = sqlPutDescOrderBy(result, "date");
+        //添加分页
+        result = sqlPutLimit(result, page, num);
         return result;
     }
 
@@ -122,7 +127,7 @@ public class AdvancedSQL {
      *               级别：普通用户
      *               日期：
      */
-    public String getOperationLogCountByParams(List<String> list, Map<String, Object> params) {
+    public String getOperationLogCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
         String result = new SQL() {
             {
                 SELECT("count(*)");
@@ -141,12 +146,43 @@ public class AdvancedSQL {
      * 内蒙古西南梦扎赉特旗音德尔镇团结路五四街建设小区6号楼3单元401号
      */
 
+    /**
+     * 函数名：私有函数-用户查询添加where条件- userBDPutWhere（）
+     * 功能描述： 用户查询添加where条件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result     条件列表
+     * @param lousertype 字段及数值集合
+     *                   返回值：string
+     *                   异    常：无
+     *                   创建人：CMAPLE
+     *                   日期：2019-01-17
+     *                   修改人：
+     *                   级别：普通用户
+     *                   日期：
+     */
     private String userBDPutWhere(String result, String lousertype) {
         //判断用户类别
         result += " WHERE usertype = '" + lousertype + "'";
         return result;
     }
 
+    /**
+     * 函数名：私有函数-用户查询添加其他条件- sqlUserPutAnd（）
+     * 功能描述： 用户查询添加其他条件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result 条件列表
+     * @param list   字段及数值集合
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
     private String sqlUserPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if ("useraffairs".equals(list.get(i))) {
@@ -156,8 +192,7 @@ public class AdvancedSQL {
                 result += " and DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
             }
             if ("content".equals(list.get(i))) {
-                result += " and username LIKE '%" + params.get(list.get(i)) + "%' " +
-                        "or idcard LIKE '%" + params.get(list.get(i)) + "%' " +
+                result += " and idcard LIKE '%" + params.get(list.get(i)) + "%' " +
                         "or name LIKE '%" + params.get(list.get(i)) + "%' " +
                         "or useraddress LIKE '%" + params.get(list.get(i)) + "%' " +
                         "or telephonenumber LIKE '%" + params.get(list.get(i)) + "%' " +
@@ -170,14 +205,35 @@ public class AdvancedSQL {
         return result;
     }
 
+    /**
+     * 函数名：私有函数-日志查询添加其他条件- sqlOperationLogPutAnd（）
+     * 功能描述： 日志查询添加其他条件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result 条件列表
+     * @param list   字段及数值集合
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
     private String sqlOperationLogPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if (params.containsKey(list.get(i))) {
-                if ("logstype".equals(list.get(i)) || "operatetype".equals(list.get(i))) {
-                    result += " and " + list.get(i) + " = " + params.get(list.get(i));
-                } else if ("timeaxisdate".equals(list.get(i))) {
+                if ("logstype".equals(list.get(i))) {
+                    result += " and logstype = '" + params.get(list.get(i)) + "'";
+                }
+                if ("operatetype".equals(list.get(i))) {
+                    result += " and operatetype = '" + params.get(list.get(i)) + "'";
+                }
+                if ("timeaxisdate".equals(list.get(i))) {
                     result += " and DATE_FORMAT( date, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( date , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
-                } else {
+                }
+                if ("search".equals(list.get(i))) {
                     result += " and content LIKE '%" + params.get(list.get(i)) + "%'";
                 }
             }
@@ -185,11 +241,62 @@ public class AdvancedSQL {
         return result;
     }
 
+    /**
+     * 函数名：私有函数-按照相应字段进行从小到大排序- sqlPutOrderBy（）
+     * 功能描述： 按照相应字段进行从小到大排序
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result   条件列表
+     * @param ordderby 字段及数值集合
+     *                 返回值：string
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 日期：2019-01-17
+     *                 修改人：
+     *                 级别：普通用户
+     *                 日期：
+     */
     private String sqlPutOrderBy(String result, String ordderby) {
         result += " order by " + ordderby;
         return result;
     }
 
+    /**
+     * 函数名：私有函数-按照相应字段进行从大到小排序- sqlPutDescOrderBy（）
+     * 功能描述： 按照相应字段进行从大到小排序
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result   条件列表
+     * @param ordderby 字段及数值集合
+     *                 返回值：string
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 日期：2019-01-17
+     *                 修改人：
+     *                 级别：普通用户
+     *                 日期：
+     */
+    private String sqlPutDescOrderBy(String result, String ordderby) {
+        result += " order by " + ordderby + " desc ";
+        return result;
+    }
+
+    /**
+     * 函数名：私有函数-分页函数- sqlPutLimit（）
+     * 功能描述： 分页函数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result 条件列表
+     * @param page   字段及数值集合
+     * @param num    字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
     private String sqlPutLimit(String result, int page, int num) {
         result += " limit " + page + "," + num;
         return result;

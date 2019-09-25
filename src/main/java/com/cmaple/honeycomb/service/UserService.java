@@ -30,24 +30,6 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private UserMapper userMapper;
 
     /**
-     * 函数名：查询函数-查询此用户名是否存在 - hasUsername（）
-     * 功能描述： 根据账户名 查询数据库中是否存在此用户的数量，返回1则表示存在此账户，否则为不存在此账户
-     * 输入参数：<按照参数定义顺序>
-     *
-     * @param username String类型的用户名
-     *                 返回值：int
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-16
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
-     */
-    public Integer hasUsername(String username) {
-        return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
-    }
-
-    /**
      * 函数名：查询函数-查询此电话号码是否已经存在 - hasTelephonenumber（）
      * 功能描述： 根据非空的电话号码查询此电话号码是否存在
      * 输入参数：<按照参数定义顺序>
@@ -102,40 +84,39 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
 
     /**
-     * 函数名：查询函数-根据用户名、密码查询用户是否存在 - hasByUsernameAndPassword（）
-     * 功能描述： 根据账户名、密码获取当前用户是否存在
+     * 函数名：查询函数-根据电话号码查询用户信息 - getUserByUsername（）
+     * 功能描述： 根据电话号码查询用户信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param username String类型的用户名
-     * @param password String类型的用户密码
-     *                 返回值：int
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-17
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
+     * @param telephonenumber String类型的用户名
+     *                        返回值：User
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        日期：2019-01-17
+     *                        修改人：
+     *                        级别：普通用户
+     *                        日期：
      */
-    public int hasByUsernameAndPassword(String username, String password) {
-        return userMapper.selectCount(new QueryWrapper<User>().lambda().eq(User::getUsername, username).eq(User::getPassword, password));
+    public User getUserByTelephonenumber(String telephonenumber) {
+        return userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getTelephonenumber, telephonenumber));
     }
 
     /**
-     * 函数名：查询函数-根据用户名查询用户信息 - getUserByUsername（）
-     * 功能描述： 根据用户名查询用户信息
+     * 函数名：查询函数-根据ID号查询用户信息 - getUserById（）
+     * 功能描述： 根据ID号查询用户信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param username String类型的用户名
-     *                 返回值：User
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 日期：2019-01-17
-     *                 修改人：
-     *                 级别：普通用户
-     *                 日期：
+     * @param id String类型的用户名
+     *           返回值：User
+     *           异    常：无
+     *           创建人：CMAPLE
+     *           日期：2019-01-17
+     *           修改人：
+     *           级别：普通用户
+     *           日期：
      */
-    public User getUserByUsername(String username) {
-        return userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
+    public User getUserById(String id) {
+        return userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getId, id));
     }
 
     /**
@@ -162,19 +143,18 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      * 函数名：复杂查询函数-根据条件查询用户数量 - queryUserCountByParams（）
      * 功能描述： 根据条件查询用户数量
      *
-     * @param list       条件列表
-     * @param params     字段及数值集合
-     * @param lousertype 操作用户级别
-     *                   返回值：int
-     *                   异    常：无
-     *                   创建人：CMAPLE
-     *                   日期：2019-01-17
-     *                   修改人：
-     *                   级别：普通用户
-     *                   日期：
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     *               返回值：int
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
      */
-    public int queryUserCountByParams(List<String> list, Map<String, Object> params, String lousertype) {
-        return userMapper.queryUserCountByParams(list, params, lousertype);
+    public int queryUserCountByParams(List<String> list, Map<String, Object> params) {
+        return userMapper.queryUserCountByParams(list, params);
     }
 
     /**
@@ -208,7 +188,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
      *             日期：
      */
     public int updateUser(User user) {
-        return userMapper.update(user, new QueryWrapper<User>().lambda().eq(User::getUsername, user.getUsername()));
+        return userMapper.update(user, new QueryWrapper<User>().lambda().eq(User::getTelephonenumber, user.getTelephonenumber()));
     }
 
 }

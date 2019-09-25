@@ -40,12 +40,6 @@ public class User {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
     /**
-     * 用户登录id
-     * 长度：36
-     * 是否为null：Y
-     **/
-    private String username;
-    /**
      * 用户密码
      * 长度：200
      * 是否为null：Y

@@ -1,12 +1,12 @@
 package com.cmaple.honeycomb;
 
-import com.cmaple.honeycomb.tools.ManageKey;
 import org.hyperic.sigar.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Map;
+import java.util.Properties;
 
 public class test {
 
@@ -30,20 +30,30 @@ public class test {
 
 
     public static void main(String[] args) throws IOException {
-        String key =  ManageKey.getManageKey().obtainManageKey();
-        System.out.println(key);
-        String returnkey =  ManageKey.getManageKey().getUserMangerKey(key,"cmaplesuper","superadmin");
-        System.out.println(returnkey);
-        boolean istrue = ManageKey.getManageKey().checkManageKeys(key,"cmaplesuper","superadmin",returnkey);
-        System.out.println(istrue);
-        System.out.println(new Date().toString());
+        //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
+//        Map<String,String> map = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014");
+//        System.out.println(map);
+////        String jsons = "{\"code\":404,\"message\":\"check.param.error:参数非法\"}";
+//        AliyunIDName aliyunIDName = JSON.parseObject(jsons, AliyunIDName.class);
+//        System.out.println("code -  " + aliyunIDName.getCode());
+//        System.out.println("msg -  " + aliyunIDName.getMessage());
+//        //进一步需要获取的信息
+//        System.out.println("bizCode -  " + aliyunIDName.getValue().getBizCode());
+//        System.out.println("message -  " + aliyunIDName.getValue().getMessage());
 
-//        String path=System.getProperty("java.library.path");
+        //        String key =  ManageKey.getManageKey().obtainManageKey();
+//        System.out.println(key);
+//        String returnkey =  ManageKey.getManageKey().getUserMangerKey(key,"cmaplesuper","superadmin");
+//        System.out.println(returnkey);
+//        boolean istrue = ManageKey.getManageKey().checkManageKeys(key,"cmaplesuper","superadmin",returnkey);
+//        System.out.println(istrue);
+//        System.out.println(new Date().toString());
+
+//        String path = System.getProperty("java.library.path");
 //        System.out.println(path);
-//
 //        try {
 //            // System信息，从jvm获取
-//            System.setProperty("java.library.path", path);
+////            System.setProperty("java.library.path", path);
 //            property();
 //            System.out.println("----------------------------------");
 //            // cpu信息
@@ -72,6 +82,9 @@ public class test {
 //        }
 
 
+
+
+
 //        Test testDo1 = new Test();
 //        Thread thread1 = new TestDo(testDo1);
 //        thread1.setName("线程 - 1");
@@ -79,7 +92,7 @@ public class test {
 //        Thread thread2 = new TestDo(testDo1);
 //        thread2.setName("线程 - 2");
 //        thread2.start();
-
+//
 //        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
 //        for (int i = 0; i < 100; i++) {
 //            final int index = i;
@@ -94,7 +107,7 @@ public class test {
 //                }
 //            });
 //        }
-
+//
 //        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 //        for (int i = 0; i < 100; i++) {
 //            final int index = i;
@@ -109,21 +122,21 @@ public class test {
 //                }
 //            });
 //        }
-
+//
 //        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
 //        scheduledThreadPool.schedule(new Runnable() {
 //            public void run() {
 //                System.out.println(Thread.currentThread().getName());
 //            }
 //        }, 1, TimeUnit.SECONDS);
-
+//
 //        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
 //        scheduledThreadPool.scheduleAtFixedRate(new Runnable() {
 //            public void run() {
 //                System.out.println(Thread.currentThread().getName());
 //            }
 //        }, 1, 3, TimeUnit.SECONDS);
-
+//
 //
 //        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 //        for (int i = 0; i < 100; i++) {
@@ -139,7 +152,7 @@ public class test {
 //                }
 //            });
 //        }
-
+//
 //        ExecutorService singleThreadExecutor = Executors.newCachedThreadPool();
 //        for (int i = 0; i < 100; i++) {
 //            final int index = i;

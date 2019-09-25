@@ -81,6 +81,62 @@ public class Enciphered {
     }
 
     /**
+     * 函数名：加密函数-将身份证号码进行加密 - idCardEncoder（）
+     * 功能描述： 将身份证号码进行加密，加密方式：将固定位数转化为*
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param idcard String类型字符串
+     *               返回值：String
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               创建日期：2018-09-30
+     *               修改人：
+     *               级别：NULL
+     *               修改日期：
+     */
+    public String idCardEncoder(String idcard) {
+        //判断传入字符是否为空或者为null
+        if (null == idcard || "".equals(idcard)) {
+            return "";
+        }
+        String s = null;
+        try {
+            s = idcard.replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    /**
+     * 函数名：加密函数-电话号码进行加密 - telephonenumberEncoder（）
+     * 功能描述： 电话号码进行加密，加密方式：将固定位数转化为*
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param telephonenumber String类型字符串
+     *                        返回值：String
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        创建日期：2018-09-30
+     *                        修改人：
+     *                        级别：NULL
+     *                        修改日期：
+     */
+    public String telephonenumberEncoder(String telephonenumber) {
+        //判断传入字符是否为空或者为null
+        if (null == telephonenumber || "".equals(telephonenumber)) {
+            return "";
+        }
+        String s = null;
+        try {
+            s = telephonenumber.replaceAll("(?<=[\\d]{3})\\d(?=[\\d]{4})", "*");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    /**
      * 函数名：解密函数-将指定的字符串进行Base64解码 - stringBase64Decoder（）
      * 功能描述： 将指定的字符串进行Base64解码，加密方式：Base64（非加密方式，只是一种编码格式）
      * 输入参数：<按照参数定义顺序>
@@ -162,7 +218,7 @@ public class Enciphered {
      *                  级别：NULL
      *                  修改日期：
      */
-    public String stringMankeyUserEncoder(String mangerkey, String username,String usertype) {
+    public String stringMankeyUserEncoder(String mangerkey, String username, String usertype) {
         return stringBase64Encoder(mangerkey + username + usertype);
     }
 

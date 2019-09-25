@@ -47,19 +47,16 @@ public interface UserMapper extends BaseMapper<User> {
      * 功能描述： 根据相应条件查询符合条件的数据并返回
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list       条件列表
-     * @param params     字段及数值集合
-     * @param lousertype 操作用户级别
-     *                   返回值：INT
-     *                   异    常：无
-     *                   创建人：CMAPLE
-     *                   日期：2019-01-17
-     *                   修改人：
-     *                   级别：普通用户
-     *                   日期：
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     *               返回值：INT
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
      */
     @SelectProvider(type = AdvancedSQL.class, method = "getUserCountByParams")
-    int queryUserCountByParams(List<String> list, Map<String, Object> params, String lousertype);
-
-
+    int queryUserCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
 }

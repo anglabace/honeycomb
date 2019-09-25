@@ -3,6 +3,7 @@ package com.cmaple.honeycomb.controller;
 
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.UserService;
+import com.cmaple.honeycomb.tools.Enciphered;
 import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,33 +42,33 @@ public class UserController {
      * 函数名：登录函数- - login（）
      * 功能描述： 根据账户名 密码查询数据库中是否存在此用户,并返回登录用户的非敏感信息
      * 输入参数：<按照参数定义顺序>
+     * ！需要增加短信验证码的接口
      *
-     * @param username String类型的用户名
-     * @param password String类型的用户密码
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-16
-     *                 修改人：CMAPLE
-     *                 级别：普通用户及以上
-     *                 修改日期：2019-01-18
+     * @param telephonenumber String类型的用户名
+     * @param password        String类型的用户密码
+     *                        返回值：map
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        创建日期：2019-01-16
+     *                        修改人：CMAPLE
+     *                        级别：普通用户及以上
+     *                        修改日期：2019-01-18
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> login(
-            @RequestParam(value = "username", required = true) String username,
-            @RequestParam(value = "password", required = true) String password
-
+            @RequestParam(value = "telephonenumber", required = true) String telephonenumber
+            , @RequestParam(value = "password", required = true) String password
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         //判断此用户名是否存在
-        if (1 != userService.hasUsername(username)) {
+        if (1 != userService.hasTelephonenumber(telephonenumber)) {
             map.put("RTCODE", "error");
             map.put("RTMSG", "用户名不存在，请注册后登录！");
             map.put("RTDATA", null);
             return map;
         }
         //获取用户信息
-        User user = userService.getUserByUsername(username);
+        User user = userService.getUserByTelephonenumber(telephonenumber);
         //判断用户名密码是否匹配
         if (!user.getPassword().equals(password)) {
             if (5 > user.getErrortry()) {
@@ -102,7 +103,7 @@ public class UserController {
                     user.setErrortry(0);
                     userService.updateUser(user);
                 }
-                User returnuser = new User(0, user.getUsername(), null, user.getUsertype(), "normal", user.getUserbalance(), user.getIdcard(), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
+                User returnuser = new User(user.getId(), null, user.getUsertype(), "normal", user.getUserbalance(), Enciphered.getEnciphered().idCardEncoder(user.getIdcard()), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
                 //设置返回信息
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "登录成功！");
@@ -179,35 +180,6 @@ public class UserController {
     }
 
     /**
-     * 函数名：获取详细的用户信息 - getUser（）
-     * 功能描述：根据用户名获取相应的用户信息
-     * 输入参数：<按照参数定义顺序>
-     *
-     * @param username String类型的用户名
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-18
-     *                 修改人：
-     *                 级别：普通用户及以上
-     *                 修改日期：
-     */
-    @RequestMapping(value = "/getUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getUser(@RequestParam(value = "username", required = true) String username) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (1 != userService.hasUsername(username)) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "不存在【" + username + "】用户！");
-            map.put("RTDATA", null);
-        } else {
-            map.put("RTCODE", "success");
-            map.put("RTMSG", "获取用户信息成功！");
-            map.put("RTDATA", userService.getUserByUsername(username).setPassword(null));
-        }
-        return map;
-    }
-
-    /**
      * 函数名：根据条件获取用户列表 - getListUser（）
      * 功能描述：根据用户名获取相应的用户信息
      * 输入参数：<按照参数定义顺序>
@@ -228,8 +200,8 @@ public class UserController {
     public Map<String, Object> getListUser(
             @RequestParam(value = "usertype", required = true) String usertype
             , @RequestParam(value = "useraffairs", required = true) String useraffairs
-            , @RequestParam(value = "content", required = false) String content
-            , @RequestParam(value = "timeaxisdate", required = false) List timeaxisdate
+            , @RequestParam(value = "content", required = true) String content
+            , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
             , @RequestParam(value = "num", required = true) int num
     ) {
@@ -239,25 +211,36 @@ public class UserController {
         //条件整理
         list.add("usertype");
         params.put("usertype", usertype);
-        list.add("useraffairs");
-        params.put("useraffairs", useraffairs);
-        if (null != content) {
+        if (!"all".equals(useraffairs)) {
+            list.add("useraffairs");
+            params.put("useraffairs", useraffairs);
+        }
+        if (!"".equals(content)) {
             list.add("content");
             params.put("content", content);
         }
-        if (null != timeaxisdate) {
+        if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
             params.put("timeaxisdate", timeaxisdate);
         }
+
         List<User> returnusers = null;
         try {
+            //根据条件查询
             returnusers = userService.getUsersByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            //加密电话及身份证，防止信息泄漏
+            for (int i = 0; i < returnusers.size(); i++) {
+                returnusers.get(i).setTelephonenumber(Enciphered.getEnciphered().telephonenumberEncoder(returnusers.get(i).getTelephonenumber()));
+                returnusers.get(i).setIdcard(Enciphered.getEnciphered().idCardEncoder(returnusers.get(i).getIdcard()));
+            }
         } catch (Exception e) {
+            //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
             map.put("RTMSG", "获取用户信息失败！");
             map.put("RTDATA", e.getMessage());
             return map;
         }
+        //返回成功信息
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
         map.put("RTDATA", returnusers);
@@ -269,36 +252,31 @@ public class UserController {
      * 功能描述：根据必要条件注册用户
      * 输入参数：<按照参数定义顺序>
      *
-     * @param username String类型的用户名
-     *                 <p>
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-18
-     *                 修改人：
-     *                 级别：普通用户及以上
-     *                 修改日期：
+     * @param telephonenumber String类型的电话号码 //电话、密码、姓名、身份证、昵称、签名（可空余）
+     *                        <p>
+     *                        返回值：map
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        创建日期：2019-01-18
+     *                        修改人：
+     *                        级别：普通用户及以上
+     *                        修改日期：
      */
     @RequestMapping(value = "/insertUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insertUser(
-            @RequestParam(value = "username", required = true) String username
-            , @RequestParam(value = "password", required = true) String password
-            , @RequestParam(value = "usertype", required = true) String usertype
+            @RequestParam(value = "password", required = true) String password
+            //, @RequestParam(value = "usertype", required = true) String usertype
             , @RequestParam(value = "name", required = false) String name
             , @RequestParam(value = "idcard", required = false) String idcard
-            , @RequestParam(value = "useraddress", required = false) String useraddress
-            , @RequestParam(value = "telephonenumber", required = false) String telephonenumber
+            //, @RequestParam(value = "useraddress", required = false) String useraddress
+            , @RequestParam(value = "telephonenumber", required = true) String telephonenumber
             , @RequestParam(value = "useremail", required = false) String useremail
             , @RequestParam(value = "usersign", required = false) String usersign
             , @RequestParam(value = "petname", required = false) String petname
+            , @RequestParam(value = "commonip", required = false) String commonip
+            , @RequestParam(value = "lastplace", required = false) String lastplace
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (0 < userService.hasUsername(username)) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "用户名【" + username + "】已存在！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //检查电话号码是否被注册
         if (null != telephonenumber) {
             if (0 < userService.hasTelephonenumber(telephonenumber)) {
@@ -326,7 +304,7 @@ public class UserController {
                 return map;
             }
         }
-        int insertreturn = userService.insertUser(new User(0, username, password, usertype, "", 0.0, idcard, name, useraddress, telephonenumber, useremail, new Date(), usersign, petname, 0, "", "", ""));
+        int insertreturn = userService.insertUser(new User(0, password, "member", "normal", 0.0, idcard, name, null, telephonenumber, useremail, new Date(), usersign, petname, 0, commonip, lastplace, "0,0,0,1,1"));
         if (1 == insertreturn) {
             map.put("RTCODE", "success");
             map.put("RTMSG", "用户注册成功！");
@@ -344,20 +322,19 @@ public class UserController {
      * 功能描述：根据传入的用户信息条件修改用户信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param username String类型的用户名
-     *                 <p>
-     *                 返回值：map
-     *                 异    常：无
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-01-18
-     *                 修改人：
-     *                 级别：普通用户及以上
-     *                 修改日期：
+     * @param telephonenumber String类型的电话号码
+     *                        <p>
+     *                        返回值：map
+     *                        异    常：无
+     *                        创建人：CMAPLE
+     *                        创建日期：2019-01-18
+     *                        修改人：
+     *                        级别：普通用户及以上
+     *                        修改日期：
      */
     @RequestMapping(value = "/updatetUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> updatetUser(
             @RequestParam(value = "id", required = true) int id
-            , @RequestParam(value = "username", required = true) String username
             , @RequestParam(value = "password", required = true) String password
             , @RequestParam(value = "usertype", required = true) String usertype
             , @RequestParam(value = "useraffairs", required = false) String useraffairs
@@ -374,11 +351,10 @@ public class UserController {
             , @RequestParam(value = "permissions", required = false) String permissions
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        User user = userService.getUserByUsername(username);
+        User user = userService.getUserByTelephonenumber(telephonenumber);
         if ("del".equals(useraffairs)) {
             if (1 != userService.updateUser(new User(
                     id                         //用户编号
-                    , username                 //用户登录名
                     , password                 //用户登录密码
                     , usertype                 //用户类型
                     , useraffairs              //用户状态
@@ -404,7 +380,6 @@ public class UserController {
         } else {
             if (1 != userService.updateUser(new User(
                     id                         //用户编号
-                    , username                 //用户登录名
                     , password                 //用户登录密码
                     , usertype                 //用户类型
                     , useraffairs              //用户状态
