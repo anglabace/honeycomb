@@ -28,7 +28,8 @@ public class AdvancedSQL {
     public String usersBaseDatas(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,usertype ,useraffairs ,userbalance ,idcard ,name ,useraddress ,telephonenumber ,useremail ,createtime ,usersign ,petname ,errortry ,commonip ,lastplace ,permissions");
+                SELECT("id ,usertype ,useraffairs ,userbalance ,idcard ,name ,useraddress ,telephonenumber " +
+                        ",useremail ,createtime ,usersign ,petname ,errortry ,commonip ,lastplace ,permissions");
                 FROM("CS_User");
             }
         }.toString();
@@ -97,7 +98,7 @@ public class AdvancedSQL {
     public String getOperationLogByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id,serialnumber,date,operator,logstype,operatetype,content");
+                SELECT("id ,serialnumber ,date ,operator ,logstype ,operatetype ,content");
                 FROM("CS_OperationLog WHERE 1 = 1 ");
             }
         }.toString();
@@ -142,8 +143,42 @@ public class AdvancedSQL {
     }
 
     /**
-     * -----------------------------------------------------------------------------------------------------------------------------
-     * 内蒙古西南梦扎赉特旗音德尔镇团结路五四街建设小区6号楼3单元401号
+     * 函数名：复杂查询函数-根据条件查询静态资源列表- queryStaticResourcesByParams（）
+     * 功能描述： 根据条件查询静态资源列表
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   条件列表
+     * @param params 字段及数值集合
+     * @param page   分页查询PAGE条件
+     * @param num    分页查询NUM条件
+     *               返回值：list<User>
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-09-26
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
+    public String queryStaticResourcesByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
+        String result = new SQL() {
+            {
+                SELECT("id ,pagepath ,imgrealpath ,imgrelativepath ,imgname ,imgrealsize ,imgrelativesize ,size ,creattime ,updatetime ");
+                FROM("CS_StaticResources WHERE 1 = 1 ");
+            }
+        }.toString();
+        //判断添加请求条件
+        if (0 != list.size()) {
+            result = sqlStaticResourcesPutAnd(result, list, params);
+        }
+        //添加排序
+        result = sqlPutOrderBy(result, "id");
+        //添加分页
+        result = sqlPutLimit(result, page, num);
+        return result;
+    }
+
+    /**
+     * ----------------------------------------------------------------------------------------------------------------------------- 私有函数 -----------------------------------------------------------------------------------------------------------------------------
      */
 
     /**
@@ -235,6 +270,41 @@ public class AdvancedSQL {
                 }
                 if ("search".equals(list.get(i))) {
                     result += " and content LIKE '%" + params.get(list.get(i)) + "%'";
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 函数名：私有函数-日志查询添加其他条件- sqlStaticResourcesPutAnd（）
+     * 功能描述： 日志查询添加其他条件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result 条件列表
+     * @param list   字段及数值集合
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-01-17
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
+    private String sqlStaticResourcesPutAnd(String result, List<String> list, Map<String, Object> params) {
+        for (int i = 0; i < list.size(); i++) {
+            if (params.containsKey(list.get(i))) {
+                if ("pagepath".equals(list.get(i))) {
+                    result += " and pagepath = '" + params.get(list.get(i)) + "'";
+                }
+                if ("search".equals(list.get(i))) {
+                    result += " and imgrealpath LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or imgrelativepath LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or imgname LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or imgrealsize LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or imgrelativesize LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or size LIKE '%" + params.get(list.get(i)) + "%' ";
                 }
             }
         }

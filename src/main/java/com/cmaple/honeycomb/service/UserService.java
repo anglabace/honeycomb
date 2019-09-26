@@ -176,7 +176,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
     /**
      * 函数名：修改函数-修改用户信息 - updateUser（）
-     * 功能描述： 插入新的账户信息
+     * 功能描述： 修改用户信息
      *
      * @param user 用户实体类
      *             返回值：int

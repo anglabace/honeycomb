@@ -39,7 +39,7 @@ public class OperationLogController {
     private HttpServletRequest request;
 
     /**
-     * 函数名：查询函数-按照条件查询日志- getUsersByParams（）
+     * 函数名：查询函数-按照条件查询日志- getOperationLogByParams（）
      * 功能描述： 根据条件进行条件进行日志的查询
      * 输入参数：<按照参数定义顺序>
      *
@@ -48,13 +48,12 @@ public class OperationLogController {
      *                     返回值：map
      *                     异    常：无
      *                     创建人：CMAPLE
-     *                     创建日期：2019-01-16
+     *                     创建日期：2019-09-25
      *                     修改人：CMAPLE
-     *                     级别：普通用户及以上
-     *                     修改日期：2019-01-18
+     *                     修改日期：2019-09-26
      */
-    @RequestMapping(value = "/getUsersByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getUsersByParams(
+    @RequestMapping(value = "/getOperationLogByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getOperationLogByParams(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "operatetype", required = true) String operatetype
             , @RequestParam(value = "search", required = true) String search

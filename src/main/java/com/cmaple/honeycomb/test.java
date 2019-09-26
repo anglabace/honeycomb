@@ -1,10 +1,13 @@
 package com.cmaple.honeycomb;
 
+import com.cmaple.honeycomb.model.ToolsFile;
+import com.cmaple.honeycomb.tools.FileSelect;
 import org.hyperic.sigar.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -30,10 +33,16 @@ public class test {
 
 
     public static void main(String[] args) throws IOException {
+
+        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/IDEA_Programe/honeycomb/src/main/resources/sigar");
+        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
+            System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
+        }
+
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
 //
-//        Map<String, String> map = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014");
-//        System.out.println(map);
+//        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014", aliYunPreset.getAPPCODE(), aliYunPreset.getUSERID(), aliYunPreset.getVERIFYKEY(), aliYunPreset.getHOST(), aliYunPreset.getPATH(), aliYunPreset.getMETHOD());
+//        System.out.println(map1);
 
 ////        String jsons = "{\"code\":404,\"message\":\"check.param.error:参数非法\"}";
 //        AliyunIDName aliyunIDName = JSON.parseObject(jsons, AliyunIDName.class);

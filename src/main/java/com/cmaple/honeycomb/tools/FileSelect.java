@@ -1,7 +1,12 @@
 package com.cmaple.honeycomb.tools;
 
+import com.cmaple.honeycomb.model.ToolsFile;
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 类名：服务器文件维护类 - FileSelect
@@ -10,7 +15,7 @@ import java.io.FilenameFilter;
  * 返回值：NULL
  * 异    常：无
  * 创建人：CMAPLE
- * 创建日期：2018-09-30
+ * 创建日期：2019-09-10
  * 修改人：
  * 级别：NULL
  * 修改日期：
@@ -46,18 +51,45 @@ public class FileSelect implements FilenameFilter {
      * 功能描述： 获取指定目录下的所有文件名称，并返回数据
      * 输入参数：<按照参数定义顺序>
      *
-     * @param string String类型字符串
-     *               返回值：String[]
-     *               异    常：无
-     *               创建人：CMAPLE
-     *               创建日期：2018-10-27
-     *               修改人：
-     *               级别：NULL
-     *               修改日期：
+     * @param realpath String类型的绝对路径
+     *                 返回值：String[]
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-09-26
+     *                 修改人：
+     *                 级别：NULL
+     *                 修改日期：
      */
+    public Map<String, Object> getfileMap(String realpath) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        ArrayList<ToolsFile> list = new ArrayList<ToolsFile>();
 
-
-
-
+        try {
+            File Initializationfile = new File(realpath);
+            if (Initializationfile.isDirectory()) {
+                File[] filelist = Initializationfile.listFiles();
+                //输出循环文件结果
+                for (File file : filelist) {
+                    if (file.isDirectory()) {
+                        list.add(new ToolsFile(file.getName(), "Directory", file.getAbsolutePath()));
+                    } else {
+                        list.add(new ToolsFile(file.getName(), "File", file.getAbsolutePath()));
+                    }
+                }
+            } else {
+                list.add(new ToolsFile(Initializationfile.getName(), "File", Initializationfile.getAbsolutePath()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "文件列表获取失败，请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "文件列表获取成功！");
+        map.put("RTDATA", list);
+        return map;
+    }
 
 }

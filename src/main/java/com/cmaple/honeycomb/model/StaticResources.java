@@ -93,6 +93,10 @@ public class StaticResources {
      * 是否为null：Y
      **/
     private Date updatetime;
-
-
+    /***
+     静态资源状态
+     * 长度：12
+     * 是否为null：Y
+     **/
+    private String affairs;
 }
