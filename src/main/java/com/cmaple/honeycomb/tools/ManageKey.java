@@ -46,7 +46,7 @@ public class ManageKey {
      * 修改日期：
      */
     public String obtainManageKey() {
-        return "CMAPLE-" + RandomData.getRandomData().getRandomData(13) + "-" + FormatTime.getFormatTime().formatYMDToString() + "-" + FormatTime.getFormatTime().formatHMSMSToString();
+        return "CMAPLE-" + RandomData.getRandomData().getRandomCHData(13) + "-" + FormatTime.getFormatTime().formatYMDToString() + "-" + FormatTime.getFormatTime().formatHMSMSToString();
     }
 
     /**

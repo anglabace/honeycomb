@@ -62,7 +62,6 @@ public class OperationLogController {
             , @RequestParam(value = "page", required = true) int page
             , @RequestParam(value = "num", required = true) int num
     ) {
-
         Map<String, Object> map = new HashMap<String, Object>();
         //拼装查询条件
         List list = new ArrayList();
@@ -93,8 +92,7 @@ public class OperationLogController {
             HttpSession session = request.getSession();
             //获取信息
             User sessionuser = (User) session.getAttribute("SSUSER");
-            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString() + "-" + RandomData.getRandomData().getRandomData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 查看日志交易异常，异常信息如下：" + e.getMessage()));
-
+            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString() + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 查看日志交易异常，异常信息如下：" + e.getMessage()));
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
             map.put("RTMSG", "日志信息查询失败，查询交易异常！");

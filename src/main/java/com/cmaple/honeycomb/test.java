@@ -31,8 +31,10 @@ public class test {
 
     public static void main(String[] args) throws IOException {
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
-//        Map<String,String> map = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014");
+//
+//        Map<String, String> map = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014");
 //        System.out.println(map);
+
 ////        String jsons = "{\"code\":404,\"message\":\"check.param.error:参数非法\"}";
 //        AliyunIDName aliyunIDName = JSON.parseObject(jsons, AliyunIDName.class);
 //        System.out.println("code -  " + aliyunIDName.getCode());
@@ -80,9 +82,6 @@ public class test {
 //        } catch (Exception e1) {
 //            e1.printStackTrace();
 //        }
-
-
-
 
 
 //        Test testDo1 = new Test();

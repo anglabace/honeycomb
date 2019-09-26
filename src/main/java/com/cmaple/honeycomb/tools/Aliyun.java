@@ -5,6 +5,7 @@ import com.cmaple.honeycomb.model.AliyunIDName;
 import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.OperationLogService;
+import com.cmaple.honeycomb.util.AliYunPreset;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,14 @@ import java.util.Map;
  * 修改日期：
  */
 public class Aliyun {
+    //引入其他服务类
+    @Autowired
+    private OperationLogService operationLogService;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private AliYunPreset ALIYUNPRESET;
+
     //私有化的构造函数
     private Aliyun() {
     }
@@ -47,11 +56,6 @@ public class Aliyun {
         return AliyunInternal.aliyun;
     }
 
-    //引入OperationLogService
-    @Autowired
-    private OperationLogService operationLogService;
-    @Autowired
-    private HttpServletRequest request;
 
     /**
      * 函数名：阿里云工具函数 - 云盾身份认证（二要素） - aliyun_Idcard_Name（）
@@ -63,54 +67,41 @@ public class Aliyun {
      *               返回值：String
      *               异    常：无
      *               创建人：CMAPLE
-     *               创建日期：2018-09-30
+     *               创建日期：2019-09-25
      *               修改人：
      *               级别：NULL
      *               修改日期：
      */
     public Map<String, String> aliyun_Idcard_Name(String name, String idcard) {
         Map<String, String> map = new HashMap<String, String>();
-        String host = "https://safrvcert.market.alicloudapi.com";
-        String path = "/safrv_2meta_id_name/";
-        String method = "GET";
-        String appcode = "ff7fd118f90848a992600745e96844d5";
         Map<String, String> headers = new HashMap<String, String>();
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
-        headers.put("Authorization", "APPCODE " + appcode);
+        headers.put("Authorization", "APPCODE " + ALIYUNPRESET.getAPPCODE());
         Map<String, String> querys = new HashMap<String, String>();
-        querys.put("__userId", "1929109414356087");
+        querys.put("__userId", ALIYUNPRESET.getUSERID());
         //querys.put("customerID", "customerID");
         querys.put("identifyNum", idcard);
         querys.put("userName", name);
-        querys.put("verifyKey", "IVYrWyJDu5B6kU");
+        querys.put("verifyKey", ALIYUNPRESET.getVERIFYKEY());
         try {
-            /**
-             * 重要提示如下:
-             * HttpUtils请从
-             * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/src/main/java/com/aliyun/api/gateway/demo/util/HttpUtils.java
-             * 下载
-             *
-             * 相应的依赖请参照
-             * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
-             */
             //验证请求
-            HttpResponse response = HttpUtils.doGet(host, path, method, headers, querys);
+            HttpResponse response = HttpUtils.doGet(ALIYUNPRESET.getHOST(), ALIYUNPRESET.getPATH(), ALIYUNPRESET.getMETHOD(), headers, querys);
             //获取response的body
             AliyunIDName aliyunIDName = JSON.parseObject(EntityUtils.toString(response.getEntity()), AliyunIDName.class);
             if (200 == aliyunIDName.getCode()) {
                 if (0 == aliyunIDName.getValue().getBizCode()) {
                     map.put("RTCODE", "success");
                     map.put("RTMSG", "实名认证成功！");
-                    map.put("RTDATA", aliyunIDName.getMessage());
+                    map.put("RTDATA", aliyunIDName.getCode() + " - " + aliyunIDName.getMessage());
                 } else {
                     map.put("RTCODE", "error");
                     map.put("RTMSG", "实名认证失败！");
-                    map.put("RTDATA", aliyunIDName.getValue().getMessage());
+                    map.put("RTDATA", aliyunIDName.getCode() + " - " + aliyunIDName.getValue().getMessage());
                 }
             } else {
                 String msg = "";
                 if (403 == aliyunIDName.getCode()) {
-                    msg = " 无权限操作！";
+                    msg = " 无权限操作！请联系管理员";
                 }
                 if (500 == aliyunIDName.getCode()) {
                     msg = " 内部服务器错误，请重新验证！";
@@ -124,7 +115,7 @@ public class Aliyun {
             HttpSession session = request.getSession();
             //获取信息
             User sessionuser = (User) session.getAttribute("SSUSER");
-            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString() + RandomData.getRandomData().getRandomData(4), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 实名认证交易异常，认证信息：[ " + name + " , " + idcard + " ]，异常信息如下：" + e.getMessage()));
+            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString() + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 实名认证交易异常，认证信息：[ " + name + " , " + idcard + " ]，异常信息如下：" + e.getMessage()));
             //拼接返回信息
             map.put("RTCODE", "error");
             map.put("RTMSG", "实名认证异常，验证过程出现异常，请联系管理员进行处理！");
