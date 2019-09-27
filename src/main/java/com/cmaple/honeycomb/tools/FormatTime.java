@@ -25,12 +25,16 @@ public class FormatTime {
     //内部类实现实例的创建(用于延迟加载)
     private static class FormatTimeInternal {
         private static FormatTime formatTime = new FormatTime();
-        //yyyy-MM-dd格式化类型
+        //yyyyMMdd格式化类型
         private static SimpleDateFormat FAM_YMD = new SimpleDateFormat("yyyyMMdd");
-        //HH-mm:ss格式化类型
+        //HHmmss格式化类型
         private static SimpleDateFormat FA_HMS = new SimpleDateFormat("HHmmss");
-        ////HH-mm:ss:ms格式化类型
+        //HHmmssms格式化类型
         private static SimpleDateFormat FA_HMSSSS = new SimpleDateFormat("HHmmssSSS");
+        //yyyy-MM-dd HH:mm:ss格式化类型
+        private static SimpleDateFormat FA_YMDHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //HH:mm:ss:ms格式化类型
+        private static SimpleDateFormat FA_Y_M_D = new SimpleDateFormat("yyyy-MM-dd");
     }
 
     //重写readResolve()方法，防止序列化及反序列化破坏单利模式
@@ -58,6 +62,17 @@ public class FormatTime {
         return FormatTimeInternal.FA_HMSSSS;
     }
 
+    //返回FA_YMDHMS实例
+    private SimpleDateFormat getFA_YMDHMS() {
+        return FormatTimeInternal.FA_YMDHMS;
+    }
+
+    //返回FA_Y_M_D实例
+    private SimpleDateFormat getFA_Y_M_D() {
+        return FormatTimeInternal.FA_Y_M_D;
+    }
+
+
     /**
      * 函数名：格式化日期函数-格式化传入时间为yyyymmdd当前格式 - formatYMDToString（）
      * 功能描述：格式化传入时间为yyyymmdd当前格式
@@ -71,8 +86,8 @@ public class FormatTime {
      * 级别：NULL
      * 修改日期：
      */
-    public String formatYMDToString() {
-        return getFAM_YMD().format(new Date());
+    public String formatYMDToString(Date date) {
+        return getFAM_YMD().format(date);
     }
 
     /**
@@ -88,8 +103,8 @@ public class FormatTime {
      * 级别：NULL
      * 修改日期：
      */
-    public String formatHMSToString() {
-        return getFA_HMS().format(new Date());
+    public String formatHMSToString(Date date) {
+        return getFA_HMS().format(date);
     }
 
     /**
@@ -105,7 +120,42 @@ public class FormatTime {
      * 级别：NULL
      * 修改日期：
      */
-    public String formatHMSMSToString() {
-        return getFA_HMSSSS().format(new Date());
+    public String formatHMSMSToString(Date date) {
+        return getFA_HMSSSS().format(date);
     }
+
+    /**
+     * 函数名：格式化日期函数-格式化传入时间为yyyy-MM-dd HH:mm:ss当前格式 - formatYMDHMSToString（）
+     * 功能描述：格式化传入时间为yyyy-MM-dd HH:mm:ss当前格式
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 创建日期：2018-10-08
+     * 修改人：
+     * 级别：NULL
+     * 修改日期：
+     */
+    public String formatYMDHMSToString(Date date) {
+        return getFA_YMDHMS().format(date);
+    }
+
+    /**
+     * 函数名：格式化日期函数-格式化传入时间为yyyy-MM-dd当前格式 - formatYMDHMSToString（）
+     * 功能描述：格式化传入时间为yyyy-MM-dd当前格式
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 创建日期：2018-10-08
+     * 修改人：
+     * 级别：NULL
+     * 修改日期：
+     */
+    public String formatY_M_DToString(Date date) {
+        return getFA_Y_M_D().format(date);
+    }
+
 }

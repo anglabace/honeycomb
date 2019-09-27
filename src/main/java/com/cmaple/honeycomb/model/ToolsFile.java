@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 类名：用户实体类 - User
- * 功能描述： 用户实体类
+ * 类名：文件信息实体类 - ToolsFile
+ * 功能描述： 文件信息实体类
  * 输入参数：NULL
  * 返回值：NULL
  * 异    常：无
  * 创建人：CMAPLE
- * 创建日期：2019-01-16
+ * 创建日期：2019-09-27
  * 修改人：
  * 级别：NULL
  * 修改日期：
@@ -24,6 +24,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor  //提供无参构造器
 @AllArgsConstructor //提供全参构造器
 public class ToolsFile {
+
     /**
      * 文件名
      * 长度：0
@@ -42,4 +43,29 @@ public class ToolsFile {
      * 是否为null：N/S
      **/
     private String filepath;
+    /**
+     * 文件大小
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    private String filesize;
+    /**
+     * 文件后缀
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    private String suffix;
+    /**
+     * 文件创建时间
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    private String createtime;
+    /**
+     * 文件修改时间
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    private String modifytime;
+
 }

@@ -112,7 +112,7 @@ public class Aliyun {
             HttpSession session = request.getSession();
             //获取信息
             User sessionuser = (User) session.getAttribute("SSUSER");
-            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString() + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 实名认证交易异常，认证信息：[ " + name + " , " + idcard + " ]，异常信息如下：" + e.getMessage()));
+            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "account", "用户：[ " + sessionuser.getTelephonenumber() + " ] 实名认证交易异常，认证信息：[ " + name + " , " + idcard + " ]，异常信息如下：" + e.getMessage()));
             //拼接返回信息
             map.put("RTCODE", "error");
             map.put("RTMSG", "实名认证异常，验证过程出现异常，请联系管理员进行处理！");

@@ -1,5 +1,7 @@
 package com.cmaple.honeycomb.tools;
 
+import java.util.Date;
+
 /**
  * 类名：管理密钥管理类 - ManageKey
  * 功能描述： 可以对管理密钥进行想用的维护；本类中使用单例模式极大的节约了系统的资源开支；
@@ -46,7 +48,7 @@ public class ManageKey {
      * 修改日期：
      */
     public String obtainManageKey() {
-        return "CMAPLE-" + RandomData.getRandomData().getRandomCHData(13) + "-" + FormatTime.getFormatTime().formatYMDToString() + "-" + FormatTime.getFormatTime().formatHMSMSToString();
+        return "CMAPLE-" + RandomData.getRandomData().getRandomCHData(13) + "-" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + FormatTime.getFormatTime().formatHMSMSToString(new Date());
     }
 
     /**

@@ -13,31 +13,25 @@ import java.util.Properties;
 
 public class test {
 
-//    public static void main(String[] args) {
-////        int i = Runtime.getRuntime().availableProcessors(); //获取cpu数量
-////        System.out.println("本机CPU数量：【" + i + "】");
-////
-////        long l = Runtime.getRuntime().totalMemory();
-////        int il = ((int) l) / 1024;
-////        System.out.println(l +"本机内存：【" + il + "】");
-//
-////        System.out.println(f(10));
-//            }
-//    public static int f(int x) {
-//        if (0 == x) {
-//            return 0;
-//        } else {
-//            return 2 * f(x - 1) + x * x;
-//        }
-//    }
-
-
     public static void main(String[] args) throws IOException {
 
-        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/IDEA_Programe/honeycomb/src/main/resources/sigar");
+        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
         for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
             System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
         }
+
+//        Map<String, Object> map1 = FileSelect.getFileSelect().createFile("/Users/congfeng/Downloads", "test.txt");
+//        System.out.println(map1);
+
+//        Map<String, Object> map2 = FileSelect.getFileSelect().delFile("/Users/congfeng/Downloads/test.txt");
+//        System.out.println(map2);
+
+//        File Initializationfile = new File("/Users/congfeng/Downloads/test.txt");
+//        Date date1 = FileSelect.getFileSelect().getCreateTime(Initializationfile);
+//        System.out.println(FormatTime.getFormatTime().formatYMDHMSToString(date1));
+//
+//        Date date2 = FileSelect.getFileSelect().getModifyTime("/Users/congfeng/Downloads/test.txt");
+//        System.out.println(FormatTime.getFormatTime().formatYMDHMSToString(date2));
 
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
 //
