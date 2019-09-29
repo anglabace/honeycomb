@@ -33,8 +33,10 @@ public class FormatTime {
         private static SimpleDateFormat FA_HMSSSS = new SimpleDateFormat("HHmmssSSS");
         //yyyy-MM-dd HH:mm:ss格式化类型
         private static SimpleDateFormat FA_YMDHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //HH:mm:ss:ms格式化类型
+        //yyyy-MM-dd格式化类型
         private static SimpleDateFormat FA_Y_M_D = new SimpleDateFormat("yyyy-MM-dd");
+        //HH:mm:ss格式化类型
+        private static SimpleDateFormat FA_H_M_S = new SimpleDateFormat("HH:mm:ss");
     }
 
     //重写readResolve()方法，防止序列化及反序列化破坏单利模式
@@ -72,6 +74,10 @@ public class FormatTime {
         return FormatTimeInternal.FA_Y_M_D;
     }
 
+    //返回FA_H_M_S实例
+    private SimpleDateFormat getFA_H_M_S() {
+        return FormatTimeInternal.FA_H_M_S;
+    }
 
     /**
      * 函数名：格式化日期函数-格式化传入时间为yyyymmdd当前格式 - formatYMDToString（）
@@ -158,4 +164,20 @@ public class FormatTime {
         return getFA_Y_M_D().format(date);
     }
 
+    /**
+     * 函数名：格式化日期函数-格式化传入时间为HH:mm:ss当前格式 - formatH_M_SToString（）
+     * 功能描述：格式化传入时间为HH:mm:ss当前格式
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 创建日期：2018-10-08
+     * 修改人：
+     * 级别：NULL
+     * 修改日期：
+     */
+    public String formatH_M_SToString(Date date) {
+        return getFA_H_M_S().format(date);
+    }
 }

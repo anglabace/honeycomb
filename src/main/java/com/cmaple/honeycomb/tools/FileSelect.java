@@ -242,7 +242,7 @@ public class FileSelect implements FilenameFilter {
                 return map;
             }
         } catch (Exception e) {
-            map.put("RTCODE", "error");
+            map.put("RTCODE", "Exception");
             map.put("RTMSG", "文件列表获取交易异常，请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;
@@ -295,7 +295,7 @@ public class FileSelect implements FilenameFilter {
                 return map;
             }
         } catch (Exception e) {
-            map.put("RTCODE", "error");
+            map.put("RTCODE", "Exception");
             map.put("RTMSG", "删除文件交易异常，请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;
@@ -350,7 +350,7 @@ public class FileSelect implements FilenameFilter {
                 return map;
             }
         } catch (Exception e) {
-            map.put("RTCODE", "error");
+            map.put("RTCODE", "Exception");
             map.put("RTMSG", "创建文件交易异常，请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;
@@ -395,7 +395,7 @@ public class FileSelect implements FilenameFilter {
             Files.copy(uploadfile.getInputStream(), Paths.get(realpath + "/" + filename), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
-            map.put("RTCODE", "error");
+            map.put("RTCODE", "Exception");
             map.put("RTMSG", "上传文件交易异常！请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;

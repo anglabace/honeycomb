@@ -1,13 +1,10 @@
 package com.cmaple.honeycomb;
 
-import com.cmaple.honeycomb.model.ToolsFile;
-import com.cmaple.honeycomb.tools.FileSelect;
 import org.hyperic.sigar.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -15,10 +12,10 @@ public class test {
 
     public static void main(String[] args) throws IOException {
 
-        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
-        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
-            System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
-        }
+//        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
+//        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
+//            System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
+//        }
 
 //        Map<String, Object> map1 = FileSelect.getFileSelect().createFile("/Users/congfeng/Downloads", "test.txt");
 //        System.out.println(map1);
@@ -34,8 +31,8 @@ public class test {
 //        System.out.println(FormatTime.getFormatTime().formatYMDHMSToString(date2));
 
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
-//
-//        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("丛枫", "152223199312260014", aliYunPreset.getAPPCODE(), aliYunPreset.getUSERID(), aliYunPreset.getVERIFYKEY(), aliYunPreset.getHOST(), aliYunPreset.getPATH(), aliYunPreset.getMETHOD());
+////
+//        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程涛", "330481200502233019", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
 //        System.out.println(map1);
 
 ////        String jsons = "{\"code\":404,\"message\":\"check.param.error:参数非法\"}";
@@ -53,7 +50,7 @@ public class test {
 //        boolean istrue = ManageKey.getManageKey().checkManageKeys(key,"cmaplesuper","superadmin",returnkey);
 //        System.out.println(istrue);
 //        System.out.println(new Date().toString());
-
+//
 //        String path = System.getProperty("java.library.path");
 //        System.out.println(path);
 //        try {

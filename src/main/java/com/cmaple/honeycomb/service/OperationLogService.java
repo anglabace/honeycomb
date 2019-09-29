@@ -29,7 +29,7 @@ public class OperationLogService {
 
     /**
      * 函数名：查询函数-根据条件查询日志 - getOperationLogByParams（）
-     * 功能描述： 根据账户名 查询数据库中是否存在此用户的数量，返回1则表示存在此账户，否则为不存在此账户
+     * 功能描述： 根据条件查询日志
      * 输入参数：<按照参数定义顺序>
      *
      * @param list   String类型的用户名
@@ -47,6 +47,7 @@ public class OperationLogService {
     public List<OperationLog> getOperationLogByParams(List<String> list, Map<String, Object> params, int page, int num) {
         return operationLogMapper.getOperationLogByParams(list, params, page, num);
     }
+
 
     /**
      * 函数名：复杂查询函数-根据条件查询用户数量 - getOperationLogCountByParams（）
@@ -82,5 +83,5 @@ public class OperationLogService {
     public int insertOperationLog(OperationLog operationLog) {
         return operationLogMapper.insert(operationLog);
     }
-    
+
 }

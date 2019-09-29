@@ -1,6 +1,9 @@
 package com.cmaple.honeycomb.model;
 
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.metadata.BaseRowModel;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -29,7 +32,7 @@ import java.util.Date;
 @Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象()
 @NoArgsConstructor  //提供无参构造器
 @AllArgsConstructor //提供全参构造器
-public class OperationLog {
+public class OperationLog extends BaseRowModel {
 
     /**
      * 日志id
@@ -38,6 +41,7 @@ public class OperationLog {
      * 自动递增
      * 主键
      **/
+    @ExcelProperty(value = "日志ID号", index = 0)
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
     /**
@@ -45,36 +49,48 @@ public class OperationLog {
      * 长度：24
      * 是否为null：N
      **/
+    @ColumnWidth(20)
+    @ExcelProperty(value = "日志流水号", index = 1)
     private String serialnumber;
     /**
      * 日志操作时间
      * 长度：0
      * 是否为null：N
      **/
+    @ColumnWidth(20)
+    @ExcelProperty(value = "操作时间", index = 2)
     private Date date;
     /**
      * 操作人员
      * 长度：24
      * 是否为null：N
      **/
+    @ColumnWidth(20)
+    @ExcelProperty(value = "操作人员（电话号）", index = 3)
     private String operator;
     /**
      * 日志类型
      * 长度：12
      * 是否为null：N
      **/
+    @ColumnWidth(20)
+    @ExcelProperty(value = "日志类型", index = 4)
     private String logstype;
     /**
      * 日志操作类型
      * 长度：12
      * 是否为null：N
      **/
+    @ColumnWidth(20)
+    @ExcelProperty(value = "日志操作类型", index = 5)
     private String operatetype;
     /**
      * 日志详细信息
      * 长度：254
      * 是否为null：N
      **/
+    @ColumnWidth(500)
+    @ExcelProperty(value = "日志详细信息", index = 6)
     private String content;
 
 }

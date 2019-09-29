@@ -259,6 +259,9 @@ public class AdvancedSQL {
     private String sqlOperationLogPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if (params.containsKey(list.get(i))) {
+                if ("operator".equals(list.get(i))) {
+                    result += " and operator = '" + params.get(list.get(i)) + "'";
+                }
                 if ("logstype".equals(list.get(i))) {
                     result += " and logstype = '" + params.get(list.get(i)) + "'";
                 }
