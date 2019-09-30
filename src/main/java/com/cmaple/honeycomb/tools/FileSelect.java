@@ -406,5 +406,135 @@ public class FileSelect implements FilenameFilter {
         return map;
     }
 
+    /**
+     * 函数名：工具函数-检查绝对路径下是否存在该文件 - checkFileExists（）
+     * 功能描述： 检查绝对路径下是否存在该文件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param realpath String类型的绝对路径
+     * @param filename String类型的文件名
+     *                 返回值：Map<String, Object>
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-09-30
+     *                 修改人：
+     *                 级别：NULL
+     *                 修改日期：
+     */
+    public Map<String, Object> checkFileExists(String realpath, String filename) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (!new File(realpath).exists()) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+                map.put("RTDATA", null);
+                return map;
+            }
+            if (new File(realpath + "/" + filename).exists()) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "存在同名文件，请更换文件名!");
+                map.put("RTDATA", null);
+                return map;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "Exception");
+            map.put("RTMSG", "检查文件是否存在交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "检查文件成功！");
+        map.put("RTDATA", "该目录下，不存在同名文件！");
+        return map;
+    }
 
+    /**
+     * 函数名：工具函数-检查绝对路径下文件的大小 - checkFileSize（）
+     * 功能描述： 检查绝对路径下文件的大小
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param realpath String类型的绝对路径
+     * @param filename String类型的文件名
+     *                 返回值：Map<String, Object>
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-09-30
+     *                 修改人：
+     *                 级别：NULL
+     *                 修改日期：
+     */
+    public Map<String, Object> checkFileSize(String realpath, String filename) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (!new File(realpath).exists()) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+                map.put("RTDATA", null);
+                return map;
+            }
+            if (new File(realpath + "/" + filename).exists()) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "存在同名文件，请更换文件名!");
+                map.put("RTDATA", null);
+                return map;
+            }
+            String filesize = FormetFileSize(getDirectorySize(new File(realpath + "/" + filename)));
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "检查文件成功！");
+            map.put("RTDATA", filesize);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "Exception");
+            map.put("RTMSG", "检查文件是否存在交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        return map;
+    }
+
+    /**
+     * 函数名：工具函数-创建文件夹 - createDirectory（）
+     * 功能描述： 检查绝对路径下文件的大小
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param realpath      String类型的绝对路径
+     * @param directoryname String类型的文件夹名
+     *                      返回值：Map<String, Object>
+     *                      异    常：无
+     *                      创建人：CMAPLE
+     *                      创建日期：2019-09-30
+     *                      修改人：
+     *                      级别：NULL
+     *                      修改日期：
+     */
+    public Map<String, Object> createDirectory(String realpath, String directoryname) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            File directory = new File(realpath + "/" + directoryname);
+            if (directory.exists()) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "存在同名文件夹，请更换文件名再创建!");
+                map.put("RTDATA", null);
+                return map;
+            }
+            boolean issuccess = directory.mkdir();
+            if (false == issuccess) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "创建文件夹失败!");
+                map.put("RTDATA", null);
+                return map;
+            }
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "创建文件夹成功！");
+            map.put("RTDATA", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "Exception");
+            map.put("RTMSG", "检查文件是否存在交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        return map;
+    }
 }

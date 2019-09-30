@@ -51,6 +51,10 @@ public class test {
 //        System.out.println(istrue);
 //        System.out.println(new Date().toString());
 //
+//        Map<String, Object> map = FileSelect.getFileSelect().checkFileExists("/Users/congfeng/Downloads/test", "ByteAiCP");
+//        System.out.println(map);
+//        Map<String, Object> map1 = FileSelect.getFileSelect().createDirectory("/Users/congfeng/Downloads/test/ByteAiCP", "V01.00.01-TR");
+//        System.out.println(map1);
 //        String path = System.getProperty("java.library.path");
 //        System.out.println(path);
 //        try {
