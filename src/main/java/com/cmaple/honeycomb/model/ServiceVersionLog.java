@@ -37,7 +37,7 @@ public class ServiceVersionLog {
      * 自动递增
      * 主键
      **/
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "serviceid", type = IdType.AUTO)
     private int serviceid;
     /**
      * 服务版本号

@@ -45,6 +45,22 @@ public class BackgroundServiceService {
     }
 
     /**
+     * 函数名：查询函数-根据ID号查询后台服务详情 - getBackgroundServicesById（）
+     * 功能描述： 根据ID号查询后台服务详情
+     * <p>
+     * 返回值：BackgroundService
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-10-17
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    public BackgroundService getBackgroundServicesById(int id) {
+        return backgroundServiceMapper.selectById(id);
+    }
+
+    /**
      * 函数名：插入函数-插入后台服务信息 - insertBackgroundService（）
      * 功能描述： 插入后台服务信息
      *

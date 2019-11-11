@@ -236,16 +236,16 @@ public class OperationLogController {
             params.put("operatetype", operatetype);
         }
         try {
-            //HttpSession session = request.getSession();
+            HttpSession session = request.getSession();
             //获取信息
-            //User sessionuser = (User) session.getAttribute("SSUSER");
+            User sessionuser = (User) session.getAttribute("SSUSER");
             List<OperationLog> result = operationLogService.getOperationLogByParams(paramslist, params, ParamsTools.getPageTools().getPageByNum(1, num), num);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             response.setHeader("Content-disposition", "attachment;filename=OperationLog_" + FormatTime.getFormatTime().formatYMDToString(new Date()) + ".xlsx");
             EasyExcel.write(response.getOutputStream(), OperationLog.class).sheet("模板").doWrite(result);
             //记录操作日志
-            //operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 导出日志为Excel交易异常，异常信息如下：" + e.getMessage()));
+            operationLogService.insertOperationLog(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "normal", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ]  导出日志为Excel成功！"));
         } catch (Exception e) {
             //记录错误日志
             HttpSession session = request.getSession();

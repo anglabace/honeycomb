@@ -1,5 +1,6 @@
 package com.cmaple.honeycomb;
 
+import com.cmaple.honeycomb.tools.FileSelect;
 import org.hyperic.sigar.*;
 
 import java.io.IOException;
@@ -12,6 +13,13 @@ public class test {
 
     public static void main(String[] args) throws IOException {
 
+//        LocalDate localDate = LocalDate.now();
+//        LocalTime localTime1 = LocalTime.now();
+//        System.out.println(localDate);
+//        System.out.println(localTime1);
+
+        Map<String, Object> map = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads/test/IMGTI-1/V01.00.01-TR");
+        System.out.println(map);
 //        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
 //        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
 //            System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
