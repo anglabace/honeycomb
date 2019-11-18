@@ -19,6 +19,7 @@ public class test {
 //        System.out.println(localTime1);
 
         Map<String, Object> map = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads/test/IMGTI-1/V01.00.01-TR");
+        //sudo codesign -f -s - --deep /Users/congfeng/Downloads/Installer
         System.out.println(map);
 //        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
 //        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
