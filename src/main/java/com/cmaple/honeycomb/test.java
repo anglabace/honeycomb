@@ -17,10 +17,12 @@ public class test {
 //        LocalTime localTime1 = LocalTime.now();
 //        System.out.println(localDate);
 //        System.out.println(localTime1);
-
-        Map<String, Object> map = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads/test/IMGTI-1/V01.00.01-TR");
+        Map<String, Object> upmap = FileSelect.getFileSelect().delFile("/Users/congfeng/Downloads/test/milestone1/IMG_Milestone201911211004289.jpg");
+        System.out.println(upmap);
+        System.out.println(upmap.toString());
+        //Map<String, Object> map = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads/test/IMGTI-1/V01.00.01-TR");
         //sudo codesign -f -s - --deep /Users/congfeng/Downloads/Installer
-        System.out.println(map);
+        //System.out.println(map);
 //        Map<String, Object> map1 = FileSelect.getFileSelect().getfileMap("/Users/congfeng/Downloads");
 //        for (int i = 0; i < ((ArrayList<ToolsFile>) map1.get("RTDATA")).size(); i++) {
 //            System.out.println(((ArrayList<ToolsFile>) map1.get("RTDATA")).get(i));
@@ -44,10 +46,17 @@ public class test {
 //        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程涛", "330481200502233019", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
 //        System.out.println(map1);
 
-////        String jsons = "{\"code\":404,\"message\":\"check.param.error:参数非法\"}";
-//        AliyunIDName aliyunIDName = JSON.parseObject(jsons, AliyunIDName.class);
-//        System.out.println("code -  " + aliyunIDName.getCode());
-//        System.out.println("msg -  " + aliyunIDName.getMessage());
+
+
+        //按钮组
+//        String jsons = "[{\"icon\":\"el-icon-paperclip\",\"title\":\"查看源码\",\"url\":\"https://www.baidu.com/\"},{\"icon\":\"el-icon-paperclip\",\"title\":\"查看源码\",\"url\":\"https://www.baidu.com/\"}]";
+//        JSONArray jsonArray = JSON.parseArray(jsons);
+//        Iterator<Object> iterator = jsonArray.iterator();
+//        while (iterator.hasNext()){
+//            JSONObject jsonObject = (JSONObject) iterator.next();
+//            System.out.println("icon: " + jsonObject.getString("icon") + ",title: " + jsonObject.getString("title")+ ",url: " + jsonObject.getString("url"));
+//
+//        }
 //        //进一步需要获取的信息
 //        System.out.println("bizCode -  " + aliyunIDName.getValue().getBizCode());
 //        System.out.println("message -  " + aliyunIDName.getValue().getMessage());

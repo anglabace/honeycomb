@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：mybatis plus 映射用户接口 - AnnouncementMapper
+ * 类名：mybatis plus 映射公告接口 - AnnouncementMapper
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
@@ -57,6 +57,4 @@ public interface AnnouncementMapper extends BaseMapper<Announcement> {
      */
     @SelectProvider(type = AdvancedSQL.class, method = "queryAnnouncementAtHome")
     List<Announcement> queryAnnouncementAtHome();
-
-
 }

@@ -40,13 +40,6 @@ public class Milestone {
     private int id;
 
     /**
-     * 里程碑编号
-     * 长度：24
-     * 是否为null：N
-     **/
-    private String milestoneid;
-
-    /**
      * 里程碑标题
      * 长度：24
      * 是否为null：N
@@ -97,17 +90,10 @@ public class Milestone {
 
     /**
      * 里程碑图片信息（在静态资源信息表）
-     * 长度：24
-     * 是否为null：N
-     **/
-    private int imgid;
-
-    /**
-     * 里程碑脚注信息
      * 长度：46
      * 是否为null：N
      **/
-    private String footer;
+    private String imgurl;
 
     /**
      * 里程碑按钮组

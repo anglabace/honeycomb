@@ -237,7 +237,7 @@ public class FileSelect implements FilenameFilter {
                 }
             } else {
                 map.put("RTCODE", "error");
-                map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+                map.put("RTMSG", "文件目录错误！请输入正确的文件目录再获取文件列表！");
                 map.put("RTDATA", null);
                 return map;
             }
@@ -290,7 +290,7 @@ public class FileSelect implements FilenameFilter {
                 }
             } else {
                 map.put("RTCODE", "error");
-                map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+                map.put("RTMSG", "文件目录错误！请输入正确的文件目录再删除文件！");
                 map.put("RTDATA", null);
                 return map;
             }
@@ -345,7 +345,7 @@ public class FileSelect implements FilenameFilter {
                 }
             } else {
                 map.put("RTCODE", "error");
-                map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+                map.put("RTMSG", "文件目录错误！请输入正确的文件目录再创建文件！");
                 map.put("RTDATA", null);
                 return map;
             }
@@ -379,20 +379,26 @@ public class FileSelect implements FilenameFilter {
      */
     public Map<String, Object> uploadFile(MultipartFile uploadfile, String realpath, String filename) {
         Map<String, Object> map = new HashMap<String, Object>();
+        String updatepath = "";
+        if (null != filename) {
+            updatepath = realpath + "/" + filename;
+        } else {
+            updatepath = realpath;
+        }
         try {
-            if (!new File(realpath).exists()) {
+            if (!new File(realpath).exists() && new File(realpath).isDirectory()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
                 map.put("RTDATA", null);
                 return map;
             }
-            if (new File(realpath + "/" + filename).exists()) {
+            if (new File(updatepath).exists()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "存在同名文件，请更换文件名!");
                 map.put("RTDATA", null);
                 return map;
             }
-            Files.copy(uploadfile.getInputStream(), Paths.get(realpath + "/" + filename), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(uploadfile.getInputStream(), Paths.get(updatepath), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
             map.put("RTCODE", "Exception");
@@ -423,14 +429,20 @@ public class FileSelect implements FilenameFilter {
      */
     public Map<String, Object> checkFileExists(String realpath, String filename) {
         Map<String, Object> map = new HashMap<String, Object>();
+        String updatepath = "";
+        if (null != filename) {
+            updatepath = realpath + "/" + filename;
+        } else {
+            updatepath = realpath;
+        }
         try {
-            if (!new File(realpath).exists()) {
+            if (!new File(realpath).exists() && new File(realpath).isDirectory()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
                 map.put("RTDATA", null);
                 return map;
             }
-            if (new File(realpath + "/" + filename).exists()) {
+            if (new File(updatepath).exists()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "存在同名文件，请更换文件名!");
                 map.put("RTDATA", null);

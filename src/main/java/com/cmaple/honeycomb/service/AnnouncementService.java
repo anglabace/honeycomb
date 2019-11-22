@@ -65,8 +65,8 @@ public class AnnouncementService {
     }
 
     /**
-     * 函数名：查询函数-根据条件查询公告 - getAnnouncementAtHome（）
-     * 功能描述： 根据条件查询公告
+     * 函数名：查询函数-主页查询，只查看日期倒叙的前五条数据 - getAnnouncementAtHome（）
+     * 功能描述： 主页查询，只查看日期倒叙的前五条数据
      * 输入参数：<按照参数定义顺序>
      * <p>
      * 返回值：List<Announcement>

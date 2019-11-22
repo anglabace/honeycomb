@@ -79,7 +79,7 @@ public class AnnouncementController {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
-            map.put("RTMSG", "删除后台服务信息异常！请联系管理员！");
+            map.put("RTMSG", "查询公告信息异常！请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;
         }
