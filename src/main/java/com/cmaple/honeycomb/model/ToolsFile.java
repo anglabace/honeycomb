@@ -44,6 +44,12 @@ public class ToolsFile {
      **/
     private String filepath;
     /**
+     * 文件上级目录
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    private String superiorfilepath;
+    /**
      * 文件大小
      * 长度：0
      * 是否为null：N/S

@@ -1,9 +1,12 @@
 package com.cmaple.honeycomb.tools;
 
 import com.cmaple.honeycomb.model.ToolsFile;
+import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -227,13 +230,13 @@ public class FileSelect implements FilenameFilter {
                     //输出循环文件结果
                     for (File file : filelist) {
                         if (file.isDirectory()) {
-                            list.add(new ToolsFile(file.getName(), "Directory", file.getAbsolutePath(), FormetFileSize(getDirectorySize(file)), null, FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(file)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(file))));
+                            list.add(new ToolsFile(file.getName(), "Directory", file.getAbsolutePath(), file.getParent(), FormetFileSize(getDirectorySize(file)), null, FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(file)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(file))));
                         } else {
-                            list.add(new ToolsFile(file.getName(), "File", file.getAbsolutePath(), FormetFileSize(file.length()), fileNameSplit(file.getName(), 1), FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(file)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(file))));
+                            list.add(new ToolsFile(file.getName(), "File", file.getAbsolutePath(), file.getParent(), FormetFileSize(file.length()), fileNameSplit(file.getName(), 1), FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(file)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(file))));
                         }
                     }
                 } else {
-                    list.add(new ToolsFile(Initializationfile.getName(), "File", Initializationfile.getAbsolutePath(), FormetFileSize(Initializationfile.length()), fileNameSplit(Initializationfile.getName(), 1), FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(Initializationfile)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(Initializationfile))));
+                    list.add(new ToolsFile(Initializationfile.getName(), "File", Initializationfile.getAbsolutePath(), Initializationfile.getParent(), FormetFileSize(Initializationfile.length()), fileNameSplit(Initializationfile.getName(), 1), FormatTime.getFormatTime().formatYMDHMSToString(getCreateTime(Initializationfile)), FormatTime.getFormatTime().formatYMDHMSToString(getModifyTime(Initializationfile))));
                 }
             } else {
                 map.put("RTCODE", "error");
@@ -544,6 +547,66 @@ public class FileSelect implements FilenameFilter {
             e.printStackTrace();
             map.put("RTCODE", "Exception");
             map.put("RTMSG", "检查文件是否存在交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        return map;
+    }
+
+    /**
+     * 函数名：工具函数-移动文件到指定目录（不可移动文件夹） - removeFile（）
+     * 功能描述： 删除绝对路径下的文件（不可删除文件夹）
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param realpath   String类型的文件原来路径
+     * @param fileName   String类型的文件名
+     * @param targetpath String类型的文件目标路径
+     *                   返回值：Map<String, Object>
+     *                   异    常：无
+     *                   创建人：CMAPLE
+     *                   创建日期：2019-11-25
+     *                   修改人：
+     *                   级别：NULL
+     *                   修改日期：
+     */
+    public Map<String, Object> removeFile(String realpath, String fileName, String targetpath) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (!new File(realpath + "/" + fileName).exists()) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        if (new File(realpath + "/" + fileName).isDirectory()) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "目录为文件夹，不可以复制!");
+            map.put("RTDATA", null);
+            return map;
+        }
+        try {
+            //复制文件到指定目录（使用IO流）
+            FileInputStream infile = new FileInputStream(new File(realpath + "/" + fileName));
+            FileOutputStream outfile = new FileOutputStream(new File(targetpath + "/" + fileName));
+            FileOutputStream cacheoutfile = new FileOutputStream(new File(new ConfigurationFile().getCACHEFILEPATH() + "/" + fileName));
+            byte[] buff = new byte[512];
+            int n = 0;
+            while ((n = infile.read(buff)) != -1) {
+                outfile.write(buff, 0, n);
+                //将文件复制到缓存目录
+                cacheoutfile.write(buff, 0, n);
+            }
+            outfile.flush();
+            infile.close();
+            outfile.close();
+            //删除原油目录文件
+            new File(realpath + "/" + fileName).delete();
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "文件复制成功！");
+            map.put("RTDATA", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "Exception");
+            map.put("RTMSG", "复制文件存在交易异常！请联系管理员！");
             map.put("RTDATA", e.getMessage());
             return map;
         }
