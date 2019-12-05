@@ -40,6 +40,12 @@ public class Report {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
     /**
+     * 调查报告标题
+     * 长度：24
+     * 是否为null：Y
+     **/
+    private String title;
+    /**
      * 调查报告编号
      * 长度：24
      * 是否为null：Y

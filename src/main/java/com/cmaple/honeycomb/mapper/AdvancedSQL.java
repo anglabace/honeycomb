@@ -143,41 +143,6 @@ public class AdvancedSQL {
     }
 
     /**
-     * 函数名：复杂查询函数-根据条件查询静态资源列表- queryStaticResourcesByParams（）
-     * 功能描述： 根据条件查询静态资源列表
-     * 输入参数：<按照参数定义顺序>
-     *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
-     *               返回值：String
-     *               异    常：无
-     *               创建人：CMAPLE
-     *               日期：2019-09-26
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
-     */
-    public String queryStaticResourcesByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
-        String result = new SQL() {
-            {
-                SELECT("id ,pagepath ,imgrealpath ,imgrelativepath ,imgname ,imgrealsize ,imgrelativesize ,size ,creattime ,updatetime ");
-                FROM("CS_StaticResources WHERE 1 = 1 ");
-            }
-        }.toString();
-        //判断添加请求条件
-        if (0 != list.size()) {
-            result = sqlStaticResourcesPutAnd(result, list, params);
-        }
-        //添加排序
-        result = sqlPutOrderBy(result, "id");
-        //添加分页
-        result = sqlPutLimit(result, page, num);
-        return result;
-    }
-
-    /**
      * 函数名：复杂查询函数-根据条件查询后台服务列表- queryBackgroundServicesByParams（）
      * 功能描述： 根据条件查询后台服务列表
      * 输入参数：<按照参数定义顺序>
@@ -384,6 +349,62 @@ public class AdvancedSQL {
 
 
     /**
+     * 函数名：复杂查询函数-查询所有调查报告，按照时间倒叙排列- queryReportDescOrderBy（）
+     * 功能描述：查询所有调查报告，按照时间倒叙排列
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-11-27
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    public String queryReportDescOrderBy() {
+        String result = new SQL() {
+            {
+                SELECT("id ,title ,reporttype ,creatdate ");
+                FROM("CS_Report WHERE 1 = 1 ");
+            }
+        }.toString();
+        //添加排序
+        result = sqlPutDescOrderBy(result, "creatdate");
+        return result;
+    }
+
+    /**
+     * 函数名：复杂查询函数-查询所有调查报告，按照时间倒叙排列- queryReportByParams（）
+     * 功能描述：查询所有调查报告，按照时间倒叙排列
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-11-27
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    public String queryReportByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
+        String result = new SQL() {
+            {
+                SELECT("id ,title ,reportid ,reporttype ,author ,creatdate ,filename ,filepath ");
+                FROM("CS_Report WHERE 1 = 1 ");
+            }
+        }.toString();
+        if (0 != list.size()) {
+            result = sqlReportPutAnd(result, list, params);
+        }
+        //添加排序
+        result = sqlPutDescOrderBy(result, "creatdate");
+        //添加分页
+        result = sqlPutLimit(result, page, num);
+        return result;
+    }
+
+
+    /**
      * ----------------------------------------------------------------------------------------------------------------------------- 私有函数 -----------------------------------------------------------------------------------------------------------------------------
      */
 
@@ -479,41 +500,6 @@ public class AdvancedSQL {
                 }
                 if ("search".equals(list.get(i))) {
                     result += " and content LIKE '%" + params.get(list.get(i)) + "%'";
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 函数名：私有函数-静态资源查询添加其他条件- sqlStaticResourcesPutAnd（）
-     * 功能描述： 日志查询添加其他条件
-     * 输入参数：<按照参数定义顺序>
-     *
-     * @param result 条件列表
-     * @param list   字段及数值集合
-     * @param params 字段及数值集合
-     *               返回值：string
-     *               异    常：无
-     *               创建人：CMAPLE
-     *               日期：2019-01-17
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
-     */
-    private String sqlStaticResourcesPutAnd(String result, List<String> list, Map<String, Object> params) {
-        for (int i = 0; i < list.size(); i++) {
-            if (params.containsKey(list.get(i))) {
-                if ("pagepath".equals(list.get(i))) {
-                    result += " and pagepath = '" + params.get(list.get(i)) + "'";
-                }
-                if ("search".equals(list.get(i))) {
-                    result += " and imgrealpath LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or imgrelativepath LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or imgname LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or imgrealsize LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or imgrelativesize LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or size LIKE '%" + params.get(list.get(i)) + "%' ";
                 }
             }
         }
@@ -630,6 +616,46 @@ public class AdvancedSQL {
                 if ("search".equals(list.get(i))) {
                     result += " and title LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or synopsis LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or author LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or filename LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or filepath LIKE '%" + params.get(list.get(i)) + "%' ";
+                }
+            }
+        }
+        return result;
+    }
+
+
+    //sqlMilestonePutAnd
+
+    /**
+     * 函数名：私有函数-调查报告查询添加其他条件- sqlReportPutAnd（）
+     * 功能描述： 调查报告查询添加其他条件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param result 条件列表
+     * @param list   字段及数值集合
+     * @param params 字段及数值集合
+     *               返回值：string
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-11-19
+     *               修改人：
+     *               级别：普通用户
+     *               日期：
+     */
+    private String sqlReportPutAnd(String result, List<String> list, Map<String, Object> params) {
+        for (int i = 0; i < list.size(); i++) {
+            if (params.containsKey(list.get(i))) {
+                //服务状态
+                if ("timeaxisdate".equals(list.get(i))) {
+                    result += " and DATE_FORMAT( creatdate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( creatdate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                }
+                //全文搜索
+                if ("search".equals(list.get(i))) {
+                    result += " and reportid LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or title LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or reporttype LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or author LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or filename LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or filepath LIKE '%" + params.get(list.get(i)) + "%' ";

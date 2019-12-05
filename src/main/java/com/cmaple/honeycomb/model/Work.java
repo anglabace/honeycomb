@@ -93,4 +93,5 @@ public class Work {
      * 是否为null：Y
      **/
     private int application;
+
 }

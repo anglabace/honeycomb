@@ -4,10 +4,7 @@ import com.cmaple.honeycomb.model.ToolsFile;
 import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -438,14 +435,16 @@ public class FileSelect implements FilenameFilter {
         } else {
             updatepath = realpath;
         }
+        File checkrealFile = new File(realpath);
+        File checkupdateFile = new File(updatepath);
         try {
-            if (!new File(realpath).exists() && new File(realpath).isDirectory()) {
+            if (!checkrealFile.exists() && checkrealFile.isDirectory()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
                 map.put("RTDATA", null);
                 return map;
             }
-            if (new File(updatepath).exists()) {
+            if (checkupdateFile.exists() && !checkupdateFile.isDirectory()) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "存在同名文件，请更换文件名!");
                 map.put("RTDATA", null);
@@ -458,6 +457,10 @@ public class FileSelect implements FilenameFilter {
             map.put("RTDATA", e.getMessage());
             return map;
         }
+        //删除引用
+        checkrealFile = null;
+        checkupdateFile = null;
+        //返回数据
         map.put("RTCODE", "success");
         map.put("RTMSG", "检查文件成功！");
         map.put("RTDATA", "该目录下，不存在同名文件！");
@@ -588,7 +591,7 @@ public class FileSelect implements FilenameFilter {
             FileInputStream infile = new FileInputStream(new File(realpath + "/" + fileName));
             FileOutputStream outfile = new FileOutputStream(new File(targetpath + "/" + fileName));
             FileOutputStream cacheoutfile = new FileOutputStream(new File(new ConfigurationFile().getCACHEFILEPATH() + "/" + fileName));
-            byte[] buff = new byte[512];
+            byte[] buff = new byte[1024];
             int n = 0;
             while ((n = infile.read(buff)) != -1) {
                 outfile.write(buff, 0, n);
@@ -612,4 +615,29 @@ public class FileSelect implements FilenameFilter {
         }
         return map;
     }
+
+    /**
+     * 函数名：工具函数-下载指定目录的文件（ - downloadFile（）
+     * 功能描述： 下载指定目录的文件
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param bufferedOutputStream String类型的文件绝对路径
+     * @param bufferedInputStream  HttpServletResponse类型的请求回应
+     *                             返回值：Map<String, Object>
+     *                             异    常：无
+     *                             创建人：CMAPLE
+     *                             创建日期：2019-11-25
+     *                             修改人：
+     *                             级别：NULL
+     *                             修改日期：
+     */
+    public void downloadFile(BufferedOutputStream bufferedOutputStream, BufferedInputStream bufferedInputStream) throws IOException {
+        byte[] buff = new byte[1024];
+        int n = 0;
+        while ((n = bufferedInputStream.read(buff)) != -1) {
+            bufferedOutputStream.write(buff, 0, buff.length);
+        }
+        bufferedOutputStream.flush();
+    }
+
 }
