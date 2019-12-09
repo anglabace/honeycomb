@@ -90,7 +90,7 @@ public class AnnouncementController {
     }
 
     /**
-     * 函数名：查询函数 - 分页获取公告列表，公告以时间倒叙排列展示 - getAnnouncementByPage（）
+     * 函数名：查询函数 - 分页获取公告列表，公告以时间倒叙排列展示 - getAnnouncementByParams（）
      * 功能描述： 分页获取公告列表，公告以时间倒叙排列展示
      * 输入参数：<按照参数定义顺序>
      *
@@ -105,8 +105,8 @@ public class AnnouncementController {
      *                     修改人：
      *                     修改日期：
      */
-    @RequestMapping(value = "/getAnnouncementByPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getAnnouncementByPage(
+    @RequestMapping(value = "/getAnnouncementByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getAnnouncementByParams(
             @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
