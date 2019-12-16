@@ -5,6 +5,8 @@ import org.hyperic.sigar.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,10 +14,10 @@ public class test {
 
     public static void main(String[] args) throws IOException {
 
-//        LocalDate localDate = LocalDate.now();
-//        LocalTime localTime1 = LocalTime.now();
-//        System.out.println(localDate);
-//        System.out.println(localTime1);
+        LocalDate localDate = LocalDate.now();
+        LocalTime localTime1 = LocalTime.now();
+        System.out.println(localDate.toString());
+        System.out.println(localTime1);
 //        Map<String, Object> upmap = FileSelect.getFileSelect().delFile("/Users/congfeng/Downloads/test/milestone1/IMG_Milestone201911211004289.jpg");
 //        System.out.println(upmap);
 //        System.out.println(upmap.toString());

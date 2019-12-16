@@ -24,7 +24,7 @@ import java.util.List;
 @Accessors(chain = true)  //chain 若为true，则setter方法返回当前对象()
 @NoArgsConstructor  //提供无参构造器
 @AllArgsConstructor //提供全参构造器
-public class statistics {
+public class Statistics {
     /**
      * 统计信息标题
      * 长度：
@@ -42,5 +42,5 @@ public class statistics {
      * 长度：
      * 是否为null：Y
      **/
-    private List<statistics_series_data> series_data;
+    private List<Statistics_Series_Data> series_data;
 }

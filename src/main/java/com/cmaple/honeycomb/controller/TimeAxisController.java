@@ -68,8 +68,8 @@ public class TimeAxisController {
     }
 
     /**
-     * 函数名：查询函数 - 分页获取公告列表，根据条件查询时间轴信息 - getTimeAxisByParams（）
-     * 功能描述： 分页获取公告列表，根据条件查询时间轴信息
+     * 函数名：查询函数 - 分页，根据条件查询时间轴信息 - getTimeAxisByParams（）
+     * 功能描述： 分页，根据条件查询时间轴信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param search       String类型的搜索内容
