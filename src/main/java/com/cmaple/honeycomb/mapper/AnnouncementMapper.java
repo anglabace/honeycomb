@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.AnnouncementSQL;
 import com.cmaple.honeycomb.model.Announcement;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -39,7 +40,7 @@ public interface AnnouncementMapper extends BaseMapper<Announcement> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryAnnouncementByParams")
+    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementByParams")
     List<Announcement> queryAnnouncementByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -55,6 +56,6 @@ public interface AnnouncementMapper extends BaseMapper<Announcement> {
      * 级别：普通用户
      * 日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryAnnouncementAtHome")
+    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementAtHome")
     List<Announcement> queryAnnouncementAtHome();
 }

@@ -3,7 +3,6 @@ package com.cmaple.honeycomb.controller;
 import com.cmaple.honeycomb.model.TimeAxis;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.TimeAxisService;
-import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,7 +51,7 @@ public class TimeAxisController {
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            returntimeaxis = timeAxisService.getTimeAxisAtHome();
+            //returntimeaxis = timeAxisService.getTimeAxisAtHome();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -114,7 +113,7 @@ public class TimeAxisController {
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            returntimeaxis = timeAxisService.getTimeAxisByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            //returntimeaxis = timeAxisService.getTimeAxisByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表

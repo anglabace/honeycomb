@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.OperationLogSQL;
 import com.cmaple.honeycomb.model.OperationLog;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：mybatis plus 映射用户接口 - OperationLogMapper
+ * 类名：mybatis plus 映射日志接口 - OperationLogMapper
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
@@ -39,7 +40,7 @@ public interface OperationLogMapper extends BaseMapper<OperationLog> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "getOperationLogByParams")
+    @SelectProvider(type = OperationLogSQL.class, method = "getOperationLogByParams")
     List<OperationLog> getOperationLogByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -57,7 +58,7 @@ public interface OperationLogMapper extends BaseMapper<OperationLog> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "getOperationLogCountByParams")
+    @SelectProvider(type = OperationLogSQL.class, method = "getOperationLogCountByParams")
     int getOperationLogCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
 
 }

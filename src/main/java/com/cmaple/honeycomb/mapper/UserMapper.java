@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.UserSQL;
 import com.cmaple.honeycomb.model.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -39,7 +40,7 @@ public interface UserMapper extends BaseMapper<User> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "usersBaseDatas")
+    @SelectProvider(type = UserSQL.class, method = "usersBaseDatas")
     List<User> queryUserByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -57,6 +58,6 @@ public interface UserMapper extends BaseMapper<User> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "getUserCountByParams")
+    @SelectProvider(type = UserSQL.class, method = "getUserCountByParams")
     int queryUserCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
 }

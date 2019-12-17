@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.WorkSQL;
 import com.cmaple.honeycomb.model.Work;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -38,7 +39,7 @@ public interface WorkMapper extends BaseMapper<Work> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryWorkByParams")
+    @SelectProvider(type = WorkSQL.class, method = "queryWorkByParams")
     List<Work> queryWorkByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -54,6 +55,6 @@ public interface WorkMapper extends BaseMapper<Work> {
      * 级别：普通用户
      * 日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryWorkDescOrderBy")
+    @SelectProvider(type = WorkSQL.class, method = "queryWorkDescOrderBy")
     List<Work> queryWorkDescOrderBy();
 }

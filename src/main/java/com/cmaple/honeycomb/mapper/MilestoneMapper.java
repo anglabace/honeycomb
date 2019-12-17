@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.MilestoneSQL;
 import com.cmaple.honeycomb.model.Milestone;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -39,7 +40,7 @@ public interface MilestoneMapper extends BaseMapper<Milestone> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryMilestoneByParams")
+    @SelectProvider(type = MilestoneSQL.class, method = "queryMilestoneByParams")
     List<Milestone> queryMilestoneByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -55,7 +56,7 @@ public interface MilestoneMapper extends BaseMapper<Milestone> {
      * 级别：普通用户
      * 日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryMilestoneAtHome")
+    @SelectProvider(type = MilestoneSQL.class, method = "queryMilestoneAtHome")
     List<Milestone> queryMilestoneAtHome();
 
     /**
@@ -71,9 +72,7 @@ public interface MilestoneMapper extends BaseMapper<Milestone> {
      * 级别：普通用户
      * 日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryMilestoneDescOrderBy")
+    @SelectProvider(type = MilestoneSQL.class, method = "queryMilestoneDescOrderBy")
     List<Milestone> queryMilestoneDescOrderBy();
-
-
-
+    
 }

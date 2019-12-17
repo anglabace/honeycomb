@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.ReportSQL;
 import com.cmaple.honeycomb.model.Report;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -38,7 +39,7 @@ public interface ReportMapper extends BaseMapper<Report> {
      *               级别：普通用户
      *               日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryReportByParams")
+    @SelectProvider(type = ReportSQL.class, method = "queryReportByParams")
     List<Report> queryReportByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
@@ -53,6 +54,6 @@ public interface ReportMapper extends BaseMapper<Report> {
      * 级别：普通用户
      * 日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryReportDescOrderBy")
+    @SelectProvider(type = ReportSQL.class, method = "queryReportDescOrderBy")
     List<Report> queryReportDescOrderBy();
 }

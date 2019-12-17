@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cmaple.honeycomb.mapper.AdvancedSQL.ServiceVersionLogSQL;
 import com.cmaple.honeycomb.model.ServiceVersionLog;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -34,7 +35,7 @@ public interface ServiceVersionLogMapper extends BaseMapper<ServiceVersionLog> {
      *                  修改人：
      *                  日期：
      */
-    @SelectProvider(type = AdvancedSQL.class, method = "queryServiceVersionLogById")
+    @SelectProvider(type = ServiceVersionLogSQL.class, method = "queryServiceVersionLogById")
     List<ServiceVersionLog> queryServiceVersionLogById(@Param("serviceid") int serviceid);
 
 }

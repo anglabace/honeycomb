@@ -6,9 +6,6 @@ import com.cmaple.honeycomb.model.TimeAxis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * 类名：时间轴功能类 - TimeAxisService
  * 功能描述：时间轴功能类
@@ -27,41 +24,41 @@ public class TimeAxisService {
     @Autowired
     private TimeAxisMapper timeAxisMapper;
 
-    /**
-     * 函数名：查询函数-根据条件查询公告 - getTimeAxisByParams（）
-     * 功能描述： 根据条件查询公告
-     * 输入参数：<按照参数定义顺序>
-     *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
-     *               返回值：List<TimeAxis>
-     *               异    常：无
-     *               创建人：CMAPLE
-     *               日期：2019-12-09
-     *               修改人：
-     *               日期：
-     */
-    public List<TimeAxis> getTimeAxisByParams(List<String> list, Map<String, Object> params, int page, int num) {
-        return timeAxisMapper.queryTimeAxisByParams(list, params, page, num);
-    }
-
-    /**
-     * 函数名：查询函数-主页查询，根据时间倒叙查询时间轴 - getTimeAxisAtHome（）
-     * 功能描述： 主页查询，根据时间倒叙查询时间轴
-     * 输入参数：<按照参数定义顺序>
-     * <p>
-     * 返回值：List<TimeAxis>
-     * 异    常：无
-     * 创建人：CMAPLE
-     * 日期：2019-12-09
-     * 修改人：
-     * 日期：
-     */
-    public List<TimeAxis> getTimeAxisAtHome() {
-        return timeAxisMapper.queryTimeAxisAtHome();
-    }
+//    /**
+//     * 函数名：查询函数-根据条件查询公告 - getTimeAxisByParams（）
+//     * 功能描述： 根据条件查询公告
+//     * 输入参数：<按照参数定义顺序>
+//     *
+//     * @param list   条件列表
+//     * @param params 字段及数值集合
+//     * @param page   分页查询PAGE条件
+//     * @param num    分页查询NUM条件
+//     *               返回值：List<TimeAxis>
+//     *               异    常：无
+//     *               创建人：CMAPLE
+//     *               日期：2019-12-09
+//     *               修改人：
+//     *               日期：
+//     */
+//    public List<TimeAxis> getTimeAxisByParams(List<String> list, Map<String, Object> params, int page, int num) {
+//        return timeAxisMapper.queryTimeAxisByParams(list, params, page, num);
+//    }
+//
+//    /**
+//     * 函数名：查询函数-主页查询，根据时间倒叙查询时间轴 - getTimeAxisAtHome（）
+//     * 功能描述： 主页查询，根据时间倒叙查询时间轴
+//     * 输入参数：<按照参数定义顺序>
+//     * <p>
+//     * 返回值：List<TimeAxis>
+//     * 异    常：无
+//     * 创建人：CMAPLE
+//     * 日期：2019-12-09
+//     * 修改人：
+//     * 日期：
+//     */
+//    public List<TimeAxis> getTimeAxisAtHome() {
+//        return timeAxisMapper.queryTimeAxisAtHome();
+//    }
 
     /**
      * 函数名：插入函数-插入时间轴信息 - insertTimeAxis（）
