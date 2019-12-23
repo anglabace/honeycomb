@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：公告信息复杂sql拼接类 - AnnouncementSQL
+ * 类名：公告模块复杂sql拼接类 - AnnouncementSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
  * 异    常：无
  * 创建人：CMAPLE
- * 创建日期：2019-12-16
+ * 创建日期：2019-12-17
  * 修改人：
  * 级别：NULL
  * 修改日期：

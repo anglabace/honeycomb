@@ -3,6 +3,7 @@ package com.cmaple.honeycomb.controller;
 import com.cmaple.honeycomb.model.TimeAxis;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.TimeAxisService;
+import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,7 +52,7 @@ public class TimeAxisController {
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            //returntimeaxis = timeAxisService.getTimeAxisAtHome();
+            returntimeaxis = timeAxisService.getTimeAxisAtHome();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -113,7 +114,7 @@ public class TimeAxisController {
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            //returntimeaxis = timeAxisService.getTimeAxisByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returntimeaxis = timeAxisService.getTimeAxisByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -135,7 +136,7 @@ public class TimeAxisController {
      *
      * @param title     String类型的标题
      * @param content   String类型的内容
-     * @param creattime String类型的事件事件
+     * @param eventtime String类型的事件时间
      *                  返回值：map
      *                  异    常：无
      *                  创建人：CMAPLE
@@ -146,8 +147,8 @@ public class TimeAxisController {
     @RequestMapping(value = "/insertTimeAxis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insertTimeAxis(
             @RequestParam(value = "title", required = true) String title
-            , @RequestParam(value = "synopsis", required = true) String content
-            , @RequestParam(value = "content", required = true) Date creattime
+            , @RequestParam(value = "content", required = true) String content
+            , @RequestParam(value = "eventtime", required = true) String eventtime
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
@@ -160,7 +161,7 @@ public class TimeAxisController {
             return map;
         }
         Date insertdate = new Date();
-        TimeAxis timeAxis = new TimeAxis(0, title, content, creattime, sessionuser.getTelephonenumber(), insertdate);
+        TimeAxis timeAxis = new TimeAxis(0, title, content, java.sql.Date.valueOf(eventtime), sessionuser.getTelephonenumber(), insertdate);
         try {
             int returntimeAxis = timeAxisService.insertTimeAxis(timeAxis);
             if (1 == returntimeAxis) {
@@ -191,7 +192,7 @@ public class TimeAxisController {
      * @param id        int类型的id号
      * @param title     String类型的标题
      * @param content   String类型的内容
-     * @param creattime String类型的事件事件
+     * @param eventtime String类型的事件事件
      *                  返回值：map
      *                  异    常：无
      *                  创建人：CMAPLE
@@ -203,8 +204,8 @@ public class TimeAxisController {
     public Map<String, Object> updateTimeAxis(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "title", required = true) String title
-            , @RequestParam(value = "synopsis", required = true) String content
-            , @RequestParam(value = "content", required = true) Date creattime
+            , @RequestParam(value = "content", required = true) String content
+            , @RequestParam(value = "eventtime", required = true) String eventtime
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
@@ -217,7 +218,7 @@ public class TimeAxisController {
             return map;
         }
         Date insertdate = new Date();
-        TimeAxis timeAxis = new TimeAxis(id, title, content, creattime, sessionuser.getTelephonenumber(), insertdate);
+        TimeAxis timeAxis = new TimeAxis(id, title, content, java.sql.Date.valueOf(eventtime), sessionuser.getTelephonenumber(), insertdate);
         try {
             int returntimeAxis = timeAxisService.updateTimeAxis(timeAxis);
             if (1 == returntimeAxis) {

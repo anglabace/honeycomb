@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：里程碑信息复杂sql拼接类 - BackgroundServiceSQL
+ * 类名：里程碑模块复杂sql拼接类 - BackgroundServiceSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
@@ -67,7 +67,7 @@ public class MilestoneSQL {
     public String queryMilestoneAtHome() {
         String result = new SQL() {
             {
-                SELECT("id ,title ,synopsis ,author ,creattime ,readtime ,filename ,filepath ,imgurl ,buttongroup ");
+                SELECT("id ,title ,imgurl ");
                 FROM("CS_Milestone ");
             }
         }.toString();

@@ -1,7 +1,7 @@
 package com.cmaple.honeycomb.mapper.AdvancedSQL;
 
 /**
- * 类名：服务器信息复杂sql拼接类 - ServersInformationSQL
+ * 类名：服务器模块复杂sql拼接类 - ServersInformationSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL

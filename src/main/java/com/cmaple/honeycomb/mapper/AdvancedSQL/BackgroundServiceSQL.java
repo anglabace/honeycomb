@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：后台服务信息复杂sql拼接类 - BackgroundServiceSQL
+ * 类名：后台服务模块复杂sql拼接类 - BackgroundServiceSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL

@@ -1,7 +1,7 @@
 package com.cmaple.honeycomb.mapper.AdvancedSQL;
 
 /**
- * 类名：统计信息信息复杂sql拼接类 - StatisticsSQL
+ * 类名：统计信息模块复杂sql拼接类 - StatisticsSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL

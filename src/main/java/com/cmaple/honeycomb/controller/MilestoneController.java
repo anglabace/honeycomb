@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 类名：公告管理服务接口 - AnnouncementController
+ * 类名：里程碑管理服务接口 - AnnouncementController
  * 功能描述： 公告管理服务接口
  * 输入参数：NULL
  * 返回值：NULL
