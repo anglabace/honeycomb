@@ -37,7 +37,7 @@ public class MilestoneSQL {
         String result = new SQL() {
             {
                 SELECT("id ,title ,synopsis ,author ,creattime ,readtime ,filename ,filepath ,imgurl ,buttongroup ");
-                FROM("CS_Milestone WHERE ");
+                FROM("CS_Milestone ");
             }
         }.toString();
         //判断添加请求条件
@@ -125,6 +125,8 @@ public class MilestoneSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {

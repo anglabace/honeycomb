@@ -155,6 +155,40 @@ public class BackgroundServiceController {
     }
 
     /**
+     * 函数名：按照时间倒叙获取后台服务详情 - getBackgroundServicesDescOrderBy（）
+     * 功能描述：按照时间倒叙获取后台服务详情
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：map
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 创建日期：2019-12-24
+     * 修改人：
+     * 级别：null
+     * 修改日期：
+     */
+    @RequestMapping(value = "/getBackgroundServicesDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getBackgroundServicesDescOrderBy() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<BackgroundService> returnBackgroundService = null;
+        try {
+            //根据条件查询
+            returnBackgroundService = backgroundService.getBackgroundServicesDescOrderBy();
+        } catch (Exception e) {
+            //报错信息，错误信息插入日志表
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "获取后台服务信息异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        //返回成功信息
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "获取后台服务信息成功！");
+        map.put("RTDATA", returnBackgroundService);
+        return map;
+    }
+
+    /**
      * 函数名：注册后台服务 - insertBackgroundService（）
      * 功能描述：注册后台服务
      * 输入参数：<按照参数定义顺序>

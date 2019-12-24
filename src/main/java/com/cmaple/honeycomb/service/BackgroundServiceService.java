@@ -61,6 +61,22 @@ public class BackgroundServiceService {
     }
 
     /**
+     * 函数名：查询函数-按照时间倒叙获取后台服务详情 - getBackgroundServicesDescOrderBy（）
+     * 功能描述： 按照时间倒叙获取后台服务详情
+     * <p>
+     * 返回值：List<BackgroundService>
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-12-24
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    public List<BackgroundService> getBackgroundServicesDescOrderBy() {
+        return backgroundServiceMapper.queryBackgroundServicesDescOrderBy();
+    }
+
+    /**
      * 函数名：插入函数-插入后台服务信息 - insertBackgroundService（）
      * 功能描述： 插入后台服务信息
      *

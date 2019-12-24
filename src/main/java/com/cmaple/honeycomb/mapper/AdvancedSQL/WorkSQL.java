@@ -37,7 +37,7 @@ public class WorkSQL {
         String result = new SQL() {
             {
                 SELECT("id ,title ,place ,type ,nature ,content ,createuser ,creatdate ,need ,application ");
-                FROM("CS_Work WHERE ");
+                FROM("CS_Work ");
             }
         }.toString();
         if (0 != list.size()) {
@@ -66,7 +66,7 @@ public class WorkSQL {
     public String queryWorkDescOrderBy() {
         String result = new SQL() {
             {
-                SELECT("id ,title ,place ,type ,creatdate ");
+                SELECT("id ,title ,place ,type ,nature ,creatdate ,need ");
                 FROM("CS_Work ");
             }
         }.toString();
@@ -97,6 +97,8 @@ public class WorkSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {

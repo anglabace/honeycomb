@@ -41,7 +41,7 @@ public class BackgroundServiceSQL {
         String result = new SQL() {
             {
                 SELECT("id ,serviceid ,name ,synopsis ,version ,path ,route ,size ,proglanguage ,receivetype ,author ,upusername ,createdate ,serverid ,servicestate ,annexepath ");
-                FROM("CS_BackgroundService WHERE ");
+                FROM("CS_BackgroundService ");
             }
         }.toString();
         //判断添加请求条件
@@ -52,6 +52,31 @@ public class BackgroundServiceSQL {
         result = SqlTool.getSqlTool().sqlPutOrderBy(result, "id");
         //添加分页
         result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
+        return result;
+    }
+
+    /**
+     * 函数名：复杂查询函数-按照时间倒叙获取后台服务详情- queryBackgroundServicesDescOrderBy（）
+     * 功能描述： 按照时间倒叙获取后台服务详情
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-12-24
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    public String queryBackgroundServicesDescOrderBy() {
+        String result = new SQL() {
+            {
+                SELECT("id ,name ,createdate ");
+                FROM("CS_BackgroundService ");
+            }
+        }.toString();
+        //添加排序
+        result = SqlTool.getSqlTool().sqlPutOrderBy(result, "createdate");
         return result;
     }
 
@@ -77,6 +102,8 @@ public class BackgroundServiceSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //服务状态
                 if ("servicestate".equals(list.get(i))) {

@@ -41,7 +41,7 @@ public class OperationLogSQL {
         String result = new SQL() {
             {
                 SELECT("id ,serialnumber ,date ,operator ,logstype ,operatetype ,content");
-                FROM("CS_OperationLog WHERE ");
+                FROM("CS_OperationLog ");
             }
         }.toString();
         //判断添加请求条件
@@ -106,6 +106,8 @@ public class OperationLogSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //添加条件
                 if ("operator".equals(list.get(i))) {

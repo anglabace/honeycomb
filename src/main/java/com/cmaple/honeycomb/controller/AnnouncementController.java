@@ -154,6 +154,47 @@ public class AnnouncementController {
     }
 
     /**
+     * 函数名：查询函数 - 按照时间倒叙分页查询公告信息 - getAnnouncementDescOrderBy（）
+     * 功能描述： 按照时间倒叙分页查询公告信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param page int类型的页数
+     *             返回值：map
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             创建日期：2019-12-24
+     *             修改人：
+     *             修改日期：
+     */
+    @RequestMapping(value = "/getAnnouncementDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> getAnnouncementDescOrderBy(
+            @RequestParam(value = "page", required = true) int page
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> datamap = new HashMap<String, Object>();
+        List<Announcement> returnannouncement = null;
+        int total = 0;
+        try {
+            //查询公告信息
+            returnannouncement = announcementService.getAnnouncementDescOrderBy(ParamsTools.getPageTools().getPageByNum(page, 20), 20);
+            total = announcementService.getAnnouncementCount();
+            datamap.put("total", total);
+            datamap.put("data", returnannouncement);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //报错信息，错误信息插入日志表
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "按照时间倒叙分页查询公告信息交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "获取公告信息成功！");
+        map.put("RTDATA", datamap);
+        return map;
+    }
+
+    /**
      * 函数名：查询函数 - 只查询5个最后日期的公告 - getAnnouncementAtHome（）
      * 功能描述：只查询5个最后日期的公告
      * 输入参数：<按照参数定义顺序>

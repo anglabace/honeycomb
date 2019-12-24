@@ -41,7 +41,7 @@ public class TimeAxisSQL {
         String result = new SQL() {
             {
                 SELECT("id ,title ,content ,eventdate ,createuser ,createdate ");
-                FROM("CS_TimeAxis WHERE ");
+                FROM("CS_TimeAxis ");
             }
         }.toString();
         //判断添加请求条件
@@ -102,6 +102,8 @@ public class TimeAxisSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //时间范围
                 if ("timeaxisdate".equals(list.get(i))) {

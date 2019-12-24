@@ -32,7 +32,7 @@ public interface BackgroundServiceMapper extends BaseMapper<BackgroundService> {
      * @param params 字段及数值集合
      * @param page   分页查询PAGE条件
      * @param num    分页查询NUM条件
-     *               返回值：list<User>
+     *               返回值：list<BackgroundService>
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-09-30
@@ -42,4 +42,21 @@ public interface BackgroundServiceMapper extends BaseMapper<BackgroundService> {
      */
     @SelectProvider(type = BackgroundServiceSQL.class, method = "queryBackgroundServicesByParams")
     List<BackgroundService> queryBackgroundServicesByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
+
+    /**
+     * 函数名：复杂查询函数-按照时间倒叙获取后台服务详情- queryBackgroundServicesByParams（）
+     * 功能描述： 按照时间倒叙获取后台服务详情
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：List<BackgroundService>
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-12-24
+     * 修改人：
+     * 级别：普通用户
+     * 日期：
+     */
+    @SelectProvider(type = BackgroundServiceSQL.class, method = "queryBackgroundServicesDescOrderBy")
+    List<BackgroundService> queryBackgroundServicesDescOrderBy();
+
 }

@@ -41,13 +41,42 @@ public class AnnouncementSQL {
         String result = new SQL() {
             {
                 SELECT("id ,announcementid ,title ,synopsis ,content ,author ,creattime ,readtime ,footer ");
-                FROM("CS_Announcement WHERE ");
+                FROM("CS_Announcement ");
             }
         }.toString();
         //判断添加请求条件
         if (0 != list.size()) {
             result = sqlAnnouncementPutAnd(result, list, params);
         }
+        //添加排序
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creattime");
+        //添加分页
+        result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
+        return result;
+    }
+
+    /**
+     * 函数名：复杂查询函数-按照时间倒叙分页查询公告信息- queryAnnouncementDescOrderBy（）
+     * 功能描述： 按照时间倒叙分页查询公告信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param page 分页查询PAGE条件
+     * @param num  分页查询NUM条件
+     *             返回值：String
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             日期：2019-12-24
+     *             修改人：
+     *             级别：普通用户
+     *             日期：
+     */
+    public String queryAnnouncementDescOrderBy(@Param("page") int page, @Param("num") int num) {
+        String result = new SQL() {
+            {
+                SELECT("id ,title ,synopsis ,creattime ,readtime ");
+                FROM("CS_Announcement ");
+            }
+        }.toString();
         //添加排序
         result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creattime");
         //添加分页
@@ -104,6 +133,8 @@ public class AnnouncementSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {

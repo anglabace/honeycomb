@@ -44,6 +44,25 @@ public interface AnnouncementMapper extends BaseMapper<Announcement> {
     List<Announcement> queryAnnouncementByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
+     * 函数名：复杂查询函数-按照时间倒叙分页查询公告信息- queryAnnouncementDescOrderBy（）
+     * 功能描述： 按照时间倒叙分页查询公告信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param page 分页查询PAGE条件
+     * @param num  分页查询NUM条件
+     *             返回值：list<Announcement>
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             日期：2019-12-24
+     *             修改人：
+     *             级别：普通用户
+     *             日期：
+     */
+    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementDescOrderBy")
+    List<Announcement> queryAnnouncementDescOrderBy(@Param("page") int page, @Param("num") int num);
+
+
+    /**
      * 函数名：复杂查询函数-主页查询，只查看日期倒叙的前五条数据- queryAnnouncementAtHome（）
      * 功能描述： 主页查询，只查看日期倒叙的前五条数据
      * 输入参数：<按照参数定义顺序>

@@ -65,6 +65,24 @@ public class AnnouncementService {
     }
 
     /**
+     * 函数名：查询函数-按照时间倒叙分页查询公告信息 - getAnnouncementDescOrderBy（）
+     * 功能描述： 按照时间倒叙分页查询公告信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param page 分页查询PAGE条件
+     * @param num  分页查询NUM条件
+     *             返回值：List<Announcement>
+     *             异    常：无
+     *             创建人：CMAPLE
+     *             日期：2019-12-24
+     *             修改人：
+     *             日期：
+     */
+    public List<Announcement> getAnnouncementDescOrderBy(int page, int num) {
+        return announcementMapper.queryAnnouncementDescOrderBy(page, num);
+    }
+
+    /**
      * 函数名：查询函数-主页查询，只查看日期倒叙的前五条数据 - getAnnouncementAtHome（）
      * 功能描述： 主页查询，只查看日期倒叙的前五条数据
      * 输入参数：<按照参数定义顺序>
@@ -78,6 +96,22 @@ public class AnnouncementService {
      */
     public List<Announcement> getAnnouncementAtHome() {
         return announcementMapper.queryAnnouncementAtHome();
+    }
+
+    /**
+     * 函数名：查询函数-查询公告总数量 - getAnnouncementCount（）
+     * 功能描述： 查询公告总数量
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：int
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 日期：2019-12-24
+     * 修改人：
+     * 日期：
+     */
+    public int getAnnouncementCount() {
+        return announcementMapper.selectCount(null);
     }
 
     /**

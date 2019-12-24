@@ -38,7 +38,7 @@ public class ReportSQL {
         String result = new SQL() {
             {
                 SELECT("id ,title ,reporttype ,creatdate ");
-                FROM("CS_Report WHERE ");
+                FROM("CS_Report ");
             }
         }.toString();
         //添加排序
@@ -63,7 +63,7 @@ public class ReportSQL {
         String result = new SQL() {
             {
                 SELECT("id ,title ,reportid ,reporttype ,author ,creatdate ,filename ,filepath ");
-                FROM("CS_Report WHERE ");
+                FROM("CS_Report ");
             }
         }.toString();
         if (0 != list.size()) {
@@ -98,6 +98,8 @@ public class ReportSQL {
                 //添加AND
                 if (i > 0) {
                     result += " AND ";
+                } else {
+                    result += " WHERE ";
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {
