@@ -640,4 +640,59 @@ public class FileSelect implements FilenameFilter {
         bufferedOutputStream.flush();
     }
 
+    /**
+     * 函数名：工具函数- 读取文件将文件读取为string - readFile（）
+     * 功能描述： 读取文件将文件读取为string
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param filePath String类型的文件原来路径
+     * @param fileName String类型的文件名
+     *                 返回值：Map<String, Object>
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-12-25
+     *                 修改人：
+     *                 级别：NULL
+     *                 修改日期：
+     */
+    public Map<String, Object> readFile(String filePath, String fileName) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (!new File(filePath + "/" + fileName).exists()) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "文件目录错误！请输入正确的文件目录！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        if (new File(filePath + "/" + fileName).isDirectory()) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "目录为文件夹，不可以复制!");
+            map.put("RTDATA", null);
+            return map;
+        }
+        String returndata = "";
+        try {
+            FileReader fileReader = new FileReader(filePath + "/" + fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line = bufferedReader.readLine();
+            returndata = returndata + line;
+            while (line != null) {
+                line = bufferedReader.readLine();
+                returndata = returndata + line;
+            }
+            //关闭流
+            fileReader.close();
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("RTCODE", "Exception");
+            map.put("RTMSG", "读取文件内容交易异常！请联系管理员！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "文件读取成功！");
+        map.put("RTDATA", returndata);
+        return map;
+    }
+
 }

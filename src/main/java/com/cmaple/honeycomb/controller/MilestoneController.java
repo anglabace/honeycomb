@@ -59,23 +59,26 @@ public class MilestoneController {
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询里程碑信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
+        Map<String, Object> datamap = new HashMap<String, Object>();
         Milestone returnmilestone = null;
         try {
-            //查询公告信息
+            //查询里程碑信息信息
             returnmilestone = milestoneService.queryMilestoneById(id);
             if (null == returnmilestone) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的里程碑信息！");
                 map.put("RTDATA", null);
+                return map;
+            }
+            //处理里程碑信息
+            Map<String, Object> upmap = FileSelect.getFileSelect().readFile("/Users/congfeng/Downloads/test/milestone1", "milestone20191121.txt");
+            if (upmap.get("RTCODE").equals("success")) {
+                datamap.put("content", upmap.get("RTDATA"));
+                datamap.put("data", returnmilestone);
+            } else {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "根据ID号查询里程碑内容 - 读取文件内容异常！");
+                map.put("RTDATA", upmap.get("RTDATA"));
                 return map;
             }
         } catch (Exception e) {
@@ -88,7 +91,7 @@ public class MilestoneController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取里程碑信息成功！");
-        map.put("RTDATA", returnmilestone);
+        map.put("RTDATA", datamap);
         return map;
     }
 

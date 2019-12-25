@@ -71,7 +71,7 @@ public class BackgroundServiceSQL {
     public String queryBackgroundServicesDescOrderBy() {
         String result = new SQL() {
             {
-                SELECT("id ,name ,createdate ");
+                SELECT("id ,name ,synopsis ,createdate ");
                 FROM("CS_BackgroundService ");
             }
         }.toString();
