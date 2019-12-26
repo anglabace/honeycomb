@@ -677,7 +677,9 @@ public class FileSelect implements FilenameFilter {
             returndata = returndata + line;
             while (line != null) {
                 line = bufferedReader.readLine();
-                returndata = returndata + line;
+                if (line != null) {
+                    returndata = returndata + line;
+                }
             }
             //关闭流
             fileReader.close();

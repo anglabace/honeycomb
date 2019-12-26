@@ -40,7 +40,7 @@ public class AnnouncementSQL {
     public String queryAnnouncementByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,announcementid ,title ,synopsis ,content ,author ,creattime ,readtime ,footer ");
+                SELECT("id ,title ,synopsis ,filename ,filepath ,author ,creattime ,readtime ");
                 FROM("CS_Announcement ");
             }
         }.toString();
@@ -142,12 +142,11 @@ public class AnnouncementSQL {
                 }
                 //全文搜索
                 if ("search".equals(list.get(i))) {
-                    result += " ( announcementid LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or title LIKE '%" + params.get(list.get(i)) + "%' " +
+                    result += " ( title LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or filename LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or filepath LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or synopsis LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or content LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or author LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or footer LIKE '%" + params.get(list.get(i)) + "%' ) ";
+                            "or author LIKE '%" + params.get(list.get(i)) + "%' ) ";
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.cmaple.honeycomb.model.BackgroundService;
 import com.cmaple.honeycomb.model.ToolsFile;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.BackgroundServiceService;
+import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.FileSelect;
 import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class BackgroundServiceController {
     //引入BackgroundService
     @Autowired
     private BackgroundServiceService backgroundService;
+    //引入userservice
+    @Autowired
+    private UserService userService;
     @Autowired
     private HttpServletRequest request;
 
@@ -121,15 +125,8 @@ public class BackgroundServiceController {
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> datamap = new HashMap<String, Object>();
         HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在注册后台服务！");
-            map.put("RTDATA", null);
-            return map;
-        }
         BackgroundService returnBackgroundService = null;
         try {
             //根据条件查询
@@ -138,6 +135,20 @@ public class BackgroundServiceController {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的后台服务！");
                 map.put("RTDATA", null);
+                return map;
+            }
+            //处理公告信息
+            User user = userService.getUserByTelephonenumber(returnBackgroundService.getAuthor());
+            returnBackgroundService.setAuthor(user.getPetname());
+            //读取文件内容
+            Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnBackgroundService.getAnnexepath() + "/" + returnBackgroundService.getName() + "/" + returnBackgroundService.getVersion(), "backgroundservice.txt");
+            if (upmap.get("RTCODE").equals("success")) {
+                datamap.put("content", upmap.get("RTDATA"));
+                datamap.put("data", returnBackgroundService);
+            } else {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "根据ID号查询里程碑内容 - 读取文件内容异常！");
+                map.put("RTDATA", upmap.get("RTDATA"));
                 return map;
             }
         } catch (Exception e) {
@@ -150,7 +161,7 @@ public class BackgroundServiceController {
         //返回成功信息
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取后台服务信息成功！");
-        map.put("RTDATA", returnBackgroundService);
+        map.put("RTDATA", datamap);
         return map;
     }
 

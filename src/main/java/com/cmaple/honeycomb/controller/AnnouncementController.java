@@ -3,13 +3,15 @@ package com.cmaple.honeycomb.controller;
 import com.cmaple.honeycomb.model.Announcement;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.AnnouncementService;
-import com.cmaple.honeycomb.tools.FormatTime;
+import com.cmaple.honeycomb.service.UserService;
+import com.cmaple.honeycomb.tools.FileSelect;
 import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,6 +38,9 @@ public class AnnouncementController {
     //引入userservice
     @Autowired
     private AnnouncementService announcementService;
+    //引入userservice
+    @Autowired
+    private UserService userService;
     @Autowired
     private HttpServletRequest request;
 
@@ -58,15 +63,8 @@ public class AnnouncementController {
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> datamap = new HashMap<String, Object>();
         HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         Announcement returnannouncement = null;
         try {
             //查询公告信息
@@ -75,6 +73,19 @@ public class AnnouncementController {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的公告！");
                 map.put("RTDATA", null);
+                return map;
+            }
+            //处理公告信息
+            User user = userService.getUserByTelephonenumber(returnannouncement.getAuthor());
+            returnannouncement.setAuthor(user.getPetname());
+            Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnannouncement.getFilepath(), returnannouncement.getFilename());
+            if (upmap.get("RTCODE").equals("success")) {
+                datamap.put("content", upmap.get("RTDATA"));
+                datamap.put("data", returnannouncement);
+            } else {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "根据ID号查询里程碑内容 - 读取文件内容异常！");
+                map.put("RTDATA", upmap.get("RTDATA"));
                 return map;
             }
         } catch (Exception e) {
@@ -87,7 +98,7 @@ public class AnnouncementController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取公告信息成功！");
-        map.put("RTDATA", returnannouncement);
+        map.put("RTDATA", datamap);
         return map;
     }
 
@@ -235,9 +246,10 @@ public class AnnouncementController {
      *
      * @param title    String类型的标题
      * @param synopsis String类型的简介
-     * @param content  String类型的内容，JSON格式
+     * @param filename String类型的文件名
+     * @param filepath String类型的文件路径
+     * @param file     MultipartFile类型的文件
      * @param readtime String类型的阅读时间
-     * @param footer   String类型的页尾内容，JSON格式
      *                 返回值：map
      *                 异    常：无
      *                 创建人：CMAPLE
@@ -249,9 +261,10 @@ public class AnnouncementController {
     public Map<String, Object> insertAnnouncement(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "synopsis", required = true) String synopsis
-            , @RequestParam(value = "content", required = true) String content
+            , @RequestParam(value = "filename", required = true) String filename
+            , @RequestParam(value = "filepath", required = true) String filepath
+            , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "readtime", required = true) String readtime
-            , @RequestParam(value = "footer", required = true) String footer
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
@@ -264,7 +277,22 @@ public class AnnouncementController {
             return map;
         }
         Date insertdate = new Date();
-        Announcement announcement = new Announcement(0, "N001-" + FormatTime.getFormatTime().formatYMDToString(insertdate) + FormatTime.getFormatTime().formatHMSToString(insertdate), title, synopsis, content, sessionuser.getTelephonenumber(), insertdate, readtime, footer);
+        //上传公告文件
+        if ("success".equals(FileSelect.getFileSelect().checkFileExists(filepath, filename).get("RTCODE"))) {
+            Map<String, Object> upmap = FileSelect.getFileSelect().uploadFile(file, filepath, filename);
+            if (!"success".equals(upmap.get("RTCODE"))) {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "上传公告文件失败！请检查相关参数！");
+                map.put("RTDATA", upmap.toString());
+                return map;
+            }
+        } else {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "存在同名的里程碑文件！更改文件名或者删除同名文件方可继续！");
+            map.put("RTDATA", "文件名：【" + filepath + "/" + filename + "】");
+            return map;
+        }
+        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, sessionuser.getTelephonenumber(), insertdate, readtime);
         try {
             int returnannouncement = announcementService.insertAnnouncement(announcement);
             if (1 == returnannouncement) {
@@ -292,29 +320,29 @@ public class AnnouncementController {
      * 功能描述：修改公告内容
      * 输入参数：<按照参数定义顺序>
      *
-     * @param id             int类型的id号
-     * @param announcementid String类型的编号
-     * @param title          String类型的标题
-     * @param synopsis       String类型的简介
-     * @param content        String类型的内容，JSON格式
-     * @param readtime       String类型的阅读时间
-     * @param footer         String类型的页尾内容，JSON格式
-     *                       返回值：map
-     *                       异    常：无
-     *                       创建人：CMAPLE
-     *                       创建日期：2019-11-18
-     *                       修改人：
-     *                       修改日期：
+     * @param id       int类型的id号
+     * @param title    String类型的标题
+     * @param synopsis String类型的简介
+     * @param filename String类型的文件名
+     * @param filepath String类型的文件路径
+     * @param file     MultipartFile类型的文件
+     * @param readtime String类型的阅读时间
+     *                 返回值：map
+     *                 异    常：无
+     *                 创建人：CMAPLE
+     *                 创建日期：2019-11-18
+     *                 修改人：
+     *                 修改日期：
      */
     @RequestMapping(value = "/updateAnnouncement", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> updateAnnouncement(
             @RequestParam(value = "id", required = true) int id
-            , @RequestParam(value = "announcementid", required = true) String announcementid
             , @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "synopsis", required = true) String synopsis
-            , @RequestParam(value = "content", required = true) String content
+            , @RequestParam(value = "filename", required = true) String filename
+            , @RequestParam(value = "filepath", required = true) String filepath
+            , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "readtime", required = true) String readtime
-            , @RequestParam(value = "footer", required = true) String footer
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
@@ -326,7 +354,7 @@ public class AnnouncementController {
             map.put("RTDATA", null);
             return map;
         }
-        Announcement announcement = new Announcement(id, announcementid, title, synopsis, content, sessionuser.getTelephonenumber(), null, readtime, footer);
+        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, sessionuser.getTelephonenumber(), null, readtime);
         try {
             int returnannouncement = announcementService.updateAnnouncement(announcement);
             if (1 == returnannouncement) {

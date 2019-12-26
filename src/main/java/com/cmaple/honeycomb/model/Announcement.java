@@ -41,13 +41,6 @@ public class Announcement {
     private int id;
 
     /**
-     * 公告编号
-     * 长度：12
-     * 是否为null：N
-     **/
-    private String announcementid;
-
-    /**
      * 公告标题
      * 长度：36
      * 是否为null：N
@@ -62,11 +55,18 @@ public class Announcement {
     private String synopsis;
 
     /**
-     * 公告内容
-     * 长度：254
+     * 公告文件名
+     * 长度：24
      * 是否为null：N
      **/
-    private String content;
+    private String filename;
+
+    /**
+     * 公告文件路径
+     * 长度：46
+     * 是否为null：N
+     **/
+    private String filepath;
 
     /**
      * 公告作者
@@ -88,11 +88,4 @@ public class Announcement {
      * 是否为null：N
      **/
     private String readtime;
-
-    /**
-     * 公告页尾内容
-     * 长度：254
-     * 是否为null：N
-     **/
-    private String footer;
 }

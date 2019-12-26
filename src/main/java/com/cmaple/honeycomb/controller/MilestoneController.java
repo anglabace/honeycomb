@@ -71,7 +71,7 @@ public class MilestoneController {
                 return map;
             }
             //处理里程碑信息
-            Map<String, Object> upmap = FileSelect.getFileSelect().readFile("/Users/congfeng/Downloads/test/milestone1", "milestone20191121.txt");
+            Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnmilestone.getFilepath(), returnmilestone.getFilename());
             if (upmap.get("RTCODE").equals("success")) {
                 datamap.put("content", upmap.get("RTDATA"));
                 datamap.put("data", returnmilestone);
