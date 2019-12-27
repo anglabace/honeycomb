@@ -2,6 +2,7 @@ package com.cmaple.honeycomb.controller;
 
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.model.Work;
+import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.service.WorkService;
 import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class WorkController {
     //引入userservice
     @Autowired
     private WorkService workService;
+    //引入userservice
+    @Autowired
+    private UserService userService;
     @Autowired
     private HttpServletRequest request;
 
@@ -65,6 +69,9 @@ public class WorkController {
                 map.put("RTDATA", null);
                 return map;
             }
+            //替换创建人员信息
+            User user = userService.getUserByTelephonenumber(returnwork.getCreateuser());
+            returnwork.setCreateuser(user.getPetname());
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表

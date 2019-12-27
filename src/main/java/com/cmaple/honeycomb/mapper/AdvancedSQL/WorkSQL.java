@@ -36,7 +36,7 @@ public class WorkSQL {
     public String queryWorkByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,title ,place ,type ,nature ,content ,createuser ,creatdate ,need ,application ");
+                SELECT("id ,title ,place ,type ,nature ,content ,createuser ,createdate ,need ,application ");
                 FROM("CS_Work ");
             }
         }.toString();
@@ -44,7 +44,7 @@ public class WorkSQL {
             result = sqlworkPutAnd(result, list, params);
         }
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creatdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createdate");
         //添加分页
         result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
         return result;
@@ -66,12 +66,12 @@ public class WorkSQL {
     public String queryWorkDescOrderBy() {
         String result = new SQL() {
             {
-                SELECT("id ,title ,place ,type ,nature ,creatdate ,need ");
+                SELECT("id ,title ,place ,type ,nature ,createdate ,need ");
                 FROM("CS_Work ");
             }
         }.toString();
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creatdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createdate");
         return result;
     }
 
@@ -102,7 +102,7 @@ public class WorkSQL {
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {
-                    result += " DATE_FORMAT( creatdate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( creatdate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                    result += " DATE_FORMAT( createdate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createdate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 //全文搜索
                 if ("search".equals(list.get(i))) {
@@ -112,7 +112,7 @@ public class WorkSQL {
                             "or nature LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or content LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or createuser LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or creatdate LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or createdate LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or need LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or application LIKE '%" + params.get(list.get(i)) + "%' ) ";
                 }
