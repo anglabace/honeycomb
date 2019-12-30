@@ -93,6 +93,12 @@ public class JobApplication {
      **/
     private String information;
     /**
+     * 申请日期
+     * 长度：24
+     * 是否为null：Y
+     **/
+    private Date createDate;
+    /**
      * 是否通过申请
      * 长度：24
      * 是否为null：Y
@@ -103,7 +109,7 @@ public class JobApplication {
      * 长度：24
      * 是否为null：Y
      **/
-    private boolean applicationUser;
+    private String applicationUser;
     /**
      * 审核日期
      * 长度：24

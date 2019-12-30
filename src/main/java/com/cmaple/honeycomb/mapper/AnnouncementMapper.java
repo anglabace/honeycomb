@@ -17,64 +17,66 @@ import java.util.Map;
  * 异    常：无
  * 创建人：CMAPLE
  * 创建日期：2019-11-11
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 public interface AnnouncementMapper extends BaseMapper<Announcement> {
 
     /**
-     * 函数名：复杂查询函数-根据条件查询公告信息- queryAnnouncementByParams（）
+     * 函数名：select函数-根据条件查询公告信息- selectByCriteria（）
      * 功能描述： 根据条件查询公告信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：list<Announcement>
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-11-18
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementByParams")
-    List<Announcement> queryAnnouncementByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
+    @SelectProvider(type = AnnouncementSQL.class, method = "selectByCriteria")
+    List<Announcement> selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
-     * 函数名：复杂查询函数-按照时间倒叙分页查询公告信息- queryAnnouncementDescOrderBy（）
+     * 函数名：select函数-根据条件查询公告总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询公告总数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：int
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-12-30
+     */
+    @SelectProvider(type = AnnouncementSQL.class, method = "selectCountByCriteria")
+    int selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
+
+    /**
+     * 函数名：select函数-按照时间倒叙分页查询公告信息- selectDescOrderByTime（）
      * 功能描述： 按照时间倒叙分页查询公告信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param page 分页查询PAGE条件
-     * @param num  分页查询NUM条件
+     * @param page int类型的页数
+     * @param num  int类型的数量
      *             返回值：list<Announcement>
      *             异    常：无
      *             创建人：CMAPLE
      *             日期：2019-12-24
-     *             修改人：
-     *             级别：普通用户
-     *             日期：
      */
-    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementDescOrderBy")
-    List<Announcement> queryAnnouncementDescOrderBy(@Param("page") int page, @Param("num") int num);
-
+    @SelectProvider(type = AnnouncementSQL.class, method = "selectDescOrderByTime")
+    List<Announcement> selectDescOrderByTime(@Param("page") int page, @Param("num") int num);
 
     /**
-     * 函数名：复杂查询函数-主页查询，只查看日期倒叙的前五条数据- queryAnnouncementAtHome（）
-     * 功能描述： 主页查询，只查看日期倒叙的前五条数据
+     * 函数名：复杂查询函数-主页查询公告列表- selectAtHomePage（）
+     * 功能描述： 主页查询公告列表
      * 输入参数：<按照参数定义顺序>
      * <p>
      * 返回值：list<Announcement>
      * 异    常：无
      * 创建人：CMAPLE
      * 日期：2019-11-18
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
      */
-    @SelectProvider(type = AnnouncementSQL.class, method = "queryAnnouncementAtHome")
-    List<Announcement> queryAnnouncementAtHome();
+    @SelectProvider(type = AnnouncementSQL.class, method = "selectAtHomePage")
+    List<Announcement> selectAtHomePage();
 }

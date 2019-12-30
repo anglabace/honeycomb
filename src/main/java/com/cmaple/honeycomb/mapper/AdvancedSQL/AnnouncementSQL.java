@@ -8,36 +8,30 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：公告模块复杂sql拼接类 - AnnouncementSQL
+ * 类名：公告模块查询sql拼接类 - AnnouncementSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
  * 异    常：无
  * 创建人：CMAPLE
  * 创建日期：2019-12-17
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 public class AnnouncementSQL {
     /**
-     * 函数名：复杂查询函数-根据条件查询后公告列表- queryAnnouncementByParams（）
+     * 函数名：select函数-根据条件查询后公告列表- selectByCriteria（）
      * 功能描述： 根据条件查询后公告列表
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：String
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-11-18
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    public String queryAnnouncementByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
+    public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
                 SELECT("id ,title ,synopsis ,filename ,filepath ,author ,creattime ,readtime ");
@@ -46,7 +40,7 @@ public class AnnouncementSQL {
         }.toString();
         //判断添加请求条件
         if (0 != list.size()) {
-            result = sqlAnnouncementPutAnd(result, list, params);
+            result = sqlPutAnd(result, list, params);
         }
         //添加排序
         result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creattime");
@@ -56,21 +50,44 @@ public class AnnouncementSQL {
     }
 
     /**
-     * 函数名：复杂查询函数-按照时间倒叙分页查询公告信息- queryAnnouncementDescOrderBy（）
+     * 函数名：select函数-根据条件查询公告总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询公告总数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：String
+     *               异    常：无
+     *               创建人：CMAPLE
+     *               日期：2019-12-30
+     */
+    public String selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
+        String result = new SQL() {
+            {
+                SELECT("COUNT(*) ");
+                FROM("CS_Announcement ");
+            }
+        }.toString();
+        //判断添加请求条件
+        if (0 != list.size()) {
+            result = sqlPutAnd(result, list, params);
+        }
+        return result;
+    }
+
+    /**
+     * 函数名：select函数-按照时间倒叙分页查询公告信息- selectDescOrderByTime（）
      * 功能描述： 按照时间倒叙分页查询公告信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param page 分页查询PAGE条件
-     * @param num  分页查询NUM条件
+     * @param page int类型的页数
+     * @param num  int类型的数量
      *             返回值：String
      *             异    常：无
      *             创建人：CMAPLE
      *             日期：2019-12-24
-     *             修改人：
-     *             级别：普通用户
-     *             日期：
      */
-    public String queryAnnouncementDescOrderBy(@Param("page") int page, @Param("num") int num) {
+    public String selectDescOrderByTime(@Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
                 SELECT("id ,title ,synopsis ,creattime ,readtime ");
@@ -85,19 +102,15 @@ public class AnnouncementSQL {
     }
 
     /**
-     * 函数名：复杂查询函数-主页查询，只查看日期倒叙的前五条数据- queryAnnouncementAtHome（）
-     * 功能描述： 主页查询，只查看日期倒叙的前五条数据
+     * 函数名：select函数-主页查询公告列表- selectAtHomePage（）
+     * 功能描述： 主页查询公告列表
      * 输入参数：<按照参数定义顺序>
-     * <p>
      * 返回值：String
      * 异    常：无
      * 创建人：CMAPLE
      * 日期：2019-11-18
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
      */
-    public String queryAnnouncementAtHome() {
+    public String selectAtHomePage() {
         String result = new SQL() {
             {
                 SELECT("id ,title ,creattime ");
@@ -116,9 +129,9 @@ public class AnnouncementSQL {
      * 功能描述： 后台服务查询添加其他条件
      * 输入参数：<按照参数定义顺序>
      *
-     * @param result 条件列表
-     * @param list   字段及数值集合
-     * @param params 字段及数值集合
+     * @param result string类型的查询语句
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
      *               返回值：string
      *               异    常：无
      *               创建人：CMAPLE
@@ -127,7 +140,7 @@ public class AnnouncementSQL {
      *               级别：普通用户
      *               日期：
      */
-    private String sqlAnnouncementPutAnd(String result, List<String> list, Map<String, Object> params) {
+    private String sqlPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if (params.containsKey(list.get(i))) {
                 //添加AND

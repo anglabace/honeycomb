@@ -18,9 +18,6 @@ import java.util.Date;
  * 异    常：无
  * 创建人：CMAPLE
  * 创建日期：2019-09-17
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 
 @Data //给实体提供读写属性, 此外还提供了 equals()、hashCode()、toString() 方法
