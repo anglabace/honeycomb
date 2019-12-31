@@ -30,8 +30,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/BackgroundService")
 public class BackgroundServiceController {
-
-
     /**
      * 引入BackgroundServiceService
      */

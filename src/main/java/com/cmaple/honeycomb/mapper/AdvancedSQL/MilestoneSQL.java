@@ -50,6 +50,32 @@ public class MilestoneSQL {
     }
 
     /**
+     * 函数名：select函数-根据条件查询里程碑总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询里程碑总数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：String
+     *               异    常：NULL
+     *               创建人：CMAPLE
+     *               日期：2019-12-31
+     */
+    public String selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
+        String result = new SQL() {
+            {
+                SELECT("COUNT(*) ");
+                FROM("CS_Milestone ");
+            }
+        }.toString();
+        //判断添加请求条件
+        if (0 != list.size()) {
+            result = sqlPutAnd(result, list, params);
+        }
+        return result;
+    }
+
+    /**
      * 函数名：select函数-主页查询里程碑列表- selectAtHomePage（）
      * 功能描述：主页查询里程碑列表
      * 输入参数：<按照参数定义顺序>

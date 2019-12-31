@@ -99,23 +99,23 @@ public class UserSQL {
                     result += " WHERE ";
                 }
                 if ("usertype".equals(list.get(i))) {
-                    result += " WHERE usertype = '" + params.get(list.get(i)) + "'";
+                    result += " usertype = '" + params.get(list.get(i)) + "'";
                 }
                 if ("useraffairs".equals(list.get(i))) {
-                    result += " and useraffairs = '" + params.get(list.get(i)) + "'";
+                    result += " useraffairs = '" + params.get(list.get(i)) + "'";
                 }
                 if ("timeaxisdate".equals(list.get(i))) {
-                    result += " and DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                    result += " DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 if ("content".equals(list.get(i))) {
-                    result += " and idcard LIKE '%" + params.get(list.get(i)) + "%' " +
+                    result += " ( idcard LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or name LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or useraddress LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or telephonenumber LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or useremail LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or petname LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or commonip LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or lastplace LIKE '%" + params.get(list.get(i)) + "%'";
+                            "or lastplace LIKE '%" + params.get(list.get(i)) + "%' ) ";
                 }
             }
         }
