@@ -8,37 +8,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：岗位申请模块复杂sql拼接类 - AnnouncementSQL
- * 功能描述：
+ * 类名：岗位申请模块sql拼接类 - JobApplicationSQL
+ * 功能描述：NULL
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：CMAPLE
  * 创建日期：2019-12-30
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 public class JobApplicationSQL {
 
     /**
-     * 函数名：复杂查询函数-根据条件查询后公告列表- queryJobApplicationByParams（）
-     * 功能描述： 根据条件查询后公告列表
+     * 函数名：select函数-根据条件查询岗位申请列表- selectByCriteria（）
+     * 功能描述： 根据条件查询岗位申请列表
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：String
-     *               异    常：无
+     *               异    常：NULL
      *               创建人：CMAPLE
      *               日期：2019-12-30
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    public String queryJobApplicationByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
+    public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
                 SELECT("id ,workId ,name ,phonenNmber ,emaile ,address ,company ,githubUrl ,personelUrl ,information ,createDate ,idpassed ,applicationUser ,applicationDate ");
@@ -47,7 +41,7 @@ public class JobApplicationSQL {
         }.toString();
         //判断添加请求条件
         if (0 != list.size()) {
-            result = sqlJobApplicationPutAnd(result, list, params);
+            result = sqlPutAnd(result, list, params);
         }
         //添加排序
         result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createDate");
@@ -57,21 +51,18 @@ public class JobApplicationSQL {
     }
 
     /**
-     * 函数名：复杂查询函数-根据条件查询后公告列表- queryJobApplicationCountByParams（）
-     * 功能描述： 根据条件查询后公告列表
+     * 函数名：select函数-根据条件查询岗位申请总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询岗位申请总数
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
      *               返回值：String
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-12-30
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    public String queryJobApplicationCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
+    public String selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
         String result = new SQL() {
             {
                 SELECT(" COUNT(*) ");
@@ -80,28 +71,25 @@ public class JobApplicationSQL {
         }.toString();
         //判断添加请求条件
         if (0 != list.size()) {
-            result = sqlJobApplicationPutAnd(result, list, params);
+            result = sqlPutAnd(result, list, params);
         }
         return result;
     }
 
     /**
-     * 函数名：私有函数-公告查询添加其他条件- sqlJobApplicationPutAnd（）
-     * 功能描述： 后台服务查询添加其他条件
+     * 函数名：私有函数-查询添加其他条件- sqlPutAnd（）
+     * 功能描述： 查询添加其他条件
      * 输入参数：<按照参数定义顺序>
      *
-     * @param result 条件列表
-     * @param list   字段及数值集合
-     * @param params 字段及数值集合
+     * @param result String类型的sql语句
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
      *               返回值：string
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-12-30
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    private String sqlJobApplicationPutAnd(String result, List<String> list, Map<String, Object> params) {
+    private String sqlPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {
             if (params.containsKey(list.get(i))) {
                 //添加AND

@@ -11,53 +11,44 @@ import java.util.Map;
 
 /**
  * 类名：mybatis plus 映射用户接口 - UserMapper
- * 功能描述：
+ * 功能描述：NULL
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：CMAPLE
  * 创建日期：2019-01-16
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 public interface UserMapper extends BaseMapper<User> {
 
     /**
-     * 函数名：复杂查询函数-根据条件查询用户列别- queryUserByParams（）
-     * 功能描述： 根据相应条件查询符合条件的数据并返回
+     * 函数名：select函数-根据条件查询用户列表- selectByCriteria（）
+     * 功能描述： 根据条件查询用户列表
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：list<User>
-     *               异    常：无
+     *               异    常：NULL
      *               创建人：CMAPLE
      *               日期：2019-01-17
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    @SelectProvider(type = UserSQL.class, method = "usersBaseDatas")
-    List<User> queryUserByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
+    @SelectProvider(type = UserSQL.class, method = "selectByCriteria")
+    List<User> selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
-     * 函数名：复杂查询函数-根据条件查询用户数量- queryUserCountByParams（）
-     * 功能描述： 根据相应条件查询符合条件的数据并返回
+     * 函数名：select函数-根据条件查询用户总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询用户总数
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     *               返回值：INT
-     *               异    常：无
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：int
+     *               异    常：NULL
      *               创建人：CMAPLE
      *               日期：2019-01-17
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    @SelectProvider(type = UserSQL.class, method = "getUserCountByParams")
-    int queryUserCountByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
+    @SelectProvider(type = UserSQL.class, method = "selectCountByCriteria")
+    int selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
 }

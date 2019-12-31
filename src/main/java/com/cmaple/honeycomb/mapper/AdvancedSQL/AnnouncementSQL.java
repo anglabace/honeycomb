@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：公告模块查询sql拼接类 - AnnouncementSQL
+ * 类名：公告模块sql拼接类 - AnnouncementSQL
  * 功能描述：
  * 输入参数：NULL
  * 返回值：NULL
@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class AnnouncementSQL {
     /**
-     * 函数名：select函数-根据条件查询后公告列表- selectByCriteria（）
-     * 功能描述： 根据条件查询后公告列表
+     * 函数名：select函数-根据条件查询公告列表- selectByCriteria（）
+     * 功能描述： 根据条件查询公告列表
      * 输入参数：<按照参数定义顺序>
      *
      * @param list   List类型的条件列表
@@ -125,20 +125,17 @@ public class AnnouncementSQL {
     }
 
     /**
-     * 函数名：私有函数-公告查询添加其他条件- sqlAnnouncementPutAnd（）
-     * 功能描述： 后台服务查询添加其他条件
+     * 函数名：私有函数-查询添加其他条件- sqlPutAnd（）
+     * 功能描述： 查询添加其他条件
      * 输入参数：<按照参数定义顺序>
      *
-     * @param result string类型的查询语句
+     * @param result String类型的sql语句
      * @param list   List类型的条件列表
      * @param params Map类型的字段及数值集合
      *               返回值：string
      *               异    常：无
      *               创建人：CMAPLE
      *               日期：2019-11-18
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
     private String sqlPutAnd(String result, List<String> list, Map<String, Object> params) {
         for (int i = 0; i < list.size(); i++) {

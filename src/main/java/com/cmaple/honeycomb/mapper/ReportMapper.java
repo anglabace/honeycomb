@@ -11,49 +11,56 @@ import java.util.Map;
 
 /**
  * 类名：mybatis plus 映射调查报告接口 - ReportMapper
- * 功能描述：
+ * 功能描述：NULL
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：CMAPLE
  * 创建日期：2019-11-27
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 public interface ReportMapper extends BaseMapper<Report> {
     /**
-     * 函数名：复杂查询函数-根据条件查询调查报告信息信息- queryReportByParams（）
-     * 功能描述： 根据条件查询公告信息
+     * 函数名：select函数-根据条件查询调查报告信息- selectByCriteria（）
+     * 功能描述： 根据条件查询调查报告信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：list<Report>
-     *               异    常：无
+     *               异    常：NULL
      *               创建人：CMAPLE
      *               日期：2019-11-27
-     *               修改人：
-     *               级别：普通用户
-     *               日期：
      */
-    @SelectProvider(type = ReportSQL.class, method = "queryReportByParams")
-    List<Report> queryReportByParams(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
+    @SelectProvider(type = ReportSQL.class, method = "selectByCriteria")
+    List<Report> selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num);
 
     /**
-     * 函数名：复杂查询函数-按照时间倒叙查询调查报告- queryReportDescOrderBy（）
+     * 函数名：select函数-根据条件查询调查报告总数- selectCountByCriteria（）
+     * 功能描述： 根据条件查询调查报告总数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：int
+     *               异    常：NULL
+     *               创建人：CMAPLE
+     *               日期：2019-11-27
+     */
+    @SelectProvider(type = ReportSQL.class, method = "selectCountByCriteria")
+    int selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params);
+
+
+    /**
+     * 函数名：select函数-按照时间倒叙查询调查报告- selectDescOrderByTime（）
      * 功能描述： 按照时间倒叙查询调查报告
      * 输入参数：<按照参数定义顺序>
      * 返回值：list<Report>
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 日期：2019-11-27
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
      */
-    @SelectProvider(type = ReportSQL.class, method = "queryReportDescOrderBy")
-    List<Report> queryReportDescOrderBy();
+    @SelectProvider(type = ReportSQL.class, method = "selectDescOrderByTime")
+    List<Report> selectDescOrderByTime();
 }
