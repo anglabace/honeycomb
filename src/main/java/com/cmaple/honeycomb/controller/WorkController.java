@@ -16,53 +16,54 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 类名：岗位管理服务接口 - AnnouncementController
- * 功能描述： 岗位管理服务接口
+ * 类名：岗位管理服务控制器 - WorkController
+ * 功能描述： 岗位管理服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-12-06
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/Work")
 public class WorkController {
 
-    //引入userservice
+    /**
+     * 引入WorkService
+     */
     @Autowired
     private WorkService workService;
-    //引入userservice
+    /**
+     * 引入UserService
+     */
     @Autowired
     private UserService userService;
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
 
     /**
-     * 函数名：查询函数 - 根据ID号查询岗位信息 - getWorkById（）
+     * 函数名：select函数 - 根据ID号查询岗位信息 - selectById（）
      * 功能描述： 根据ID号查询岗位信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的id号
-     *           <p>
      *           返回值：map
      *           异    常：无
-     *           创建人：CMAPLE
+     *           创建人：NULL
      *           创建日期：2019-12-06
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/getWorkById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getWorkById(
+    @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         Work returnwork = null;
         try {
             //查询公告信息
-            returnwork = workService.getWorkById(id);
+            returnwork = workService.selectById(id);
             if (null == returnwork) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的岗位信息！");
@@ -70,7 +71,7 @@ public class WorkController {
                 return map;
             }
             //替换创建人员信息
-            User user = userService.getUserByTelephonenumber(returnwork.getCreateuser());
+            User user = userService.selectByTelephonenumber(returnwork.getCreateuser());
             returnwork.setCreateuser(user.getPetname());
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +88,7 @@ public class WorkController {
     }
 
     /**
-     * 函数名：查询函数 - 根据条件查询岗位信息 - getWorkByParams（）
+     * 函数名：select函数 - 根据条件查询岗位信息 - selectByCriteria（）
      * 功能描述： 根据条件查询岗位信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -95,16 +96,13 @@ public class WorkController {
      * @param timeaxisdate list类型的时间范围
      * @param page         int类型的页数
      * @param num          int类型的数量
-     *                     <p>
-     *                     返回值：void
-     *                     异    常：无
+     *                     返回值：Map
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-12-06
-     *                     修改人：
-     *                     修改日期：
      */
-    @RequestMapping(value = "/getWorkByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getWorkByParams(
+    @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
@@ -134,7 +132,7 @@ public class WorkController {
         List<Work> returnWork = null;
         try {
             //查询公告信息
-            returnWork = workService.getWorkByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returnWork = workService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -150,24 +148,21 @@ public class WorkController {
     }
 
     /**
-     * 函数名：查询函数 - 根据时间倒叙查询岗位信息 - getWorkDescOrderBy（）
+     * 函数名：select函数 - 根据时间倒叙查询岗位信息 - selectDescOrderByTime（）
      * 功能描述： 根据时间倒叙查询岗位信息
      * 输入参数：<按照参数定义顺序>
-     * <p>
-     * 返回值：void
-     * 异    常：无
+     * 返回值：Map
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-12-06
-     * 修改人：
-     * 修改日期：
      */
-    @RequestMapping(value = "/getWorkDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getWorkDescOrderBy() {
+    @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Work> returnWork = null;
         try {
             //查询公告信息
-            returnWork = workService.getWorkDescOrderBy();
+            returnWork = workService.selectDescOrderByTime();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -183,7 +178,7 @@ public class WorkController {
     }
 
     /**
-     * 函数名：插入函数 - 创建信息岗位信息 - insertWork（）
+     * 函数名：insert函数 - 创建信息岗位信息 - insert（）
      * 功能描述： 创建信息岗位信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -194,16 +189,13 @@ public class WorkController {
      * @param content     String类型的岗位内容
      * @param need        int类型的需求人数
      * @param application int类型的工作申请人数
-     *                    <p>
-     *                    返回值：void
-     *                    异    常：无
+     *                    返回值：Map
+     *                    异    常：NULL
      *                    创建人：CMAPLE
      *                    创建日期：2019-12-06
-     *                    修改人：
-     *                    修改日期：
      */
-    @RequestMapping(value = "/insertWork", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> insertWork(
+    @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "place", required = true) String place
             , @RequestParam(value = "type", required = true) String type
@@ -229,7 +221,7 @@ public class WorkController {
         try {
             //创建岗位信息
             Work insterWork = new Work(0, title, place, type, nature, content, sessionuser.getTelephonenumber(), insertdate, need, application);
-            int returnWork = workService.insertWork(insterWork);
+            int returnWork = workService.insert(insterWork);
             if (1 == returnWork) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "岗位信息创建成功！");
@@ -254,7 +246,7 @@ public class WorkController {
     }
 
     /**
-     * 函数名：修改函数 - 更新岗位信息 - updateWork（）
+     * 函数名：update函数 - 更新岗位信息 - update（）
      * 功能描述： 更新岗位信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -266,16 +258,13 @@ public class WorkController {
      * @param content     String类型的岗位内容
      * @param need        int类型的需求人数
      * @param application int类型的工作申请人数
-     *                    <p>
-     *                    返回值：void
-     *                    异    常：无
+     *                    返回值：Map
+     *                    异    常：NULL
      *                    创建人：CMAPLE
      *                    创建日期：2019-12-06
-     *                    修改人：
-     *                    修改日期：
      */
-    @RequestMapping(value = "/updateWork", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> updateWork(
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "place", required = true) String place
@@ -302,7 +291,7 @@ public class WorkController {
         try {
             //创建岗位信息
             Work insterWork = new Work(id, title, place, type, nature, content, sessionuser.getTelephonenumber(), insertdate, need, application);
-            int returnWork = workService.updateWork(insterWork);
+            int returnWork = workService.update(insterWork);
             if (1 == returnWork) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "岗位信息更新成功！");
@@ -327,21 +316,18 @@ public class WorkController {
     }
 
     /**
-     * 函数名：删除函数 - 删除岗位信息 - delWork（）
+     * 函数名：delete函数 - 删除岗位信息 - deleteById（）
      * 功能描述： 删除岗位信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的岗位id号
-     *           <p>
-     *           返回值：void
-     *           异    常：无
+     *           返回值：Map
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-12-06
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/delWork", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> delWork(
+    @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -356,7 +342,7 @@ public class WorkController {
         }
         //删除数据库信息记录
         try {
-            int isdel = workService.delWork(id);
+            int isdel = workService.deleteById(id);
             if (1 != isdel) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "删除岗位信息失败！");

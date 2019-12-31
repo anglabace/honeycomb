@@ -24,47 +24,47 @@ import java.io.FileInputStream;
 import java.util.*;
 
 /**
- * 类名：调查报告管理服务接口 - ReportController
- * 功能描述： 调查报告管理服务接口
+ * 类名：调查报告管理服务控制器 - ReportController
+ * 功能描述： 调查报告管理服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-11-27
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/Report")
 public class ReportController {
-
     /**
-     * 引入相关参数
+     * 引入ReportService
      */
     @Autowired
     private ReportService reportService;
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
+    /**
+     * 引入HttpServletResponse
+     */
     @Autowired
     private HttpServletResponse response;
 
     /**
-     * 函数名：查询函数 - 根据ID号查询调查报告 - getRequestById（）
+     * 函数名：select函数 - 根据ID号查询调查报告 - selectById（）
      * 功能描述： 根据ID号查询调查报告
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的id号
      *           <p>
      *           返回值：void
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-11-28
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/getRequestById", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void getRequestById(
+    @RequestMapping(value = "/selectById", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         HttpSession session = request.getSession();
@@ -73,7 +73,7 @@ public class ReportController {
         Report returnreport = null;
         try {
             //查询调查报告信息
-            returnreport = reportService.getReportById(id);
+            returnreport = reportService.selectById(id);
             // 设置信息给客户端
             String type = new MimetypesFileTypeMap().getContentType(returnreport.getFilename());
             // 设置contenttype，即告诉客户端所发送的数据属于什么类型
@@ -100,24 +100,21 @@ public class ReportController {
     }
 
     /**
-     * 函数名：查询函数 - 根据时间倒叙查询调查报告 - getReportDescOrderBy（）
+     * 函数名：select函数 - 根据时间倒叙查询调查报告 - selectDescOrderByTime（）
      * 功能描述： 根据时间倒叙查询调查报告
      * 输入参数：<按照参数定义顺序>
-     * <p>
-     * 返回值：void
-     * 异    常：无
+     * 返回值：Map
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-12-02
-     * 修改人：
-     * 修改日期：
      */
-    @RequestMapping(value = "/getReportDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getReportDescOrderBy() {
+    @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Report> returnReport = null;
         try {
             //查询公告信息
-            returnReport = reportService.getReportDescOrderBy();
+            returnReport = reportService.selectDescOrderByTime();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -133,24 +130,21 @@ public class ReportController {
     }
 
     /**
-     * 函数名：查询函数 - 页获取公告列表，调查报告以时间倒叙排列展示 - getReportByParams（）
-     * 功能描述： 页获取公告列表，调查报告以时间倒叙排列展示
+     * 函数名：select函数 - 根据条件查询调查报告信息 - selectByCriteria（）
+     * 功能描述： 根据条件查询调查报告信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param search       String类型的搜索内容
      * @param timeaxisdate list类型的时间范围
      * @param page         int类型的页数
      * @param num          int类型的数量
-     *                     <p>
-     *                     返回值：void
-     *                     异    常：无
+     *                     返回值：Map
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-28
-     *                     修改人：
-     *                     修改日期：
      */
-    @RequestMapping(value = "/getReportByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getReportByParams(
+    @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
@@ -180,7 +174,7 @@ public class ReportController {
         List<Report> returnReport = null;
         try {
             //查询公告信息
-            returnReport = reportService.getReportByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returnReport = reportService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -196,7 +190,7 @@ public class ReportController {
     }
 
     /**
-     * 函数名：插入函数 - 注册调查报告 - insertReport（）
+     * 函数名：insert函数 - 注册调查报告 - insert（）
      * 功能描述： 注册调查报告
      * 输入参数：<按照参数定义顺序>
      *
@@ -204,16 +198,13 @@ public class ReportController {
      * @param reporttype String类型的调查报告类型
      * @param filepath   String类型的文件路径
      * @param file       MultipartFile类型的文件
-     *                   <p>
-     *                   返回值：void
-     *                   异    常：无
+     *                   返回值：Map
+     *                   异    常：NULL
      *                   创建人：CMAPLE
      *                   创建日期：2019-12-03
-     *                   修改人：
-     *                   修改日期：
      */
-    @RequestMapping(value = "/insertReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> insertReport(
+    @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "reporttype", required = true) String reporttype
             , @RequestParam(value = "filepath", required = true) String filepath
@@ -254,7 +245,7 @@ public class ReportController {
         try {
             //创建调查报告信息
             Report report = new Report(0, title, insertreportid, reporttype, sessionuser.getTelephonenumber(), new Date(), insertreportid + ".pdf", filepath);
-            int returnreport = reportService.insertReport(report);
+            int returnreport = reportService.insert(report);
             if (1 == returnreport) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "调查报告上传成功！");
@@ -279,24 +270,21 @@ public class ReportController {
     }
 
     /**
-     * 函数名：更新函数 - 注册调查报告 - updateReport（）
-     * 功能描述： 注册调查报告
+     * 函数名：update函数 - 更新调查报告 - update（）
+     * 功能描述： 更新调查报告
      * 输入参数：<按照参数定义顺序>
      *
      * @param title      String类型的标题
      * @param reporttype String类型的调查报告类型
      * @param filepath   String类型的文件路径
      * @param file       MultipartFile类型的文件
-     *                   <p>
-     *                   返回值：void
-     *                   异    常：无
+     *                   返回值：Map
+     *                   异    常：NULL
      *                   创建人：CMAPLE
      *                   创建日期：2019-12-04
-     *                   修改人：
-     *                   修改日期：
      */
-    @RequestMapping(value = "/updateReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> updateReport(
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "reportid", required = true) String reportid
@@ -337,7 +325,7 @@ public class ReportController {
         try {
             //创建调查报告信息
             Report report = new Report(id, title, reportid, reporttype, sessionuser.getTelephonenumber(), new Date(), filename, filepath);
-            int returnreport = reportService.updateReport(report);
+            int returnreport = reportService.update(report);
             if (1 == returnreport) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "调查更新成功！");
@@ -362,21 +350,18 @@ public class ReportController {
     }
 
     /**
-     * 函数名：删除函数 - 删除调查报告 - delReport（）
+     * 函数名：delete函数 - 删除调查报告 - deleteById（）
      * 功能描述： 删除调查报告
      * 输入参数：<按照参数定义顺序>
      *
      * @param id String类型的标题
-     *           <p>
-     *           返回值：void
+     *           返回值：Map
      *           异    常：无
      *           创建人：CMAPLE
      *           创建日期：2019-12-04
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/delReport", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> delReport(
+    @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -392,7 +377,7 @@ public class ReportController {
         Report returnreport = null;
         //查询调查报告信息
         try {
-            returnreport = reportService.getReportById(id);
+            returnreport = reportService.selectById(id);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -412,7 +397,7 @@ public class ReportController {
         }
         //删除数据库信息记录
         try {
-            int isdel = reportService.delReport(id);
+            int isdel = reportService.deleteById(id);
             if (1 != isdel) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "删除调查报告失败！");
@@ -432,6 +417,5 @@ public class ReportController {
         }
         return map;
     }
-
-
+    
 }

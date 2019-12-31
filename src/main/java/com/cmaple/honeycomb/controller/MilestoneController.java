@@ -3,6 +3,7 @@ package com.cmaple.honeycomb.controller;
 import com.cmaple.honeycomb.model.Milestone;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.MilestoneService;
+import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.FileSelect;
 import com.cmaple.honeycomb.tools.FormatTime;
 import com.cmaple.honeycomb.tools.ParamsTools;
@@ -18,44 +19,47 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 类名：里程碑管理服务接口 - AnnouncementController
- * 功能描述： 公告管理服务接口
+ * 类名：里程碑管理服务控制器 - MilestoneController
+ * 功能描述： 里程碑管理服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-11-11
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/Milestone")
 public class MilestoneController {
-
-    //引入MilestoneService
+    /**
+     * 引入MilestoneService
+     */
     @Autowired
     private MilestoneService milestoneService;
+    /**
+     * 引入UserService
+     */
+    @Autowired
+    private UserService userService;
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
 
 
     /**
-     * 函数名：查询函数 - 根据ID号查询里程碑内容 - getMilestoneById（）
+     * 函数名：select函数 - 根据ID号查询里程碑内容 - selectById（）
      * 功能描述： 根据ID号查询里程碑内容
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的id号
-     *           <p>
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-11-19
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/getMilestoneById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getMilestoneById(
+    @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -63,7 +67,7 @@ public class MilestoneController {
         Milestone returnmilestone = null;
         try {
             //查询里程碑信息信息
-            returnmilestone = milestoneService.queryMilestoneById(id);
+            returnmilestone = milestoneService.selectById(id);
             if (null == returnmilestone) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的里程碑信息！");
@@ -96,25 +100,21 @@ public class MilestoneController {
     }
 
     /**
-     * 函数名：查询函数 - 主页查询里程碑，只查看日期倒叙的前四条数据 - getMilestoneAtHome（）
-     * 功能描述：主页查询里程碑，只查看日期倒叙的前四条数据
+     * 函数名：select函数 - 主页查询里程碑信息 - selectAtHomePage（）
+     * 功能描述：主页查询里程碑信息
      * 输入参数：<按照参数定义顺序>
-     * <p>
-     * <p>
      * 返回值：map
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-11-19
-     * 修改人：
-     * 修改日期：
      */
-    @RequestMapping(value = "/getMilestoneAtHome", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getMilestoneAtHome() {
+    @RequestMapping(value = "/selectAtHomePage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectAtHomePage() {
         Map<String, Object> map = new HashMap<String, Object>();
         List<Milestone> returnmilestone = null;
         try {
             //查询公告信息
-            returnmilestone = milestoneService.queryMilestoneAtHome();
+            returnmilestone = milestoneService.selectAtHomePage();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -130,7 +130,7 @@ public class MilestoneController {
     }
 
     /**
-     * 函数名：查询函数 - 根据条件查询里程碑 - getMilestoneByParams（）
+     * 函数名：select函数 - 根据条件查询里程碑 - selectByCriteria（）
      * 功能描述：根据条件查询里程碑
      * 输入参数：<按照参数定义顺序>
      *
@@ -139,14 +139,12 @@ public class MilestoneController {
      * @param page         int类型的页数
      * @param num          int类型的数量
      *                     返回值：map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-20
-     *                     修改人：
-     *                     修改日期：
      */
-    @RequestMapping(value = "/getMilestoneByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getMilestoneByParams(
+    @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
@@ -176,7 +174,7 @@ public class MilestoneController {
         List<Milestone> returnmilestone = null;
         try {
             //查询公告信息
-            returnmilestone = milestoneService.queryMilestoneByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returnmilestone = milestoneService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -192,26 +190,23 @@ public class MilestoneController {
     }
 
     /**
-     * 函数名：查询函数 - 查询所有里程碑，按照倒叙排列 - getMilestoneDescOrderBy（）
-     * 功能描述：查询所有里程碑，按照倒叙排列
+     * 函数名：select函数 - 按照时间倒叙查询里程碑信息 - selectDescOrderByTime（）
+     * 功能描述：按照时间倒叙查询里程碑信息
      * 输入参数：<按照参数定义顺序>
-     * <p>
      * 返回值：map
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-11-20
-     * 修改人：
-     * 修改日期：
      */
-    @RequestMapping(value = "/getMilestoneDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getMilestoneDescOrderBy() {
+    @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectDescOrderByTime() {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
         List<Milestone> returnmilestone = null;
         //查询里程碑信息
         try {
             //查询里程碑信息
-            returnmilestone = milestoneService.queryMilestoneDescOrderBy();
+            returnmilestone = milestoneService.selectDescOrderByTime();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -228,7 +223,7 @@ public class MilestoneController {
 
 
     /**
-     * 函数名：插入函数 - 增加新的里程碑 - insertMilestone（）
+     * 函数名：insert函数 - 增加新的里程碑 - insert（）
      * 功能描述：增加新的公告
      * 输入参数：<按照参数定义顺序>
      *
@@ -242,14 +237,12 @@ public class MilestoneController {
      * @param buttongroup String类型的按钮组，JSON格式
      * @param file        MultipartFile类型的文件
      *                    返回值：map
-     *                    异    常：无
+     *                    异    常：NULL
      *                    创建人：CMAPLE
      *                    创建日期：2019-11-20
-     *                    修改人：CMAPLE
-     *                    修改日期：2019-11-21
      */
-    @RequestMapping(value = "/insertMilestone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> insertMilestone(
+    @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "synopsis", required = true) String synopsis
             , @RequestParam(value = "readtime", required = true) String readtime
@@ -306,7 +299,7 @@ public class MilestoneController {
         //创建新的里程碑
         Milestone milestone = new Milestone(0, title, synopsis, sessionuser.getTelephonenumber(), insertdate, readtime, filename, filepath, imgurl + "/" + imgname, buttongroup);
         try {
-            int returnmilestone = milestoneService.insertMilestone(milestone);
+            int returnmilestone = milestoneService.insert(milestone);
             if (1 == returnmilestone) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "里程碑信息创建成功！");
@@ -328,7 +321,7 @@ public class MilestoneController {
     }
 
     /**
-     * 函数名：更新函数-更新里程碑信息 - updateMilestone（）
+     * 函数名：update函数-更新里程碑信息 - update（）
      * 功能描述：更新里程碑信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -343,14 +336,12 @@ public class MilestoneController {
      * @param buttongroup String类型的按钮组，JSON格式
      * @param file        MultipartFile类型的文件
      *                    返回值：map
-     *                    异    常：无
+     *                    异    常：NULL
      *                    创建人：CMAPLE
      *                    创建日期：2019-11-21
-     *                    修改人：
-     *                    修改日期：
      */
-    @RequestMapping(value = "/updateMilestone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> updateMilestone(
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "synopsis", required = true) String synopsis
@@ -407,7 +398,7 @@ public class MilestoneController {
         //更新里程碑
         Milestone milestone = new Milestone(id, title, synopsis, sessionuser.getTelephonenumber(), new Date(), readtime, filename, filepath, imgurl, buttongroup);
         try {
-            int returnmilestone = milestoneService.updateMilestone(milestone);
+            int returnmilestone = milestoneService.update(milestone);
             if (1 == returnmilestone) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "里程碑信息修改成功！");
@@ -430,20 +421,18 @@ public class MilestoneController {
 
 
     /**
-     * 函数名：更新函数-删除里程碑信息 - delMilestone（）
+     * 函数名：delete函数-删除里程碑信息 - deleteById（）
      * 功能描述：删除里程碑信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型id
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-11-22
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/delMilestone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> delMilestone(
+    @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         //初始化参数
@@ -459,7 +448,7 @@ public class MilestoneController {
         //删除里程碑
         try {
             //删除相应的文件
-            Milestone delmilestone = milestoneService.queryMilestoneById(id);
+            Milestone delmilestone = milestoneService.selectById(id);
             //删除里程碑文件
             Map<String, Object> delfile = FileSelect.getFileSelect().delFile(delmilestone.getFilepath() + "/" + delmilestone.getFilename());
             if (!"success".equals(delfile.get("RTCODE"))) {
@@ -477,7 +466,7 @@ public class MilestoneController {
                 return map;
             }
             //删除数据库记录
-            int returnmilestone = milestoneService.delMilestone(id);
+            int returnmilestone = milestoneService.deleteById(id);
             if (1 == returnmilestone) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "里程碑信息删除成功！");

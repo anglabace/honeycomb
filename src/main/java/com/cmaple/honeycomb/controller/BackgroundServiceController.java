@@ -19,34 +19,38 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 类名：后台服务管理请求接口 - BackgroundServiceController
- * 功能描述： 后台服务管理请求接口
+ * 类名：后台管理服务控制器 - BackgroundServiceController
+ * 功能描述： 后台管理服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-09-30
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/BackgroundService")
 public class BackgroundServiceController {
 
 
-    //引入BackgroundService
+    /**
+     * 引入BackgroundServiceService
+     */
     @Autowired
     private BackgroundServiceService backgroundService;
-    //引入userservice
+    /**
+     * 引入UserService
+     */
     @Autowired
     private UserService userService;
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
 
 
     /**
-     * 函数名：根据条件获取后台服务列表 - getBackgroundServices（）
+     * 函数名：select函数 - 根据条件获取后台服务列表 - selectByCriteria（）
      * 功能描述：根据条件获取后台服务列表
      * 输入参数：<按照参数定义顺序>
      *
@@ -56,15 +60,12 @@ public class BackgroundServiceController {
      * @param page         int类型的页数
      * @param num          int类型的展示数量
      *                     返回值：map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-30
-     *                     修改人：
-     *                     级别：null
-     *                     修改日期：
      */
-    @RequestMapping(value = "/getBackgroundServices", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getBackgroundServices(
+    @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectByCriteria(
             @RequestParam(value = "servicestate", required = true) String servicestate
             , @RequestParam(value = "proglanguage", required = true) String proglanguage
             , @RequestParam(value = "search", required = true) String search
@@ -72,8 +73,17 @@ public class BackgroundServiceController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        HttpSession session = request.getSession();
         List<String> list = new ArrayList<String>();
         Map<String, Object> params = new HashMap<String, Object>();
+        //获取信息
+        User sessionuser = (User) session.getAttribute("SSUSER");
+        if (null == sessionuser) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "请先登录，在查询公告信息！");
+            map.put("RTDATA", null);
+            return map;
+        }
         //条件整理
         if (!"all".equals(servicestate)) {
             list.add("servicestate");
@@ -90,7 +100,7 @@ public class BackgroundServiceController {
         List<BackgroundService> returnBackgroundService = null;
         try {
             //根据条件查询
-            returnBackgroundService = backgroundService.getBackgroundServices(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returnBackgroundService = backgroundService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
@@ -106,22 +116,18 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：根据ID获取后台服务信息 - getBackgroundServicesById（）
+     * 函数名：select函数 - 根据ID获取后台服务信息 - selectById（）
      * 功能描述：根据ID获取后台服务信息
      * 输入参数：<按照参数定义顺序>
-     * <p>
      *
      * @param id int类型的服务器id号
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-10-28
-     *           修改人：
-     *           级别：null
-     *           修改日期：
      */
-    @RequestMapping(value = "/getBackgroundServicesById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getBackgroundServicesById(
+    @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -130,7 +136,7 @@ public class BackgroundServiceController {
         BackgroundService returnBackgroundService = null;
         try {
             //根据条件查询
-            returnBackgroundService = backgroundService.getBackgroundServicesById(id);
+            returnBackgroundService = backgroundService.selectById(id);
             if (null == returnBackgroundService) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "不存在此ID号的后台服务！");
@@ -138,7 +144,7 @@ public class BackgroundServiceController {
                 return map;
             }
             //处理公告信息
-            User user = userService.getUserByTelephonenumber(returnBackgroundService.getAuthor());
+            User user = userService.selectByTelephonenumber(returnBackgroundService.getAuthor());
             returnBackgroundService.setAuthor(user.getPetname());
             //读取文件内容
             Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnBackgroundService.getAnnexepath() + "/" + returnBackgroundService.getName() + "/" + returnBackgroundService.getVersion(), "backgroundservice.txt");
@@ -166,25 +172,21 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：按照时间倒叙获取后台服务详情 - getBackgroundServicesDescOrderBy（）
+     * 函数名：select函数 - 按照时间倒叙获取后台服务详情 - selectDescOrderByTime（）
      * 功能描述：按照时间倒叙获取后台服务详情
      * 输入参数：<按照参数定义顺序>
-     * <p>
      * 返回值：map
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-12-24
-     * 修改人：
-     * 级别：null
-     * 修改日期：
      */
-    @RequestMapping(value = "/getBackgroundServicesDescOrderBy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getBackgroundServicesDescOrderBy() {
+    @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
         List<BackgroundService> returnBackgroundService = null;
         try {
             //根据条件查询
-            returnBackgroundService = backgroundService.getBackgroundServicesDescOrderBy();
+            returnBackgroundService = backgroundService.selectDescOrderByTime();
         } catch (Exception e) {
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
@@ -200,10 +202,9 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：注册后台服务 - insertBackgroundService（）
+     * 函数名：insert函数 - 注册后台服务 - insert（）
      * 功能描述：注册后台服务
      * 输入参数：<按照参数定义顺序>
-     * <p>
      *
      * @param serviceid    String类型的服务ID号
      * @param name         String类型的服务名称
@@ -216,17 +217,13 @@ public class BackgroundServiceController {
      * @param author       String类型的服务作者
      * @param serverid     String类型的服务所在服务器编号
      * @param files        String类型的服务文件
-     *                     <p>
      *                     返回值：map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-30
-     *                     修改人：
-     *                     级别：null
-     *                     修改日期：
      */
-    @RequestMapping(value = "/insertBackgroundService", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> insertBackgroundService(
+    @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> insert(
             @RequestParam(value = "serviceid", required = true) String serviceid
             , @RequestParam(value = "name", required = true) String name
             , @RequestParam(value = "synopsis", required = true) String synopsis
@@ -240,7 +237,16 @@ public class BackgroundServiceController {
             , @RequestParam(value = "files", required = true) List<MultipartFile> files
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        HttpSession session = request.getSession();
         Map<String, Object> remap = new HashMap<String, Object>();
+        //获取信息
+        User sessionuser = (User) session.getAttribute("SSUSER");
+        if (null == sessionuser) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "请先登录，在查询公告信息！");
+            map.put("RTDATA", null);
+            return map;
+        }
         try {
             //检查服务名和服务id(后续添加)
             //创建服务文件夹
@@ -268,17 +274,8 @@ public class BackgroundServiceController {
                     }
                 }
             }
-            HttpSession session = request.getSession();
-            //获取信息
-            User sessionuser = (User) session.getAttribute("SSUSER");
-            if (null == sessionuser) {
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "请先登录，在注册后台服务！");
-                map.put("RTDATA", null);
-                return map;
-            }
             //注册后台服务
-            int returnBackgroundService = backgroundService.insertBackgroundService(new BackgroundService(0, serviceid, name, synopsis, version, path, route + "/" + name, filesize, proglanguage, receivetype, author, sessionuser.getTelephonenumber(), new Date(), serverid, "lock", path + "/" + name));
+            int returnBackgroundService = backgroundService.insert(new BackgroundService(0, serviceid, name, synopsis, version, path, route + "/" + name, filesize, proglanguage, receivetype, author, sessionuser.getTelephonenumber(), new Date(), serverid, "lock", path + "/" + name));
             if (1 == returnBackgroundService) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "后台服务注册成功！");
@@ -300,22 +297,18 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：锁定后台服务 - lockBackgroundService（）
+     * 函数名：update函数 - 锁定后台服务 - lock（）
      * 功能描述：锁定后台服务
      * 输入参数：<按照参数定义顺序>
-     * <p>
      *
      * @param id int类型的服务器id号
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-10-17
-     *           修改人：
-     *           级别：null
-     *           修改日期：
      */
-    @RequestMapping(value = "/lockBackgroundService", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> lockBackgroundService(
+    @RequestMapping(value = "/lock", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> lock(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -332,7 +325,7 @@ public class BackgroundServiceController {
         bs.setId(id);
         bs.setServicestate("lock");
         try {
-            BackgroundService returnbackgroundService = backgroundService.getBackgroundServicesById(id);
+            BackgroundService returnbackgroundService = backgroundService.selectById(id);
             if (!"run".equals(returnbackgroundService.getServicestate())) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务处于非运行状态，不可以锁定！");
@@ -340,7 +333,7 @@ public class BackgroundServiceController {
                 return map;
             }
             //注册后台服务
-            int returnBackgroundService = backgroundService.updateBackgroundService(bs);
+            int returnBackgroundService = backgroundService.update(bs);
             if (1 != returnBackgroundService) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务锁定失败！");
@@ -362,22 +355,19 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：解锁后台服务 - unLockBackgroundService（）
+     * 函数名：update函数 - 解锁后台服务 - unLock（）
      * 功能描述：解锁后台服务
      * 输入参数：<按照参数定义顺序>
      * <p>
      *
      * @param id int类型的服务器id号
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-10-17
-     *           修改人：
-     *           级别：null
-     *           修改日期：
      */
-    @RequestMapping(value = "/unLockBackgroundService", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> unLockBackgroundService(
+    @RequestMapping(value = "/unLock", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> unLock(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -394,7 +384,7 @@ public class BackgroundServiceController {
         bs.setId(id);
         bs.setServicestate("run");
         try {
-            BackgroundService returnbackgroundService = backgroundService.getBackgroundServicesById(id);
+            BackgroundService returnbackgroundService = backgroundService.selectById(id);
             if (!"lock".equals(returnbackgroundService.getServicestate())) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务处于非锁定状态，不可以锁定！");
@@ -402,7 +392,7 @@ public class BackgroundServiceController {
                 return map;
             }
             //注册后台服务
-            int returnBackgroundService = backgroundService.updateBackgroundService(bs);
+            int returnBackgroundService = backgroundService.update(bs);
             if (1 != returnBackgroundService) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务解锁失败！");
@@ -424,10 +414,9 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：更新后台服务信息 - updateBackgroundService（）
+     * 函数名：update函数 - 更新后台服务信息 - updateBackgroundService（）
      * 功能描述：更新后台服务信息，包括服务相关信息及服务相关文件
      * 输入参数：<按照参数定义顺序>
-     * <p>
      *
      * @param id           int类型的服务器id号
      * @param serviceid    String类型的服务ID号
@@ -441,17 +430,13 @@ public class BackgroundServiceController {
      * @param author       String类型的服务作者
      * @param serverid     String类型的服务所在服务器编号
      * @param files        String类型的服务文件
-     *                     <p>
      *                     返回值：map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-10-28
-     *                     修改人：CMAPLE
-     *                     级别：null
-     *                     修改日期：2019-11-11
      */
-    @RequestMapping(value = "/updateBackgroundService", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> updateBackgroundService(
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "serviceid", required = true) String serviceid
             , @RequestParam(value = "name", required = true) String name
@@ -505,7 +490,7 @@ public class BackgroundServiceController {
         }
         BackgroundService updatebs = new BackgroundService(id, serviceid, name, synopsis, version, path, null, filesize, proglanguage, receivetype, author, sessionuser.getTelephonenumber(), new Date(), serverid, "lock", null);
         try {
-            int returnBackgroundService = backgroundService.updateBackgroundService(updatebs);
+            int returnBackgroundService = backgroundService.update(updatebs);
             if (1 == returnBackgroundService) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "后台服务更新成功！");
@@ -535,22 +520,18 @@ public class BackgroundServiceController {
     }
 
     /**
-     * 函数名：删除后台服务 - delBackgroundService（）
+     * 函数名：delect函数 - 删除后台服务 - delete（）
      * 功能描述：删除后台服务
      * 输入参数：<按照参数定义顺序>
-     * <p>
      *
      * @param id int类型的服务器id号
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-10-28
-     *           修改人：
-     *           级别：null
-     *           修改日期：
      */
-    @RequestMapping(value = "/delBackgroundService", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> delBackgroundService(
+    @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> delete(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -565,7 +546,7 @@ public class BackgroundServiceController {
         }
         try {
             //判断是否为正常状态
-            BackgroundService returnbackgroundService = backgroundService.getBackgroundServicesById(id);
+            BackgroundService returnbackgroundService = backgroundService.selectById(id);
             if (!"run".equals(returnbackgroundService.getServicestate())) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务输入非运行状态，不可以删除！");
@@ -576,7 +557,7 @@ public class BackgroundServiceController {
             BackgroundService bs = new BackgroundService();
             bs.setId(id);
             bs.setServicestate("del");
-            int returnBackgroundService = backgroundService.updateBackgroundService(bs);
+            int returnBackgroundService = backgroundService.update(bs);
             if (1 != returnBackgroundService) {
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "后台服务删除失败！");

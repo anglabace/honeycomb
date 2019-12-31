@@ -22,14 +22,13 @@ import java.util.*;
  * 功能描述： 公告管理服务接口
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：CMAPLE
  * 创建日期：2019-11-11
  */
 @RestController
 @RequestMapping("/Announcement")
 public class AnnouncementController {
-
     /**
      * 引入AnnouncementService
      */
@@ -56,7 +55,7 @@ public class AnnouncementController {
      * @param page         int类型的页数
      * @param num          int类型的数量
      *                     返回值：Map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-18
      */
@@ -113,7 +112,7 @@ public class AnnouncementController {
      *
      * @param page int类型的页数
      *             返回值：Map
-     *             异    常：无
+     *             异    常：NULL
      *             创建人：CMAPLE
      *             创建日期：2019-12-24
      */
@@ -150,7 +149,7 @@ public class AnnouncementController {
      * 功能描述：主页查询公告列表
      * 输入参数：<按照参数定义顺序>
      * 返回值：Map
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-11-18
      */
@@ -182,7 +181,7 @@ public class AnnouncementController {
      *
      * @param id int类型的id号
      *           返回值：Map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-11-11
      */
@@ -204,7 +203,7 @@ public class AnnouncementController {
                 return map;
             }
             //处理公告信息
-            User user = userService.getUserByTelephonenumber(returnannouncement.getAuthor());
+            User user = userService.selectByTelephonenumber(returnannouncement.getAuthor());
             returnannouncement.setAuthor(user.getPetname());
             Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnannouncement.getFilepath(), returnannouncement.getFilename());
             if (upmap.get("RTCODE").equals("success")) {
@@ -242,7 +241,7 @@ public class AnnouncementController {
      * @param file     MultipartFile类型的文件
      * @param readtime String类型的阅读时间
      *                 返回值：Map
-     *                 异    常：无
+     *                 异    常：NULL
      *                 创建人：CMAPLE
      *                 创建日期：2019-11-18
      */
@@ -317,7 +316,7 @@ public class AnnouncementController {
      * @param file     MultipartFile类型的文件
      * @param readtime String类型的阅读时间
      *                 返回值：Map
-     *                 异    常：无
+     *                 异    常：NULL
      *                 创建人：CMAPLE
      *                 创建日期：2019-11-18
      */
@@ -371,7 +370,7 @@ public class AnnouncementController {
      *
      * @param id int类型的id号
      *           返回值：Map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-11-18
      */

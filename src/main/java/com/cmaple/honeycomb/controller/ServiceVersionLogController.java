@@ -16,40 +16,39 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：服务版本日志请求接口 - ServiceVersionLogController
- * 功能描述： 服务版本日志请求接口
+ * 类名：服务版本日志服务控制器 - ServiceVersionLogController
+ * 功能描述： 服务版本日志服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：CMAPLE
  * 创建日期：2019-11-11
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/ServiceVersionLog")
 public class ServiceVersionLogController {
 
-    //引入BackgroundService
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
+    /**
+     * 引入ServiceVersionLogService
+     */
     @Autowired
     private ServiceVersionLogService serviceVersionLogService;
 
     /**
-     * 函数名：根据服务ID号按照时间倒叙排列获取服务版本日志 - getServiceVersionLogById（）
+     * 函数名：select函数 - 根据服务ID号按照时间倒叙排列获取服务版本日志 - getServiceVersionLogById（）
      * 功能描述：根据服务ID号按照时间倒叙排列获取服务版本日志
      * 输入参数：<按照参数定义顺序>
      *
      * @param serviceid int类型的服务ID
-     *                  返回值：map
-     *                  异    常：无
+     *                  返回值：Map
+     *                  异    常：NULL
      *                  创建人：CMAPLE
      *                  创建日期：2019-11-11
-     *                  修改人：
-     *                  级别：null
-     *                  修改日期：
      */
     @RequestMapping(value = "/getServiceVersionLogById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getServiceVersionLogById(

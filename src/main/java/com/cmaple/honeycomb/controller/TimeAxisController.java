@@ -15,44 +15,44 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
- * 类名：时间轴管理服务接口 - TimeAxisController
- * 功能描述： 时间轴管理服务接口
+ * 类名：时间轴管理服务控制器 - TimeAxisController
+ * 功能描述： 时间轴管理服务控制器
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-12-09
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @RestController
 @RequestMapping("/TimeAxis")
 public class TimeAxisController {
+    /**
+     * 引入TimeAxisService
+     */
     @Autowired
     private TimeAxisService timeAxisService;
+    /**
+     * 引入HttpServletRequest
+     */
     @Autowired
     private HttpServletRequest request;
 
     /**
-     * 函数名：查询函数 - 在主页显示时间轴 - getTimeAxisAtHome（）
+     * 函数名：select函数 - 在主页显示时间轴 - selectAtHomePage（）
      * 功能描述： 在主页显示时间轴
      * 输入参数：<按照参数定义顺序>
-     * <p>
      * 返回值：map
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 创建日期：2019-12-09
-     * 修改人：
-     * 修改日期：
      */
-    @RequestMapping(value = "/getTimeAxisAtHome", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getTimeAxisAtHome() {
+    @RequestMapping(value = "/selectAtHomePage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectAtHomePage() {
         Map<String, Object> map = new HashMap<String, Object>();
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            returntimeaxis = timeAxisService.getTimeAxisAtHome();
+            returntimeaxis = timeAxisService.selectAtHomePage();
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -68,8 +68,8 @@ public class TimeAxisController {
     }
 
     /**
-     * 函数名：查询函数 - 分页，根据条件查询时间轴信息 - getTimeAxisByParams（）
-     * 功能描述： 分页，根据条件查询时间轴信息
+     * 函数名：select函数 - 根据条件查询时间轴信息 - selectByCriteria（）
+     * 功能描述： 根据条件查询时间轴信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param search       String类型的搜索内容
@@ -77,14 +77,12 @@ public class TimeAxisController {
      * @param page         int类型的页数
      * @param num          int类型的数量
      *                     返回值：map
-     *                     异    常：无
+     *                     异    常：NULL
      *                     创建人：CMAPLE
      *                     创建日期：2019-12-09
-     *                     修改人：
-     *                     修改日期：
      */
-    @RequestMapping(value = "/getTimeAxisByParams", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getTimeAxisByParams(
+    @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
             , @RequestParam(value = "page", required = true) int page
@@ -114,7 +112,7 @@ public class TimeAxisController {
         List<TimeAxis> returntimeaxis = null;
         try {
             //查询公告信息
-            returntimeaxis = timeAxisService.getTimeAxisByParams(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returntimeaxis = timeAxisService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -130,7 +128,7 @@ public class TimeAxisController {
     }
 
     /**
-     * 函数名：插入函数 - 增加新的时间轴信息 - insertTimeAxis（）
+     * 函数名：insert函数 - 增加新的时间轴信息 - insert（）
      * 功能描述：增加新的时间轴信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -138,14 +136,12 @@ public class TimeAxisController {
      * @param content   String类型的内容
      * @param eventtime String类型的事件时间
      *                  返回值：map
-     *                  异    常：无
+     *                  异    常：NULL
      *                  创建人：CMAPLE
      *                  创建日期：2019-12-09
-     *                  修改人：
-     *                  修改日期：
      */
-    @RequestMapping(value = "/insertTimeAxis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> insertTimeAxis(
+    @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "content", required = true) String content
             , @RequestParam(value = "eventtime", required = true) String eventtime
@@ -163,7 +159,7 @@ public class TimeAxisController {
         Date insertdate = new Date();
         TimeAxis timeAxis = new TimeAxis(0, title, content, java.sql.Date.valueOf(eventtime), sessionuser.getTelephonenumber(), insertdate);
         try {
-            int returntimeAxis = timeAxisService.insertTimeAxis(timeAxis);
+            int returntimeAxis = timeAxisService.insert(timeAxis);
             if (1 == returntimeAxis) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "时间轴信息创建成功！");
@@ -185,7 +181,7 @@ public class TimeAxisController {
     }
 
     /**
-     * 函数名：插入函数 - 修改时间轴信息 - updateTimeAxis（）
+     * 函数名：update函数 - 修改时间轴信息 - update（）
      * 功能描述：修改时间轴信息
      * 输入参数：<按照参数定义顺序>
      *
@@ -194,14 +190,12 @@ public class TimeAxisController {
      * @param content   String类型的内容
      * @param eventtime String类型的事件事件
      *                  返回值：map
-     *                  异    常：无
+     *                  异    常：NULL
      *                  创建人：CMAPLE
      *                  创建日期：2019-12-09
-     *                  修改人：
-     *                  修改日期：
      */
-    @RequestMapping(value = "/updateTimeAxis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> updateTimeAxis(
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
             , @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "content", required = true) String content
@@ -220,7 +214,7 @@ public class TimeAxisController {
         Date insertdate = new Date();
         TimeAxis timeAxis = new TimeAxis(id, title, content, java.sql.Date.valueOf(eventtime), sessionuser.getTelephonenumber(), insertdate);
         try {
-            int returntimeAxis = timeAxisService.updateTimeAxis(timeAxis);
+            int returntimeAxis = timeAxisService.update(timeAxis);
             if (1 == returntimeAxis) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "时间轴信息修改成功！");
@@ -243,20 +237,18 @@ public class TimeAxisController {
 
 
     /**
-     * 函数名：删除函数 - 根据id号删除时间轴信息 - delTimeAxis（）
+     * 函数名：delete函数 - 根据id号删除时间轴信息 - deleteById（）
      * 功能描述：根据id号删除时间轴信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的id号
      *           返回值：map
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           创建日期：2019-12-09
-     *           修改人：
-     *           修改日期：
      */
-    @RequestMapping(value = "/delTimeAxis", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> delTimeAxis(
+    @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         //初始化参数
@@ -270,7 +262,7 @@ public class TimeAxisController {
             return map;
         }
         try {
-            int returntimeAxis = timeAxisService.delTimeAxis(id);
+            int returntimeAxis = timeAxisService.deleteById(id);
             if (1 == returntimeAxis) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "时间轴信息删除成功！");
