@@ -10,128 +10,128 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 类名：岗位服务功能类 - WorkService
- * 功能描述：维护岗位管理相应的功能
+ * 类名：岗位功能类业务组件 - WorkService
+ * 功能描述：岗位功能类业务组件
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
+ * 异    常：NULL
  * 创建人：cmaple
  * 创建日期：2019-12-06
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @Service
 public class WorkService {
 
-    //引入用户映射接口
+    /**
+     * 引入WorkMapper
+     */
     @Autowired
     private WorkMapper workMapper;
 
     /**
-     * 函数名：查询函数-根据ID号查询岗位信息 - getWorkById（）
+     * 函数名：select函数-根据ID号查询岗位信息 - selectById（）
      * 功能描述： 根据ID号查询岗位信息
      * 输入参数：<按照参数定义顺序>
      *
      * @param id int类型的公告编号
-     *           返回值：int
-     *           异    常：无
+     *           返回值：Work
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           日期：2019-12-06
-     *           修改人：
-     *           日期：
      */
-    public Work getWorkById(int id) {
+    public Work selectById(int id) {
         return workMapper.selectById(id);
     }
 
     /**
-     * 函数名：查询函数-根据条件查询岗位信息 - getWorkByParams（）
+     * 函数名：select函数-根据条件查询岗位信息 - selectByCriteria（）
      * 功能描述： 根据条件查询岗位信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param list   条件列表
-     * @param params 字段及数值集合
-     * @param page   分页查询PAGE条件
-     * @param num    分页查询NUM条件
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     * @param page   int类型的页数
+     * @param num    int类型的数量
      *               返回值：List<Work>
-     *               异    常：无
+     *               异    常：NULL
      *               创建人：CMAPLE
      *               日期：2019-12-06
-     *               修改人：
-     *               日期：
      */
-    public List<Work> getWorkByParams(List<String> list, Map<String, Object> params, int page, int num) {
-        return workMapper.queryWorkByParams(list, params, page, num);
+    public List<Work> selectByCriteria(List<String> list, Map<String, Object> params, int page, int num) {
+        return workMapper.selectByCriteria(list, params, page, num);
     }
 
     /**
-     * 函数名：查询函数-根据时间倒叙查询岗位概要信息 - getWorkDescOrderBy（）
+     * 函数名：select函数-根据条件查询岗位总数 - selectCountByCriteria（）
+     * 功能描述： 根据条件查询岗位总数
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param list   List类型的条件列表
+     * @param params Map类型的字段及数值集合
+     *               返回值：int
+     *               异    常：NULL
+     *               创建人：CMAPLE
+     *               日期：2019-12-31
+     */
+    public int selectCountByCriteria(List<String> list, Map<String, Object> params) {
+        return workMapper.selectCountByCriteria(list, params);
+    }
+
+    /**
+     * 函数名：select函数-根据时间倒叙查询岗位概要信息 - selectDescOrderByTime（）
      * 功能描述： 根据时间倒叙查询岗位概要信息
      * 输入参数：<按照参数定义顺序>
-     * <p>
      * 返回值：List<Work>
-     * 异    常：无
+     * 异    常：NULL
      * 创建人：CMAPLE
      * 日期：2019-12-06
-     * 修改人：
-     * 日期：
      */
-    public List<Work> getWorkDescOrderBy() {
-        return workMapper.queryWorkDescOrderBy();
+    public List<Work> selectDescOrderByTime() {
+        return workMapper.selectDescOrderByTime();
     }
 
     /**
-     * 函数名：插入函数-创建新的岗位信息 - insertWork（）
+     * 函数名：insert函数-创建新的岗位信息 - insert（）
      * 功能描述： 创建新的岗位信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param work 岗位信息实体类
-     *             <p>
+     * @param work Work类型的岗位信息实体类
      *             返回值：int
-     *             异    常：无
+     *             异    常：NULL
      *             创建人：CMAPLE
      *             日期：2019-12-06
-     *             修改人：
-     *             日期：
      */
-    public int insertWork(Work work) {
+    public int insert(Work work) {
         return workMapper.insert(work);
     }
 
     /**
-     * 函数名：更新函数-更新岗位信息 - updateWork（）
+     * 函数名：update函数-更新岗位信息 - update（）
      * 功能描述： 更新岗位信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param work 岗位信息实体类
-     *             <p>
+     * @param work Work类型的岗位信息实体类
      *             返回值：int
-     *             异    常：无
+     *             异    常：NULL
      *             创建人：CMAPLE
      *             日期：2019-12-06
-     *             修改人：
-     *             日期：
      */
-    public int updateWork(Work work) {
+    public int update(Work work) {
         return workMapper.update(work, new QueryWrapper<Work>().lambda().eq(Work::getId, work.getId()));
     }
 
     /**
-     * 函数名：删除函数-根据ID删除岗位信息 - delWork（）
+     * 函数名：delete函数-根据ID删除岗位信息 - deleteById（）
      * 功能描述： 根据ID删除岗位信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param id 岗位id号
+     * @param id int类型的岗位id号
      *           <p>
      *           返回值：int
-     *           异    常：无
+     *           异    常：NULL
      *           创建人：CMAPLE
      *           日期：2019-12-06
-     *           修改人：
-     *           日期：
      */
-    public int delWork(int id) {
+    public int deleteById(int id) {
         return workMapper.deleteById(id);
     }
 

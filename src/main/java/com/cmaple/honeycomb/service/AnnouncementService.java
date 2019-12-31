@@ -14,8 +14,8 @@ import java.util.Map;
  * 功能描述：公告服务功能类业务组件
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
- * 创建人：cmaple
+ * 异    常：NULL
+ * 创建人：CMAPLE
  * 创建日期：2019-11-11
  */
 @Service

@@ -6,73 +6,50 @@ import com.cmaple.honeycomb.model.ServersInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
- * 类名：服务器详细信息功能类 - ServersInformationService
- * 功能描述：维护服务器详细信息功能类相应的功能
+ * 类名：服务器相关功能类业务组件 - ServersInformationService
+ * 功能描述：服务器相关功能类业务组件
  * 输入参数：NULL
  * 返回值：NULL
- * 异    常：无
- * 创建人：cmaple
+ * 异    常：NULL
+ * 创建人：CMAPLE
  * 创建日期：2019-09-29
- * 修改人：
- * 级别：NULL
- * 修改日期：
  */
 @Service
 public class ServersInformationService {
-    //引入服务器详细信息接口
+    /**
+     * 引入ServersInformationMapper
+     */
     @Autowired
     private ServersInformationMapper serversInformationMapper;
 
     /**
-     * 函数名：查询函数-查询服务器信息并返回所有的服务器信息数据 - getServersInformations（）
-     * 功能描述： 查询服务器信息并返回所有的服务器信息数据
-     * <p>
-     * 返回值：int
-     * 异    常：无
-     * 创建人：CMAPLE
-     * 日期：2019-09-29
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
+     * 函数名：insert函数-增加信息的服务器资源 - insert（）
+     * 功能描述： 增加信息的服务器资源
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param serversInformation ServersInformation类型的条件列表
+     *                           返回值：int
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           日期：2019-09-29
      */
-    public List<ServersInformation> getServersInformations() {
-        return serversInformationMapper.selectList(null);
-    }
-
-    /**
-     * 函数名：插入函数-增加信息的服务器资源 - insertServersInformation（）
-     * 功能描述： 查询服务器信息并返回所有的服务器信息数据
-     * <p>
-     * 返回值：int
-     * 异    常：无
-     * 创建人：CMAPLE
-     * 日期：2019-09-29
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
-     */
-    public int insertServersInformation(ServersInformation serversInformation) {
+    public int insert(ServersInformation serversInformation) {
         return serversInformationMapper.insert(serversInformation);
     }
 
     /**
-     * 函数名：修改函数-修改指定id的服务器信息 - updateServersInformation（）
+     * 函数名：修改函数-修改指定id的服务器信息 - update（）
      * 功能描述： 修改指定id的服务器信息
-     * <p>
-     * 返回值：int
-     * 异    常：无
-     * 创建人：CMAPLE
-     * 日期：2019-09-29
-     * 修改人：
-     * 级别：普通用户
-     * 日期：
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param serversInformation ServersInformation类型的条件列表
+     *                           返回值：int
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           日期：2019-09-29
      */
-    public int updateServersInformation(ServersInformation serversInformation) {
+    public int update(ServersInformation serversInformation) {
         return serversInformationMapper.update(serversInformation, new QueryWrapper<ServersInformation>().lambda().eq(ServersInformation::getId, serversInformation.getId()));
     }
-
-
 }
