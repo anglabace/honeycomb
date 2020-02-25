@@ -259,7 +259,7 @@ public class OperationLogController {
             List<OperationLog> result = operationLogService.selectByCriteria(paramslist, params, ParamsTools.getPageTools().getPageByNum(1, num), num);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=OperationLog_" + FormatTime.getFormatTime().formatYMDToString(new Date()) + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename=OperationLog_" + FormatTime.getFormatTime().formatHMSMSToString(new Date()) + ".xlsx");
             EasyExcel.write(response.getOutputStream(), OperationLog.class).sheet("模板").doWrite(result);
             //记录操作日志
             //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "normal", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ]  导出日志为Excel成功！"));

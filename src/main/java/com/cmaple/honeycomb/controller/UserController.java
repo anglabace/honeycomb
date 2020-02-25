@@ -1,10 +1,14 @@
 package com.cmaple.honeycomb.controller;
 
 
+import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
+import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.Enciphered;
+import com.cmaple.honeycomb.tools.FormatTime;
 import com.cmaple.honeycomb.tools.ParamsTools;
+import com.cmaple.honeycomb.tools.RandomData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,7 +42,11 @@ public class UserController {
      */
     @Autowired
     private HttpServletRequest request;
-
+    /**
+     * 引入OperationLogService
+     */
+    @Autowired
+    private OperationLogService operationLogService;
 
     /**
      * 函数名：登录函数- - login（）
@@ -108,8 +116,8 @@ public class UserController {
                 map.put("RTMSG", "登录成功！");
                 map.put("RTDATA", returnuser);
                 //将登录信息存储在session中
-                HttpSession session = request.getSession(true);
-                session.setAttribute("SSUSER", returnuser);
+//                HttpSession session = request.getSession(true);
+//                session.setAttribute("SSUSER", returnuser);
             }
         }
         //删除强引用，释放相应内存空间，减少内存溢出风险
@@ -135,6 +143,40 @@ public class UserController {
         map.put("RTCODE", "success");
         map.put("RTMSG", "注销登录成功！");
         map.put("RTDATA", session.getAttribute("SSUSER"));
+        return map;
+    }
+
+    /**
+     * 函数名：注册登录用户信息 - setUserSession（）
+     * 功能描述： 注册登录用户信息，用于登录后的Session注册
+     * 输入参数：<按照参数定义顺序>
+     * 返回值：map
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 创建日期：2020-02-25
+     */
+    @RequestMapping(value = "/setUserSession", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> setUserSession(@RequestParam(value = "telephonenumber", required = true) String telephonenumber) {
+        //设置参数
+        Map<String, Object> map = new HashMap<String, Object>();
+        HttpSession session = request.getSession();
+        User sessionuser = (User) session.getAttribute("SSUSER");
+        //信息判断
+        if (null == sessionuser) {
+            //注册用户信息
+            User user = userService.selectByTelephonenumber(telephonenumber);
+            //身份证信息加密
+            user.setIdcard(Enciphered.getEnciphered().idCardEncoder(user.getIdcard()));
+            session.setAttribute("SSUSER", user);
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "注册session成功！");
+            map.put("RTDATA", user);
+        } else {
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "获取用户信息成功！");
+            map.put("RTDATA", sessionuser);
+        }
+        //信息返回
         return map;
     }
 
@@ -409,5 +451,66 @@ public class UserController {
         return map;
     }
 
+    /**
+     * 函数名：update函数 - 更新用户登录地址信息 - updateUserLoginInfo（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param telephonenumber String类型的电话好吗
+     * @param commonip        String类型的常用ip
+     * @param lastplace       String类型的最后登录地址
+     *                        返回值：map
+     *                        异    常：NULL
+     *                        创建人：CMAPLE
+     *                        创建日期：2020-02-18
+     */
+    @RequestMapping(value = "/updateUserLoginInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> updateUserLoginInfo(
+            @RequestParam(value = "telephonenumber", required = false) String telephonenumber
+            , @RequestParam(value = "commonip", required = false) String commonip
+            , @RequestParam(value = "lastplace", required = false) String lastplace
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        User user = userService.selectByTelephonenumber(telephonenumber);
+        //增加日志
+        try {
+            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), user.getTelephonenumber(), "normal", "account", "用户：[ " + user.getTelephonenumber() + " ] 使用 iP - " + commonip + " ｜ 登录地点 - " + lastplace + "  进行登录操作！"));
+        } catch (Exception e) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "日志更新失败！");
+            map.put("RTDATA", e.getMessage());
+            return map;
+        }
+        //更新登录信息
+        if (1 != userService.update(new User(
+                user.getId()                         //用户编号
+                , user.getPassword()                 //用户登录密码
+                , user.getUsertype()                 //用户类型
+                , user.getUseraffairs()              //用户状态
+                , user.getUserbalance()             //用户余额
+                , user.getIdcard()                   //用户身份证号码
+                , user.getName()                     //用户真实姓名
+                , user.getUseraddress()              //用户地址
+                , telephonenumber          //用户电话
+                , user.getUseremail()                //用户电子邮箱
+                , user.getCreatetime()     //用户创建时间
+                , user.getUsersign()                 //用户签名
+                , user.getPetname()                  //用户昵称
+                , user.getErrortry()    //用户密码连续输入错误次数
+                , commonip                 //常用ip
+                , lastplace                //最后登录地点
+                , user.getPermissions()              //权限列表
+        ))) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "用户登录信息更新失败！");
+            map.put("RTDATA", null);
+            return map;
+        }
+
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "用户登录信息更新成功！");
+        map.put("RTDATA", null);
+        return map;
+    }
 
 }

@@ -1,11 +1,18 @@
 package com.cmaple.honeycomb;
 
+import com.cmaple.honeycomb.model.OperationLog;
+import com.cmaple.honeycomb.service.OperationLogService;
+import com.cmaple.honeycomb.tools.FormatTime;
+import com.cmaple.honeycomb.tools.RandomData;
+
 import java.io.IOException;
+import java.util.Date;
 
 public class test {
 
     public static void main(String[] args) throws IOException {
-
+        OperationLogService operationLogService = null;
+        operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), "18368080269", "normal", "account", "用户：[ 18368080269 ] 使用 iP - 61.164.40.82 ｜ 登录地点 - 浙江省杭州市  进行登录操作！"));
 //        LocalDate localDate = LocalDate.now();
 //        LocalTime localTime1 = LocalTime.now();
 //        System.out.println(localDate.toString());
