@@ -48,4 +48,19 @@ public class ConfigurationFile {
      **/
     @Value("${config.backgroundServicefile.path}")
     private String BACKGROUNDSERVICEFILEPATH;
+
+    /**
+     * 服务版本号
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${main.version.id}")
+    private String MAINVERSIONID;
+    /**
+     * Token密钥
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.token.key}")
+    private String CONFIGTOKENKEY;
 }

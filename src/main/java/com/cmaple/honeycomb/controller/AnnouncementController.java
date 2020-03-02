@@ -1,5 +1,8 @@
 package com.cmaple.honeycomb.controller;
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.Announcement;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.AnnouncementService;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -39,11 +41,6 @@ public class AnnouncementController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
 
     /**
      * 函数名：select函数 - 根据条件查询公告信息 - selectByCriteria（）
@@ -59,6 +56,7 @@ public class AnnouncementController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
@@ -67,17 +65,8 @@ public class AnnouncementController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼接条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -116,6 +105,7 @@ public class AnnouncementController {
      *             创建人：CMAPLE
      *             创建日期：2019-12-24
      */
+    @PassToken
     @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectDescOrderByTime(
             @RequestParam(value = "page", required = true) int page
@@ -153,6 +143,7 @@ public class AnnouncementController {
      * 创建人：CMAPLE
      * 创建日期：2019-11-18
      */
+    @PassToken
     @RequestMapping(value = "/selectAtHomePage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectAtHomePage() {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -185,13 +176,13 @@ public class AnnouncementController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-11
      */
+    @PassToken
     @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         Map<String, Object> datamap = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         Announcement returnannouncement = null;
         try {
             //查询公告信息
@@ -245,6 +236,7 @@ public class AnnouncementController {
      *                 创建人：CMAPLE
      *                 创建日期：2019-11-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
@@ -253,17 +245,12 @@ public class AnnouncementController {
             , @RequestParam(value = "filepath", required = true) String filepath
             , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "readtime", required = true) String readtime
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
+        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
         Date insertdate = new Date();
         //上传公告文件
         if ("success".equals(FileSelect.getFileSelect().checkFileExists(filepath, filename).get("RTCODE"))) {
@@ -280,7 +267,7 @@ public class AnnouncementController {
             map.put("RTDATA", "文件名：【" + filepath + "/" + filename + "】");
             return map;
         }
-        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, sessionuser.getTelephonenumber(), insertdate, readtime);
+        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, telephonenumber, insertdate, readtime);
         try {
             int returnannouncement = announcementService.insert(announcement);
             if (1 == returnannouncement) {
@@ -320,6 +307,7 @@ public class AnnouncementController {
      *                 创建人：CMAPLE
      *                 创建日期：2019-11-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
@@ -329,18 +317,13 @@ public class AnnouncementController {
             , @RequestParam(value = "filepath", required = true) String filepath
             , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "readtime", required = true) String readtime
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在更新公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
-        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, sessionuser.getTelephonenumber(), null, readtime);
+        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
+        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, telephonenumber, null, readtime);
         try {
             int returnannouncement = announcementService.update(announcement);
             if (1 == returnannouncement) {
@@ -374,20 +357,13 @@ public class AnnouncementController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在删除公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         try {
             int returnannouncement = announcementService.deleteById(id);
             if (1 == returnannouncement) {

@@ -1,14 +1,15 @@
 package com.cmaple.honeycomb.controller;
 
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
-import com.cmaple.honeycomb.tools.Enciphered;
-import com.cmaple.honeycomb.tools.FormatTime;
-import com.cmaple.honeycomb.tools.ParamsTools;
-import com.cmaple.honeycomb.tools.RandomData;
+import com.cmaple.honeycomb.tools.*;
+import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -40,13 +40,19 @@ public class UserController {
     /**
      * 引入HttpServletRequest
      */
-    @Autowired
-    private HttpServletRequest request;
+//    @Autowired
+//    private HttpServletRequest request;
     /**
      * 引入OperationLogService
      */
     @Autowired
     private OperationLogService operationLogService;
+
+    /**
+     * 引入ConfigurationFile
+     */
+    @Autowired
+    private ConfigurationFile configurationFile;
 
     /**
      * 函数名：登录函数- - login（）
@@ -61,19 +67,13 @@ public class UserController {
      *                        创建人：CMAPLE
      *                        创建日期：2019-01-16
      */
+    @PassToken
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> login(
             @RequestParam(value = "telephonenumber", required = true) String telephonenumber
             , @RequestParam(value = "password", required = true) String password
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        //判断此用户名是否存在
-        if (1 != userService.equalsTelephonenumber(telephonenumber)) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "用户名不存在，请注册后登录！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //获取用户信息
         User user = userService.selectByTelephonenumber(telephonenumber);
         //判断用户名密码是否匹配
@@ -111,72 +111,18 @@ public class UserController {
                     userService.update(user);
                 }
                 User returnuser = new User(user.getId(), null, user.getUsertype(), "normal", user.getUserbalance(), Enciphered.getEnciphered().idCardEncoder(user.getIdcard()), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
+                //生成token
+                System.out.println("token 1 = " + configurationFile.getCONFIGTOKENKEY());
+                String token = Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), returnuser);
                 //设置返回信息
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "登录成功！");
-                map.put("RTDATA", returnuser);
-                //将登录信息存储在session中
-//                HttpSession session = request.getSession(true);
-//                session.setAttribute("SSUSER", returnuser);
+                map.put("RTDATA", token);
             }
         }
         //删除强引用，释放相应内存空间，减少内存溢出风险
         user = null;
         //返回消息
-        return map;
-    }
-
-    /**
-     * 函数名：退出登录函数 - logOut（）
-     * 功能描述： 将session注销，并给予浏览器退出成功提示！
-     * 输入参数：<按照参数定义顺序>
-     * 返回值：map
-     * 异    常：NULL
-     * 创建人：CMAPLE
-     * 创建日期：2019-01-18
-     */
-    @RequestMapping(value = "/logOut", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> logOut() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        session.setAttribute("SSUSER", null);
-        map.put("RTCODE", "success");
-        map.put("RTMSG", "注销登录成功！");
-        map.put("RTDATA", session.getAttribute("SSUSER"));
-        return map;
-    }
-
-    /**
-     * 函数名：注册登录用户信息 - setUserSession（）
-     * 功能描述： 注册登录用户信息，用于登录后的Session注册
-     * 输入参数：<按照参数定义顺序>
-     * 返回值：map
-     * 异    常：NULL
-     * 创建人：CMAPLE
-     * 创建日期：2020-02-25
-     */
-    @RequestMapping(value = "/setUserSession", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> setUserSession(@RequestParam(value = "telephonenumber", required = true) String telephonenumber) {
-        //设置参数
-        Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        //信息判断
-        if (null == sessionuser) {
-            //注册用户信息
-            User user = userService.selectByTelephonenumber(telephonenumber);
-            //身份证信息加密
-            user.setIdcard(Enciphered.getEnciphered().idCardEncoder(user.getIdcard()));
-            session.setAttribute("SSUSER", user);
-            map.put("RTCODE", "success");
-            map.put("RTMSG", "注册session成功！");
-            map.put("RTDATA", user);
-        } else {
-            map.put("RTCODE", "success");
-            map.put("RTMSG", "获取用户信息成功！");
-            map.put("RTDATA", sessionuser);
-        }
-        //信息返回
         return map;
     }
 
@@ -189,22 +135,23 @@ public class UserController {
      * 创建人：CMAPLE
      * 创建日期：2019-01-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/getUserSession", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> getUserSession() {
+    public Map<String, Object> getUserSession(HttpServletRequest httpServletRequest) {
         //设置参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        //信息判断
-        if (null == sessionuser) {
+        String token = httpServletRequest.getHeader("token");
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
+        //获取用户信息
+        User user = userService.selectByTelephonenumber(telephonenumber);
+        if (null == user) {
             map.put("RTCODE", "error");
-            map.put("RTMSG", "获取用户信息失败！账户已注销登录！");
+            map.put("RTMSG", "获取用户信息失败！账号不存在！");
             map.put("RTDATA", null);
         } else {
             map.put("RTCODE", "success");
             map.put("RTMSG", "获取用户信息成功！");
-            map.put("RTDATA", sessionuser);
+            map.put("RTDATA", user);
         }
         return map;
     }
@@ -223,6 +170,7 @@ public class UserController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-01-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "usertype", required = true) String usertype
@@ -295,6 +243,7 @@ public class UserController {
      *                        创建人：CMAPLE
      *                        创建日期：2019-01-18
      */
+    @PassToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "password", required = true) String password
@@ -374,6 +323,7 @@ public class UserController {
      *                        创建人：CMAPLE
      *                        创建日期：2019-01-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/updatetUser", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> updatetUser(
             @RequestParam(value = "id", required = true) int id
@@ -456,21 +406,24 @@ public class UserController {
      * 功能描述：根据传入的用户信息条件修改用户信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param telephonenumber String类型的电话好吗
-     * @param commonip        String类型的常用ip
-     * @param lastplace       String类型的最后登录地址
-     *                        返回值：map
-     *                        异    常：NULL
-     *                        创建人：CMAPLE
-     *                        创建日期：2020-02-18
+     * @param httpServletRequest HttpServletRequest类型的请求
+     * @param commonip           String类型的常用ip
+     * @param lastplace          String类型的最后登录地址
+     *                           返回值：map
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           创建日期：2020-02-18
      */
+    @UserLoginToken
     @RequestMapping(value = "/updateUserLoginInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> updateUserLoginInfo(
-            @RequestParam(value = "telephonenumber", required = false) String telephonenumber
-            , @RequestParam(value = "commonip", required = false) String commonip
+            @RequestParam(value = "commonip", required = false) String commonip
             , @RequestParam(value = "lastplace", required = false) String lastplace
+            , HttpServletRequest httpServletRequest
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        String token = httpServletRequest.getHeader("token");
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
         User user = userService.selectByTelephonenumber(telephonenumber);
         //增加日志
         try {
