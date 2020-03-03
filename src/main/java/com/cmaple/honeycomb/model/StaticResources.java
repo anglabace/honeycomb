@@ -86,7 +86,7 @@ public class StaticResources {
      * 长度：0
      * 是否为null：N
      **/
-    private Date creattime;
+    private Date createtime;
     /***
      静态资源最后修改日期
      * 长度：0

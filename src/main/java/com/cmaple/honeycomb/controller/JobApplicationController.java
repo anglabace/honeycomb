@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * 类名：岗位申请管理服务控制器 - JobApplicationController
  * 功能描述： 岗位申请管理服务控制器
@@ -30,10 +28,6 @@ public class JobApplicationController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
+
 
 }

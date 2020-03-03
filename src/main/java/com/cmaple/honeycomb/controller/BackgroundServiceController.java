@@ -1,5 +1,8 @@
 package com.cmaple.honeycomb.controller;
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.BackgroundService;
 import com.cmaple.honeycomb.model.ToolsFile;
 import com.cmaple.honeycomb.model.User;
@@ -15,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -40,12 +42,6 @@ public class BackgroundServiceController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
-
 
     /**
      * 函数名：select函数 - 根据条件获取后台服务列表 - selectByCriteria（）
@@ -62,6 +58,7 @@ public class BackgroundServiceController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-30
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "servicestate", required = true) String servicestate
@@ -71,17 +68,8 @@ public class BackgroundServiceController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         List<String> list = new ArrayList<String>();
         Map<String, Object> params = new HashMap<String, Object>();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //条件整理
         if (!"all".equals(servicestate)) {
             list.add("servicestate");
@@ -124,13 +112,13 @@ public class BackgroundServiceController {
      *           创建人：CMAPLE
      *           创建日期：2019-10-28
      */
+    @PassToken
     @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         Map<String, Object> datamap = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         BackgroundService returnBackgroundService = null;
         try {
             //根据条件查询
@@ -178,6 +166,7 @@ public class BackgroundServiceController {
      * 创建人：CMAPLE
      * 创建日期：2019-12-24
      */
+    @PassToken
     @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -220,6 +209,7 @@ public class BackgroundServiceController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-30
      */
+    @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "serviceid", required = true) String serviceid
@@ -233,18 +223,11 @@ public class BackgroundServiceController {
             , @RequestParam(value = "author", required = true) String author   //作者,界面上选择
             , @RequestParam(value = "serverid", required = true) String serverid   //页面上选择
             , @RequestParam(value = "files", required = true) List<MultipartFile> files
+            , HttpServletRequest httpServletRequest
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         Map<String, Object> remap = new HashMap<String, Object>();
         //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         try {
             //检查服务名和服务id(后续添加)
             //创建服务文件夹
@@ -272,8 +255,11 @@ public class BackgroundServiceController {
                     }
                 }
             }
+            //获取用户信息
+            String token = httpServletRequest.getHeader("token");
+            String telephonenumber = JWT.decode(token).getAudience().get(0);
             //注册后台服务
-            int returnBackgroundService = backgroundService.insert(new BackgroundService(0, serviceid, name, synopsis, version, path, route + "/" + name, filesize, proglanguage, receivetype, author, sessionuser.getTelephonenumber(), new Date(), serverid, "lock", path + "/" + name));
+            int returnBackgroundService = backgroundService.insert(new BackgroundService(0, serviceid, name, synopsis, version, path, route + "/" + name, filesize, proglanguage, receivetype, author, telephonenumber, new Date(), serverid, "lock", path + "/" + name));
             if (1 == returnBackgroundService) {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "后台服务注册成功！");
@@ -305,20 +291,13 @@ public class BackgroundServiceController {
      *           创建人：CMAPLE
      *           创建日期：2019-10-17
      */
+    @UserLoginToken
     @RequestMapping(value = "/lock", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> lock(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在注册后台服务！");
-            map.put("RTDATA", null);
-            return map;
-        }
         BackgroundService bs = new BackgroundService();
         bs.setId(id);
         bs.setServicestate("lock");
@@ -364,20 +343,13 @@ public class BackgroundServiceController {
      *           创建人：CMAPLE
      *           创建日期：2019-10-17
      */
+    @UserLoginToken
     @RequestMapping(value = "/unLock", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> unLock(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在注册后台服务！");
-            map.put("RTDATA", null);
-            return map;
-        }
         BackgroundService bs = new BackgroundService();
         bs.setId(id);
         bs.setServicestate("run");
@@ -433,6 +405,7 @@ public class BackgroundServiceController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-10-28
      */
+    @UserLoginToken
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
@@ -447,17 +420,9 @@ public class BackgroundServiceController {
             , @RequestParam(value = "author", required = true) String author   //作者,界面上选择
             , @RequestParam(value = "serverid", required = true) String serverid   //页面上选择
             , @RequestParam(value = "files", required = true) List<MultipartFile> files
+            , HttpServletRequest httpServletRequest
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在注册后台服务！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //判断服务根目录文件夹是否存在
         if ("success".equals(FileSelect.getFileSelect().checkFileExists(path, name).get("RTCODE"))) {
             map.put("RTCODE", "error");
@@ -486,7 +451,9 @@ public class BackgroundServiceController {
                 }
             }
         }
-        BackgroundService updatebs = new BackgroundService(id, serviceid, name, synopsis, version, path, null, filesize, proglanguage, receivetype, author, sessionuser.getTelephonenumber(), new Date(), serverid, "lock", null);
+        String token = httpServletRequest.getHeader("token");
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
+        BackgroundService updatebs = new BackgroundService(id, serviceid, name, synopsis, version, path, null, filesize, proglanguage, receivetype, author, telephonenumber, new Date(), serverid, "lock", null);
         try {
             int returnBackgroundService = backgroundService.update(updatebs);
             if (1 == returnBackgroundService) {
@@ -528,20 +495,13 @@ public class BackgroundServiceController {
      *           创建人：CMAPLE
      *           创建日期：2019-10-28
      */
+    @UserLoginToken
     @RequestMapping(value = "/delete", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> delete(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在注册后台服务！");
-            map.put("RTDATA", null);
-            return map;
-        }
         try {
             //判断是否为正常状态
             BackgroundService returnbackgroundService = backgroundService.selectById(id);

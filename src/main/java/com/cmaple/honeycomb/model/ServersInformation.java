@@ -116,7 +116,7 @@ public class ServersInformation {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date creatdate;
+    private Date createtime;
     /**
      * 服务器创建用户
      * 长度：24

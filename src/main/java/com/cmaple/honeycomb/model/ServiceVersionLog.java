@@ -50,7 +50,7 @@ public class ServiceVersionLog {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date date;
+    private Date updatetime;
     /**
      * 服务修改人
      * 长度：24

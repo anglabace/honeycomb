@@ -80,7 +80,7 @@ public class Work {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date createdate;
+    private Date createtime;
     /**
      * 工作需求人数
      * 长度：6

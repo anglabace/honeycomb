@@ -110,7 +110,7 @@ public class BackgroundService {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date createdate;
+    private Date createtime;
     /**
      * 服务所在服务器
      * 长度：12

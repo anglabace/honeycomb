@@ -3,12 +3,15 @@ package com.cmaple.honeycomb.auth.handle;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.cmaple.honeycomb.Interface.PassToken;
 import com.cmaple.honeycomb.Interface.UserLoginToken;
+import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
+import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
+import com.cmaple.honeycomb.tools.FormatTime;
+import com.cmaple.honeycomb.tools.HttpServletRequestTool;
+import com.cmaple.honeycomb.tools.RandomData;
 import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.Date;
 
 /**
  * 类名：登录验证拦截器 - AuthenticationInterceptor
@@ -28,7 +32,7 @@ import java.lang.reflect.Method;
  * 创建人：cmaple
  * 创建日期：2020-03-01
  */
-public class AuthenticationInterceptor implements HandlerInterceptor {
+public class PermissionsInterceptor implements HandlerInterceptor {
     /**
      * 引入UserService
      */
@@ -40,10 +44,27 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
      */
     @Autowired
     private ConfigurationFile configurationFile;
+    /**
+     * 引入OperationLogService
+     */
+    @Autowired
+    private OperationLogService operationLogService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
+        //记录日志
+        operationLogService.insert(new OperationLog(0
+                , "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6)
+                , new Date(), HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest)
+                , "normal"
+                , ""
+                , "用户：[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest) + "] " +
+                "通过 ip[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddress(httpServletRequest) + "] " +
+                "访问 [" + HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(httpServletRequest) + "]服务，" +
+                "请求类型[" + HttpServletRequestTool.getHttpServletRequestToolExample().getMethod(httpServletRequest) + "]，" +
+                "请求参数[" + HttpServletRequestTool.getHttpServletRequestToolExample().getQueryString(httpServletRequest) + "]"));
+        // 从 http 请求头中取出 token
+        String token = httpServletRequest.getHeader("token");
         // 如果不是映射到方法直接通过
         if (!(object instanceof HandlerMethod)) {
             return true;
@@ -63,29 +84,31 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (userLoginToken.required()) {
                 // 执行认证
                 if (token == null) {
-                    throw new RuntimeException("无token，请重新登录！");
+                    throw new Exception("无token，请重新登录！");
                 }
                 // 获取 token 中的 user id
                 String telephonenumber;
                 try {
                     telephonenumber = JWT.decode(token).getAudience().get(0);
-                } catch (JWTDecodeException j) {
-                    throw new RuntimeException("获取用户信息异常，请重新登录！");
+                } catch (Exception e) {
+                    throw new Exception("获取用户信息异常，请重新登录！" + e.getMessage());
                 }
                 User user = userService.selectByTelephonenumber(telephonenumber);
                 if (user == null) {
-                    throw new RuntimeException("用户名不存在，请重新登录！");
+                    throw new Exception("用户名不存在，请重新登录！");
                 }
                 // 验证 token
-                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(configurationFile.getCONFIGTOKENKEY())).build();
+                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(configurationFile.getCONFIGTOKENKEY() + FormatTime.getFormatTime().formatYMDToString(new Date()))).build();
                 try {
                     jwtVerifier.verify(token);
-                } catch (JWTVerificationException e) {
-                    throw new RuntimeException("客户端token异常，请重新登录！");
+                } catch (Exception e) {
+                    throw new Exception("客户端token异常，请重新登录！" + e.getMessage());
                 }
                 return true;
             }
+
         }
+        //日志记录
         return true;
     }
 
@@ -93,6 +116,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest httpServletRequest,
                            HttpServletResponse httpServletResponse,
                            Object o, ModelAndView modelAndView) throws Exception {
+        //日志结束记录
 
     }
 

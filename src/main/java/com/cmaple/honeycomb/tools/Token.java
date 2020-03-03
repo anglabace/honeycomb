@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.cmaple.honeycomb.model.User;
 
+import java.util.Date;
+
 /**
  * 类名：TOKEN管理类 - Token
  * 功能描述：服务管理Token类，主要对Token进行产生和销毁
@@ -56,7 +58,7 @@ public class Token {
     public String getToken(String tokenkey, User user) {
         String token = "";
         token = JWT.create().withAudience(user.getTelephonenumber())
-                .sign(Algorithm.HMAC256(tokenkey));
+                .sign(Algorithm.HMAC256(tokenkey + FormatTime.getFormatTime().formatYMDToString(new Date())));
         return token;
     }
 

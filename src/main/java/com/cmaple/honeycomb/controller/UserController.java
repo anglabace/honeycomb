@@ -4,11 +4,11 @@ package com.cmaple.honeycomb.controller;
 import com.auth0.jwt.JWT;
 import com.cmaple.honeycomb.Interface.PassToken;
 import com.cmaple.honeycomb.Interface.UserLoginToken;
-import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
-import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
-import com.cmaple.honeycomb.tools.*;
+import com.cmaple.honeycomb.tools.Enciphered;
+import com.cmaple.honeycomb.tools.ParamsTools;
+import com.cmaple.honeycomb.tools.Token;
 import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,16 +37,6 @@ public class UserController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-//    @Autowired
-//    private HttpServletRequest request;
-    /**
-     * 引入OperationLogService
-     */
-    @Autowired
-    private OperationLogService operationLogService;
 
     /**
      * 引入ConfigurationFile
@@ -112,7 +102,6 @@ public class UserController {
                 }
                 User returnuser = new User(user.getId(), null, user.getUsertype(), "normal", user.getUserbalance(), Enciphered.getEnciphered().idCardEncoder(user.getIdcard()), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
                 //生成token
-                System.out.println("token 1 = " + configurationFile.getCONFIGTOKENKEY());
                 String token = Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), returnuser);
                 //设置返回信息
                 map.put("RTCODE", "success");
@@ -425,15 +414,6 @@ public class UserController {
         String token = httpServletRequest.getHeader("token");
         String telephonenumber = JWT.decode(token).getAudience().get(0);
         User user = userService.selectByTelephonenumber(telephonenumber);
-        //增加日志
-        try {
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), user.getTelephonenumber(), "normal", "account", "用户：[ " + user.getTelephonenumber() + " ] 使用 iP - " + commonip + " ｜ 登录地点 - " + lastplace + "  进行登录操作！"));
-        } catch (Exception e) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "日志更新失败！");
-            map.put("RTDATA", e.getMessage());
-            return map;
-        }
         //更新登录信息
         if (1 != userService.update(new User(
                 user.getId()                         //用户编号

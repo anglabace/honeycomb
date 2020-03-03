@@ -1,7 +1,9 @@
 package com.cmaple.honeycomb.controller;
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.Report;
-import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.ReportService;
 import com.cmaple.honeycomb.tools.FileSelect;
 import com.cmaple.honeycomb.tools.FormatTime;
@@ -16,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,16 +41,6 @@ public class ReportController {
      */
     @Autowired
     private ReportService reportService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
-    /**
-     * 引入HttpServletResponse
-     */
-    @Autowired
-    private HttpServletResponse response;
 
     /**
      * 函数名：select函数 - 根据ID号查询调查报告 - selectById（）
@@ -63,13 +54,13 @@ public class ReportController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-28
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectById", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void selectById(
             @RequestParam(value = "id", required = true) int id
+            , HttpServletRequest httpServletRequest
+            , HttpServletResponse response
     ) {
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
         Report returnreport = null;
         try {
             //查询调查报告信息
@@ -108,6 +99,7 @@ public class ReportController {
      * 创建人：CMAPLE
      * 创建日期：2019-12-02
      */
+    @PassToken
     @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -143,6 +135,7 @@ public class ReportController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-28
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
@@ -153,15 +146,6 @@ public class ReportController {
         Map<String, Object> map = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<String, Object>();
         List list = new ArrayList();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询调查报告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼接条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -203,28 +187,21 @@ public class ReportController {
      *                   创建人：CMAPLE
      *                   创建日期：2019-12-03
      */
+    @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "reporttype", required = true) String reporttype
             , @RequestParam(value = "filepath", required = true) String filepath
             , @RequestParam(value = "file", required = true) MultipartFile file
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //创建时间
         Date insertdate = new Date();
         //创建调查报告ID
         String insertreportid = "HCR-" + FormatTime.getFormatTime().formatYMDToString(insertdate) + "-" + FormatTime.getFormatTime().formatHMSToString(insertdate);
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建调查报告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //判断是否存在同名文件
         if (!"success".equals(FileSelect.getFileSelect().checkFileExists(filepath, null).get("RTCODE"))) {
             map.put("RTCODE", "error");
@@ -243,8 +220,10 @@ public class ReportController {
         }
         //插入调查报告信息
         try {
+            String token = httpServletRequest.getHeader("token");
+            String telephonenumber = JWT.decode(token).getAudience().get(0);
             //创建调查报告信息
-            Report report = new Report(0, title, insertreportid, reporttype, sessionuser.getTelephonenumber(), new Date(), insertreportid + ".pdf", filepath);
+            Report report = new Report(0, title, insertreportid, reporttype, telephonenumber, new Date(), insertreportid + ".pdf", filepath);
             int returnreport = reportService.insert(report);
             if (1 == returnreport) {
                 map.put("RTCODE", "success");
@@ -283,6 +262,7 @@ public class ReportController {
      *                   创建人：CMAPLE
      *                   创建日期：2019-12-04
      */
+    @UserLoginToken
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
@@ -292,17 +272,9 @@ public class ReportController {
             , @RequestParam(value = "filename", required = true) String filename
             , @RequestParam(value = "filepath", required = true) String filepath
             , @RequestParam(value = "file", required = true) MultipartFile file
+            , HttpServletRequest httpServletRequest
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在更新调查报告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //删除原来的文件
         if (!"success".equals(FileSelect.getFileSelect().checkFileExists(filepath, filename).get("RTCODE"))) {
             FileSelect.getFileSelect().delFile(filepath + "/" + filename);
@@ -323,8 +295,10 @@ public class ReportController {
         }
         //插入调查报告信息
         try {
+            String token = httpServletRequest.getHeader("token");
+            String telephonenumber = JWT.decode(token).getAudience().get(0);
             //创建调查报告信息
-            Report report = new Report(id, title, reportid, reporttype, sessionuser.getTelephonenumber(), new Date(), filename, filepath);
+            Report report = new Report(id, title, reportid, reporttype, telephonenumber, new Date(), filename, filepath);
             int returnreport = reportService.update(report);
             if (1 == returnreport) {
                 map.put("RTCODE", "success");
@@ -360,20 +334,12 @@ public class ReportController {
      *           创建人：CMAPLE
      *           创建日期：2019-12-04
      */
+    @UserLoginToken
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询调查报告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         Report returnreport = null;
         //查询调查报告信息
         try {
@@ -417,5 +383,5 @@ public class ReportController {
         }
         return map;
     }
-    
+
 }

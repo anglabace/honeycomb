@@ -1,11 +1,8 @@
 package com.cmaple.honeycomb.controller;
 
-import com.cmaple.honeycomb.model.OperationLog;
-import com.cmaple.honeycomb.model.User;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.tools.FileSelect;
-import com.cmaple.honeycomb.tools.FormatTime;
-import com.cmaple.honeycomb.tools.RandomData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.*;
-import java.util.Date;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,21 +32,10 @@ import java.util.Map;
 @RequestMapping("/staticresources")
 public class StaticResourcesController {
     /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
-    /**
-     * 引入HttpServletResponse
-     */
-    @Autowired
-    private HttpServletResponse response;
-    /**
      * 引入OperationLogService
      */
     @Autowired
     private OperationLogService operationLogService;
-
     /**
      * 函数名：select函数-按照条件查询日志- selectStaticResources（）
      * 功能描述： 根据条件进行条件进行日志的查询
@@ -61,25 +47,16 @@ public class StaticResourcesController {
      *                 创建人：CMAPLE
      *                 创建日期：2019-09-27
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectStaticResources", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectStaticResources(
             @RequestParam(value = "filepath", required = true) String filepath
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         map = FileSelect.getFileSelect().getfileMap(filepath);
         //当请求交易异常，进行日志记录
         if ("Exception".equals(map.get("RTCODE"))) {
             map.put("RTCODE", "error");
-            //记录错误日志
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 查看静态资源列表交易异常，异常信息如下：" + map.get("RTDATA")));
         }
         return map;
     }
@@ -97,6 +74,7 @@ public class StaticResourcesController {
      *                   创建人：CMAPLE
      *                   创建日期：2019-09-27
      */
+    @UserLoginToken
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> uploadFile(
             @RequestParam(value = "file", required = true) MultipartFile file
@@ -104,20 +82,10 @@ public class StaticResourcesController {
             , @RequestParam(value = "search", required = true) String filename
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         map = FileSelect.getFileSelect().uploadFile(file, uploadpath, filename);
         //当请求交易异常，进行日志记录
         if ("Exception".equals(map.get("RTCODE"))) {
             map.put("RTCODE", "error");
-            //记录错误日志
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 上传静态资源交易异常，异常信息如下：" + map.get("RTDATA")));
         }
         return map;
     }
@@ -133,23 +101,15 @@ public class StaticResourcesController {
      *                 创建人：CMAPLE
      *                 创建日期：2019-09-29
      */
+    @UserLoginToken
     @RequestMapping(value = "/deleteFile", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> deleteFile(
             @RequestParam(value = "filepath", required = true) String filepath
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         map = FileSelect.getFileSelect().delFile(filepath);
         if ("Exception".equals(map.get("RTCODE"))) {
             map.put("RTCODE", "error");
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 删除静态资源交易异常，异常信息如下：" + map.get("RTDATA")));
         }
         return map;
     }
@@ -166,14 +126,14 @@ public class StaticResourcesController {
      *                 创建人：CMAPLE
      *                 创建日期：2019-09-29
      */
+    @UserLoginToken
     @RequestMapping(value = "/downloadFile", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public void downloadFile(
             @RequestParam(value = "filepath", required = true) String filepath
             , @RequestParam(value = "filename", required = true) String filename
+            , HttpServletResponse response
     ) {
         //初始化参数
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
         //设置相关信息
         try {
             // 设置信息给客户端不解析
@@ -185,8 +145,6 @@ public class StaticResourcesController {
             response.setHeader("Content-Disposition", "attachment;filename=" + hehe);
         } catch (Exception e) {
             e.printStackTrace();
-            //记录日志
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 下载文件【" + filepath + "/" + filename + "】交易异常，异常信息如下：" + e.getMessage()));
         }
         //下载文件
         try (
@@ -199,8 +157,6 @@ public class StaticResourcesController {
             FileSelect.getFileSelect().downloadFile(bufferedOutputStream, bufferedInputStream);
         } catch (Exception e) {
             e.printStackTrace();
-            //记录日志
-            operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 下载文件【" + filepath + "/" + filename + "】交易异常，异常信息如下：" + e.getMessage()));
         }
     }
 }

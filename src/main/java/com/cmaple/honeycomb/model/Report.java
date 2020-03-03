@@ -68,7 +68,7 @@ public class Report {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date creatdate;
+    private Date createtime;
     /**
      * 调查报告文件名
      * 长度：24

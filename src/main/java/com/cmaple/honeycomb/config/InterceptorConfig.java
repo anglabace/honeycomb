@@ -1,6 +1,6 @@
-package com.cmaple.honeycomb.auth;
+package com.cmaple.honeycomb.config;
 
-import com.cmaple.honeycomb.auth.handle.AuthenticationInterceptor;
+import com.cmaple.honeycomb.auth.handle.PermissionsInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -24,7 +24,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor() {
-        return new AuthenticationInterceptor();
+    public PermissionsInterceptor authenticationInterceptor() {
+        return new PermissionsInterceptor();
     }
 }

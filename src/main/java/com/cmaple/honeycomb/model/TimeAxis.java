@@ -56,7 +56,7 @@ public class TimeAxis {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date eventdate;
+    private Date eventtime;
     /**
      * 时间轴创建人
      * 长度：24
@@ -68,5 +68,5 @@ public class TimeAxis {
      * 长度：0
      * 是否为null：Y
      **/
-    private Date createdate;
+    private Date createtime;
 }

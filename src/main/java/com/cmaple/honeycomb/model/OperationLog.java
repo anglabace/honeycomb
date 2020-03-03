@@ -58,7 +58,7 @@ public class OperationLog{
      **/
     @ColumnWidth(35)
     @ExcelProperty(value = "操作时间")
-    private Date date;
+    private Date createtime;
     /**
      * 操作人员
      * 长度：24

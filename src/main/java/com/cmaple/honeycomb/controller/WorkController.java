@@ -1,5 +1,8 @@
 package com.cmaple.honeycomb.controller;
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.model.Work;
 import com.cmaple.honeycomb.service.UserService;
@@ -12,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -38,11 +40,6 @@ public class WorkController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
 
     /**
      * 函数名：select函数 - 根据ID号查询岗位信息 - selectById（）
@@ -55,6 +52,7 @@ public class WorkController {
      *           创建人：NULL
      *           创建日期：2019-12-06
      */
+    @PassToken
     @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
@@ -101,6 +99,7 @@ public class WorkController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-12-06
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
@@ -111,15 +110,6 @@ public class WorkController {
         Map<String, Object> map = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<String, Object>();
         List list = new ArrayList();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询岗位信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼接条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -156,6 +146,7 @@ public class WorkController {
      * 创建人：CMAPLE
      * 创建日期：2019-12-06
      */
+    @PassToken
     @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectDescOrderByTime() {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -194,6 +185,7 @@ public class WorkController {
      *                    创建人：CMAPLE
      *                    创建日期：2019-12-06
      */
+    @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
@@ -203,24 +195,18 @@ public class WorkController {
             , @RequestParam(value = "content", required = true) String content
             , @RequestParam(value = "need", required = true) int need
             , @RequestParam(value = "application", required = true) int application
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //创建时间
         Date insertdate = new Date();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建岗位信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //插入岗位信息
         try {
+            String token = httpServletRequest.getHeader("token");
+            String telephonenumber = JWT.decode(token).getAudience().get(0);
             //创建岗位信息
-            Work insterWork = new Work(0, title, place, type, nature, content, sessionuser.getTelephonenumber(), insertdate, need, application);
+            Work insterWork = new Work(0, title, place, type, nature, content, telephonenumber, insertdate, need, application);
             int returnWork = workService.insert(insterWork);
             if (1 == returnWork) {
                 map.put("RTCODE", "success");
@@ -263,6 +249,7 @@ public class WorkController {
      *                    创建人：CMAPLE
      *                    创建日期：2019-12-06
      */
+    @UserLoginToken
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
@@ -273,24 +260,19 @@ public class WorkController {
             , @RequestParam(value = "content", required = true) String content
             , @RequestParam(value = "need", required = true) int need
             , @RequestParam(value = "application", required = true) int application
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //创建时间
         Date insertdate = new Date();
         //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在更新岗位信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //插入岗位信息
         try {
+            String token = httpServletRequest.getHeader("token");
+            String telephonenumber = JWT.decode(token).getAudience().get(0);
             //创建岗位信息
-            Work insterWork = new Work(id, title, place, type, nature, content, sessionuser.getTelephonenumber(), insertdate, need, application);
+            Work insterWork = new Work(id, title, place, type, nature, content, telephonenumber, insertdate, need, application);
             int returnWork = workService.update(insterWork);
             if (1 == returnWork) {
                 map.put("RTCODE", "success");
@@ -326,20 +308,12 @@ public class WorkController {
      *           创建人：CMAPLE
      *           创建日期：2019-12-06
      */
+    @UserLoginToken
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在删除岗位信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //删除数据库信息记录
         try {
             int isdel = workService.deleteById(id);

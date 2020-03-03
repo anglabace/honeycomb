@@ -1,7 +1,7 @@
 package com.cmaple.honeycomb.controller;
 
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.ServiceVersionLog;
-import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.ServiceVersionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +25,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/ServiceVersionLog")
 public class ServiceVersionLogController {
-
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
     /**
      * 引入ServiceVersionLogService
      */
@@ -50,20 +42,12 @@ public class ServiceVersionLogController {
      *                  创建人：CMAPLE
      *                  创建日期：2019-11-11
      */
+    @UserLoginToken
     @RequestMapping(value = "/getServiceVersionLogById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getServiceVersionLogById(
             @RequestParam(value = "serviceid", required = true) int serviceid
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，再查询服务版本日志！");
-            map.put("RTDATA", null);
-            return map;
-        }
         List<ServiceVersionLog> ServiceVersionLoglist = null;
         try {
             ServiceVersionLoglist = serviceVersionLogService.getBackgroundServices(serviceid);

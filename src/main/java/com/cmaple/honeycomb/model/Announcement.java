@@ -75,9 +75,9 @@ public class Announcement {
     /**
      * 公告创建时间
      * 长度：0
-     * 是否为null：N
+     * 是否为null：Na
      **/
-    private Date creattime;
+    private Date createtime;
 
     /**
      * 公告阅读时间

@@ -1,7 +1,9 @@
 package com.cmaple.honeycomb.controller;
 
+import com.auth0.jwt.JWT;
+import com.cmaple.honeycomb.Interface.PassToken;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.Milestone;
-import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.MilestoneService;
 import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.FileSelect;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -40,11 +41,6 @@ public class MilestoneController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
 
 
     /**
@@ -58,6 +54,7 @@ public class MilestoneController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-19
      */
+    @PassToken
     @RequestMapping(value = "/selectById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectById(
             @RequestParam(value = "id", required = true) int id
@@ -108,6 +105,7 @@ public class MilestoneController {
      * 创建人：CMAPLE
      * 创建日期：2019-11-19
      */
+    @PassToken
     @RequestMapping(value = "/selectAtHomePage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectAtHomePage() {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -143,6 +141,7 @@ public class MilestoneController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-11-20
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "search", required = true) String search
@@ -151,17 +150,8 @@ public class MilestoneController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询里程碑信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼接条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -198,6 +188,7 @@ public class MilestoneController {
      * 创建人：CMAPLE
      * 创建日期：2019-11-20
      */
+    @PassToken
     @RequestMapping(value = "/selectDescOrderByTime", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectDescOrderByTime() {
         //初始化参数
@@ -241,6 +232,7 @@ public class MilestoneController {
      *                    创建人：CMAPLE
      *                    创建日期：2019-11-20
      */
+    @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
@@ -252,18 +244,10 @@ public class MilestoneController {
             , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "imgurl", required = true) String imgurl
             , @RequestParam(value = "jpgfile", required = true) MultipartFile jpgfile
-
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         Date insertdate = new Date();
         String imgname = "IMG_Milestone" + FormatTime.getFormatTime().formatYMDToString(insertdate) + FormatTime.getFormatTime().formatHMSToString(insertdate) + ".jpg";
         //上传里程碑文件文件
@@ -296,8 +280,10 @@ public class MilestoneController {
             map.put("RTDATA", "文件名：【" + imgurl + "/" + imgname + "】");
             return map;
         }
+        String token = httpServletRequest.getHeader("token");
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
         //创建新的里程碑
-        Milestone milestone = new Milestone(0, title, synopsis, sessionuser.getTelephonenumber(), insertdate, readtime, filename, filepath, imgurl + "/" + imgname, buttongroup);
+        Milestone milestone = new Milestone(0, title, synopsis, telephonenumber, insertdate, readtime, filename, filepath, imgurl + "/" + imgname, buttongroup);
         try {
             int returnmilestone = milestoneService.insert(milestone);
             if (1 == returnmilestone) {
@@ -340,6 +326,7 @@ public class MilestoneController {
      *                    创建人：CMAPLE
      *                    创建日期：2019-11-21
      */
+    @UserLoginToken
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> update(
             @RequestParam(value = "id", required = true) int id
@@ -352,17 +339,10 @@ public class MilestoneController {
             , @RequestParam(value = "file", required = true) MultipartFile file
             , @RequestParam(value = "imgurl", required = true) String imgurl
             , @RequestParam(value = "jpgfile", required = true) MultipartFile jpgfile
+            , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //上传里程碑文件文件
         if (!"success".equals(FileSelect.getFileSelect().checkFileExists(filepath, filename).get("RTCODE"))) {
             Map<String, Object> delmap = FileSelect.getFileSelect().delFile(filepath + "/" + filename);
@@ -395,8 +375,10 @@ public class MilestoneController {
             map.put("RTDATA", "文件名：【" + imgurl + "】");
             return map;
         }
+        String token = httpServletRequest.getHeader("token");
+        String telephonenumber = JWT.decode(token).getAudience().get(0);
         //更新里程碑
-        Milestone milestone = new Milestone(id, title, synopsis, sessionuser.getTelephonenumber(), new Date(), readtime, filename, filepath, imgurl, buttongroup);
+        Milestone milestone = new Milestone(id, title, synopsis, telephonenumber, new Date(), readtime, filename, filepath, imgurl, buttongroup);
         try {
             int returnmilestone = milestoneService.update(milestone);
             if (1 == returnmilestone) {
@@ -431,20 +413,13 @@ public class MilestoneController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-22
      */
+    @UserLoginToken
     @RequestMapping(value = "/deleteById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> deleteById(
             @RequestParam(value = "id", required = true) int id
     ) {
         //初始化参数
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在创建公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //删除里程碑
         try {
             //删除相应的文件

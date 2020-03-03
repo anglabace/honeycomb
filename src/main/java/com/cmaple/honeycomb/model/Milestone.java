@@ -65,7 +65,7 @@ public class Milestone {
      * 长度：0
      * 是否为null：N
      **/
-    private Date creattime;
+    private Date createtime;
 
     /**
      * 里程碑阅读时间

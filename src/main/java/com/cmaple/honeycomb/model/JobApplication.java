@@ -97,7 +97,7 @@ public class JobApplication {
      * 长度：24
      * 是否为null：Y
      **/
-    private Date createDate;
+    private Date createtime;
     /**
      * 是否通过申请
      * 长度：24

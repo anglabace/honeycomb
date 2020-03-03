@@ -1,8 +1,8 @@
 package com.cmaple.honeycomb.controller;
 
 import com.alibaba.excel.EasyExcel;
+import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.OperationLog;
-import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.FormatTime;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -41,16 +40,6 @@ public class OperationLogController {
      */
     @Autowired
     private UserService userService;
-    /**
-     * 引入HttpServletRequest
-     */
-    @Autowired
-    private HttpServletRequest request;
-    /**
-     * 引入HttpServletResponse
-     */
-    @Autowired
-    private HttpServletResponse response;
 
     /**
      * 函数名：select函数-按照条件查询日志- selectByCriteria（）
@@ -68,6 +57,7 @@ public class OperationLogController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-25
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
@@ -78,18 +68,9 @@ public class OperationLogController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //拼装查询条件
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼装条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -113,8 +94,6 @@ public class OperationLogController {
             returnpologs = operationLogService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
             //获取信息
-            //User sessionuser = (User) session.getAttribute("SSUSER");
-            //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 查看日志交易异常，异常信息如下：" + e.getMessage()));
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
             map.put("RTMSG", "日志信息查询失败，查询交易异常！");
@@ -145,6 +124,7 @@ public class OperationLogController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-29
      */
+    @UserLoginToken
     @RequestMapping(value = "/selectUserOperationLogByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectUserOperationLogByCriteria(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
@@ -156,18 +136,9 @@ public class OperationLogController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
-        HttpSession session = request.getSession();
         //拼装查询条件
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
-        //获取信息
-        User sessionuser = (User) session.getAttribute("SSUSER");
-        if (null == sessionuser) {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "请先登录，在查询公告信息！");
-            map.put("RTDATA", null);
-            return map;
-        }
         //拼装条件
         if (!"".equals(operator)) {
             list.add("operator");
@@ -194,7 +165,6 @@ public class OperationLogController {
             //根据条件查询
             returnpologs = operationLogService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
         } catch (Exception e) {
-            //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 查看日志交易异常，异常信息如下：" + e.getMessage()));
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");
             map.put("RTMSG", "日志信息查询失败，查询交易异常！");
@@ -224,6 +194,7 @@ public class OperationLogController {
      *                     创建人：CMAPLE
      *                     创建日期：2019-09-29
      */
+    @UserLoginToken
     @RequestMapping(value = "/getOperationLogByParamsToExcel", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public void getOperationLogByParamsToExcel(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
@@ -231,6 +202,8 @@ public class OperationLogController {
             , @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "logstype", required = true) String logstype
             , @RequestParam(value = "num", required = true) int num
+            , HttpServletRequest request
+            , HttpServletResponse response
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         List paramslist = new ArrayList();
@@ -253,18 +226,14 @@ public class OperationLogController {
             params.put("operatetype", operatetype);
         }
         try {
-            HttpSession session = request.getSession();
-            //获取信息
-            User sessionuser = (User) session.getAttribute("SSUSER");
             List<OperationLog> result = operationLogService.selectByCriteria(paramslist, params, ParamsTools.getPageTools().getPageByNum(1, num), num);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
             response.setHeader("Content-disposition", "attachment;filename=OperationLog_" + FormatTime.getFormatTime().formatHMSMSToString(new Date()) + ".xlsx");
             EasyExcel.write(response.getOutputStream(), OperationLog.class).sheet("模板").doWrite(result);
             //记录操作日志
-            //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "normal", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ]  导出日志为Excel成功！"));
         } catch (Exception e) {
-            //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), sessionuser.getTelephonenumber(), "exception", "resources", "用户：[ " + sessionuser.getTelephonenumber() + " ] 导出日志为Excel交易异常，异常信息如下：" + e.getMessage()));
+            //
         }
     }
 }
