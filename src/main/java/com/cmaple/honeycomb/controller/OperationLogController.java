@@ -47,7 +47,6 @@ public class OperationLogController {
      * 输入参数：<按照参数定义顺序>
      *
      * @param timeaxisdate List类型的时间范围
-     * @param operatetype  String类型的操作类型
      * @param search       String类型的全文搜索内容
      * @param logstype     String类型的日志类型
      * @param page         int类型的页数
@@ -61,7 +60,6 @@ public class OperationLogController {
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectByCriteria(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
-            , @RequestParam(value = "operatetype", required = true) String operatetype
             , @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "logstype", required = true) String logstype
             , @RequestParam(value = "page", required = true) int page
@@ -83,10 +81,6 @@ public class OperationLogController {
         if (!"all".equals(logstype)) {
             list.add("logstype");
             params.put("logstype", logstype);
-        }
-        if (!"all".equals(operatetype)) {
-            list.add("operatetype");
-            params.put("operatetype", operatetype);
         }
         List<OperationLog> returnpologs = null;
         try {
@@ -113,7 +107,6 @@ public class OperationLogController {
      * 输入参数：<按照参数定义顺序>
      *
      * @param timeaxisdate List类型的时间范围
-     * @param operatetype  String类型的操作类型
      * @param search       String类型的全文搜索内容
      * @param logstype     String类型的日志类型
      * @param operator     String类型的用户电话号码
@@ -128,7 +121,6 @@ public class OperationLogController {
     @RequestMapping(value = "/selectUserOperationLogByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> selectUserOperationLogByCriteria(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
-            , @RequestParam(value = "operatetype", required = true) String operatetype
             , @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "logstype", required = true) String logstype
             , @RequestParam(value = "operator", required = true) String operator
@@ -156,10 +148,6 @@ public class OperationLogController {
             list.add("logstype");
             params.put("logstype", logstype);
         }
-        if (!"all".equals(operatetype)) {
-            list.add("operatetype");
-            params.put("operatetype", operatetype);
-        }
         List<OperationLog> returnpologs = null;
         try {
             //根据条件查询
@@ -185,7 +173,6 @@ public class OperationLogController {
      * 输入参数：<按照参数定义顺序>
      *
      * @param timeaxisdate List类型的时间范围
-     * @param operatetype  String类型的操作类型
      * @param search       String类型的全文搜索内容
      * @param logstype     String类型的日志类型
      * @param num          int类型的展示数量
@@ -198,7 +185,6 @@ public class OperationLogController {
     @RequestMapping(value = "/getOperationLogByParamsToExcel", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public void getOperationLogByParamsToExcel(
             @RequestParam(value = "timeaxisdate", required = true) List timeaxisdate
-            , @RequestParam(value = "operatetype", required = true) String operatetype
             , @RequestParam(value = "search", required = true) String search
             , @RequestParam(value = "logstype", required = true) String logstype
             , @RequestParam(value = "num", required = true) int num
@@ -220,10 +206,6 @@ public class OperationLogController {
         if (!"all".equals(logstype)) {
             paramslist.add("logstype");
             params.put("logstype", logstype);
-        }
-        if (!"all".equals(operatetype)) {
-            paramslist.add("operatetype");
-            params.put("operatetype", operatetype);
         }
         try {
             List<OperationLog> result = operationLogService.selectByCriteria(paramslist, params, ParamsTools.getPageTools().getPageByNum(1, num), num);

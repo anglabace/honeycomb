@@ -29,12 +29,12 @@ public class ServiceVersionLogSQL {
     public String queryServiceVersionLogById(@Param("serviceid") int serviceid) {
         String result = new SQL() {
             {
-                SELECT("version ,date ,operator ,content ");
+                SELECT("id version ,updatetime ,operator ,content ");
                 FROM("CS_ServiceVersionLog ");
             }
         }.toString();
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "date");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "updatetime");
         return result;
     }
 }

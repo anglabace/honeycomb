@@ -35,7 +35,7 @@ public class JobApplicationSQL {
     public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,workId ,name ,phonenNmber ,emaile ,address ,company ,githubUrl ,personelUrl ,information ,createDate ,idpassed ,applicationUser ,applicationDate ");
+                SELECT("id ,workId ,name ,phonenNmber ,emaile ,address ,company ,githubUrl ,personelUrl ,information ,createtime ,idpassed ,applicationUser ,applicationDate ");
                 FROM("CS_JobApplication ");
             }
         }.toString();
@@ -44,7 +44,7 @@ public class JobApplicationSQL {
             result = sqlPutAnd(result, list, params);
         }
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createDate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createtime");
         //添加分页
         result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
         return result;
@@ -100,7 +100,7 @@ public class JobApplicationSQL {
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {
-                    result += " DATE_FORMAT( createDate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createDate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                    result += " DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 //全文搜索
                 if ("search".equals(list.get(i))) {

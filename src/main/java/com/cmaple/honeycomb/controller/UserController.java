@@ -68,6 +68,7 @@ public class UserController {
         User user = userService.selectByTelephonenumber(telephonenumber);
         //判断用户名密码是否匹配
         if (!user.getPassword().equals(password)) {
+            //密码错误执行
             if (5 > user.getErrortry()) {
                 user.setErrortry(user.getErrortry() + 1);
                 userService.update(user);
@@ -86,15 +87,19 @@ public class UserController {
             }
             return map;
         } else {
+            //密码正确执行
             if ("lock".equals(user.getUseraffairs())) {
+                //账户锁定状态返回
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "账户已锁定，请进行账号申诉解锁！");
                 map.put("RTDATA", null);
             } else if ("del".equals(user.getUseraffairs())) {
+                //账户删除状态返回
                 map.put("RTCODE", "error");
                 map.put("RTMSG", "账户已删除，请进行账号申诉恢复！");
                 map.put("RTDATA", null);
-            } else {
+            } else if ("normal".equals(user.getUseraffairs())) {
+                //账户正常状态
                 if (0 != user.getErrortry()) {
                     //登录成功重写错误记录数
                     user.setErrortry(0);
@@ -107,6 +112,11 @@ public class UserController {
                 map.put("RTCODE", "success");
                 map.put("RTMSG", "登录成功！");
                 map.put("RTDATA", token);
+            } else {
+                //账户其他异常状态返回
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "账户状态异常，请联系管理员！");
+                map.put("RTDATA", null);
             }
         }
         //删除强引用，释放相应内存空间，减少内存溢出风险
@@ -133,6 +143,8 @@ public class UserController {
         String telephonenumber = JWT.decode(token).getAudience().get(0);
         //获取用户信息
         User user = userService.selectByTelephonenumber(telephonenumber);
+        user.setIdcard(Enciphered.getEnciphered().idCardEncoder(user.getIdcard()));
+        user.setTelephonenumber(Enciphered.getEnciphered().telephonenumberEncoder(user.getTelephonenumber()));
         if (null == user) {
             map.put("RTCODE", "error");
             map.put("RTMSG", "获取用户信息失败！账号不存在！");
@@ -219,10 +231,7 @@ public class UserController {
      * @param password        String类型的密码
      * @param name            String类型的真实姓名
      * @param idcard          String类型的身份证好吗
-     * @param useraddress     String类型的用户地址
      * @param telephonenumber String类型的电话好吗
-     * @param useremail       String类型的电子邮件
-     * @param usersign        String类型的签名
      * @param petname         String类型的昵称
      * @param commonip        String类型的常用ip
      * @param lastplace       String类型的最后登录地址
@@ -236,15 +245,12 @@ public class UserController {
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "password", required = true) String password
-            , @RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "idcard", required = false) String idcard
-            , @RequestParam(value = "useraddress", required = false) String useraddress
+            , @RequestParam(value = "name", required = true) String name
+            , @RequestParam(value = "idcard", required = true) String idcard
             , @RequestParam(value = "telephonenumber", required = true) String telephonenumber
-            , @RequestParam(value = "useremail", required = false) String useremail
-            , @RequestParam(value = "usersign", required = false) String usersign
-            , @RequestParam(value = "petname", required = false) String petname
-            , @RequestParam(value = "commonip", required = false) String commonip
-            , @RequestParam(value = "lastplace", required = false) String lastplace
+            , @RequestParam(value = "petname", required = true) String petname
+            , @RequestParam(value = "commonip", required = true) String commonip
+            , @RequestParam(value = "lastplace", required = true) String lastplace
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         //检查电话号码是否被注册
@@ -265,16 +271,7 @@ public class UserController {
                 return map;
             }
         }
-        //检查电子邮箱是否被注册
-        if (null != useremail) {
-            if (0 < userService.equalsEmail(useremail)) {
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "电子邮箱【" + useremail + "】已被注册！");
-                map.put("RTDATA", null);
-                return map;
-            }
-        }
-        int insertreturn = userService.insert(new User(0, password, "member", "normal", 0.0, idcard, name, useraddress, telephonenumber, useremail, new Date(), usersign, petname, 0, commonip, lastplace, "0,0,0,1,1"));
+        int insertreturn = userService.insert(new User(0, password, "member", "normal", 0.00, idcard, name, null, telephonenumber, null, new Date(), null, petname, 0, commonip, lastplace, "0,0,0,1,1"));
         if (1 == insertreturn) {
             map.put("RTCODE", "success");
             map.put("RTMSG", "用户注册成功！");

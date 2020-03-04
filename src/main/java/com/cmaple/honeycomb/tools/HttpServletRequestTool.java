@@ -3,6 +3,10 @@ package com.cmaple.honeycomb.tools;
 import com.auth0.jwt.JWT;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 类名：HTTP请求工具类 - HttpServletRequestTool
@@ -91,7 +95,7 @@ public class HttpServletRequestTool {
      *                级别：NULL
      *                修改日期：
      */
-    public String getIpAddgetRequestUser(HttpServletRequest request) {
+    public String getIpAddgetRequestUser(HttpServletRequest request) throws Exception {
         String user = "";
         String token = request.getHeader("token");
         if (null != token) {
@@ -133,7 +137,26 @@ public class HttpServletRequestTool {
      *                修改日期：
      */
     public String getQueryString(HttpServletRequest request) {
-        return request.getQueryString();
+        String returninfo = null;
+        String query = request.getQueryString();
+        if (null == query) {
+            Map<String, String> parmMap = new HashMap<String, String>();
+            //方式一：getParameterMap()，获得请求参数map
+            Map<String, String[]> map = request.getParameterMap();
+            //参数名称
+            Set<String> key = map.keySet();
+            //参数迭代器
+            Iterator<String> iterator = key.iterator();
+            while (iterator.hasNext()) {
+                String k = iterator.next();
+                parmMap.put(k, map.get(k)[0]);
+            }
+            returninfo = parmMap.toString();
+        } else {
+            returninfo = query;
+        }
+
+        return returninfo;
     }
 
     /**

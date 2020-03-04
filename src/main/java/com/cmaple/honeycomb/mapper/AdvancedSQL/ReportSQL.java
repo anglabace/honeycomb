@@ -35,7 +35,7 @@ public class ReportSQL {
     public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,title ,reportid ,reporttype ,author ,creatdate ,filename ,filepath ");
+                SELECT("id ,title ,reportid ,reporttype ,author ,createtime ,filename ,filepath ");
                 FROM("CS_Report ");
             }
         }.toString();
@@ -43,7 +43,7 @@ public class ReportSQL {
             result = sqlPutAnd(result, list, params);
         }
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creatdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createtime");
         //添加分页
         result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
         return result;
@@ -87,12 +87,12 @@ public class ReportSQL {
     public String selectDescOrderByTime() {
         String result = new SQL() {
             {
-                SELECT("id ,title ,reporttype ,creatdate ");
+                SELECT("id ,title ,reporttype ,createtime ");
                 FROM("CS_Report ");
             }
         }.toString();
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "creatdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createtime");
         return result;
     }
 
@@ -120,7 +120,7 @@ public class ReportSQL {
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {
-                    result += " DATE_FORMAT( creatdate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( creatdate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                    result += " DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 //全文搜索
                 if ("search".equals(list.get(i))) {

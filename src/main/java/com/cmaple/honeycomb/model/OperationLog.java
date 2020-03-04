@@ -76,14 +76,6 @@ public class OperationLog{
     @ExcelProperty(value = "日志类型")
     private String logstype;
     /**
-     * 日志操作类型
-     * 长度：12
-     * 是否为null：N
-     **/
-    @ColumnWidth(30)
-    @ExcelProperty(value = "日志操作类型")
-    private String operatetype;
-    /**
      * 日志详细信息
      * 长度：254
      * 是否为null：N

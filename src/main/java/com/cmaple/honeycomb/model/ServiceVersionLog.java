@@ -31,13 +31,20 @@ import java.util.Date;
 public class ServiceVersionLog {
 
     /**
-     * 服务编号
+     * 主键
      * 长度：24
      * 是否为null：N
      * 自动递增
      * 主键
      **/
-    @TableId(value = "serviceid", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
+    private int id;
+    /**
+     * 服务编号
+     * 长度：24
+     * 是否为null：N
+     * 主键
+     **/
     private int serviceid;
     /**
      * 服务版本号

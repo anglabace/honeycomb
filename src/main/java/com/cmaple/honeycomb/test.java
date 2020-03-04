@@ -1,6 +1,9 @@
 package com.cmaple.honeycomb;
 
+import com.cmaple.honeycomb.tools.Aliyun;
+
 import java.io.IOException;
+import java.util.Map;
 
 public class test {
 
@@ -40,8 +43,8 @@ public class test {
 
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
 ////
-//        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程涛", "330481200502233019", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
-//        System.out.println(map1);
+        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程涛", "330481200502233019", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
+        System.out.println(map1);
 
 
         //按钮组

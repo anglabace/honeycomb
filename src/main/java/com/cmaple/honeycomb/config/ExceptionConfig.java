@@ -40,7 +40,6 @@ public class ExceptionConfig {
                 , "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6)
                 , new Date(), HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(request)
                 , "exception"
-                , ""
                 , "用户：[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(request) + "] " +
                 "通过 ip[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddress(request) + "] " +
                 "访问 [" + HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(request) + "]服务出现异常，" +

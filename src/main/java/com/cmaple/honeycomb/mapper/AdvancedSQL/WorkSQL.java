@@ -34,7 +34,7 @@ public class WorkSQL {
     public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,title ,place ,type ,nature ,content ,createuser ,createdate ,need ,application ");
+                SELECT("id ,title ,place ,type ,nature ,content ,createuser ,createtime ,need ,application ");
                 FROM("CS_Work ");
             }
         }.toString();
@@ -42,7 +42,7 @@ public class WorkSQL {
             result = sqlPutAnd(result, list, params);
         }
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createtime");
         //添加分页
         result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
         return result;
@@ -86,12 +86,12 @@ public class WorkSQL {
     public String selectDescOrderByTime() {
         String result = new SQL() {
             {
-                SELECT("id ,title ,place ,type ,nature ,createdate ,need ");
+                SELECT("id ,title ,place ,type ,nature ,createtime ,need ");
                 FROM("CS_Work ");
             }
         }.toString();
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createdate");
+        result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "createtime");
         return result;
     }
 
@@ -119,7 +119,7 @@ public class WorkSQL {
                 }
                 //服务状态
                 if ("timeaxisdate".equals(list.get(i))) {
-                    result += " DATE_FORMAT( createdate, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createdate , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
+                    result += " DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 //全文搜索
                 if ("search".equals(list.get(i))) {

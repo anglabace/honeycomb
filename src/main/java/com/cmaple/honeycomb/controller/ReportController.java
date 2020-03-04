@@ -54,7 +54,7 @@ public class ReportController {
      *           创建人：CMAPLE
      *           创建日期：2019-11-28
      */
-    @UserLoginToken
+    @PassToken
     @RequestMapping(value = "/selectById", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void selectById(
             @RequestParam(value = "id", required = true) int id

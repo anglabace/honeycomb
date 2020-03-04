@@ -57,7 +57,6 @@ public class PermissionsInterceptor implements HandlerInterceptor {
                 , "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6)
                 , new Date(), HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest)
                 , "normal"
-                , ""
                 , "用户：[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest) + "] " +
                 "通过 ip[" + HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddress(httpServletRequest) + "] " +
                 "访问 [" + HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(httpServletRequest) + "]服务，" +

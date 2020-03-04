@@ -34,7 +34,7 @@ public class BackgroundServiceSQL {
     public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,serviceid ,name ,synopsis ,version ,path ,route ,size ,proglanguage ,receivetype ,author ,upusername ,createdate ,serverid ,servicestate ,annexepath ");
+                SELECT("id ,serviceid ,name ,synopsis ,version ,path ,route ,size ,proglanguage ,receivetype ,author ,upusername ,createtime ,serverid ,servicestate ,annexepath ");
                 FROM("CS_BackgroundService ");
             }
         }.toString();
@@ -87,12 +87,12 @@ public class BackgroundServiceSQL {
     public String selectDescOrderByTime() {
         String result = new SQL() {
             {
-                SELECT("id ,name ,synopsis ,createdate ");
+                SELECT("id ,name ,synopsis ,createtime ");
                 FROM("CS_BackgroundService ");
             }
         }.toString();
         //添加排序
-        result = SqlTool.getSqlTool().sqlPutOrderBy(result, "createdate");
+        result = SqlTool.getSqlTool().sqlPutOrderBy(result, "createtime");
         return result;
     }
 
