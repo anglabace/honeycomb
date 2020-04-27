@@ -37,8 +37,8 @@ public class StaticResourcesController {
     @Autowired
     private OperationLogService operationLogService;
     /**
-     * 函数名：select函数-按照条件查询日志- selectStaticResources（）
-     * 功能描述： 根据条件进行条件进行日志的查询
+     * 函数名：select函数-按照条件查询静态资源- selectStaticResources（）
+     * 功能描述： 按照条件查询静态资源
      * 输入参数：<按照参数定义顺序>
      *
      * @param filepath String类型的地址

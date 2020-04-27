@@ -108,7 +108,9 @@ public class OperationLogSQL {
                     result += " DATE_FORMAT( createtime, '%Y-%m-%d') >= '" + ((List) params.get(list.get(i))).get(0) + "' and DATE_FORMAT( createtime , '%Y-%m-%d') <= '" + ((List) params.get(list.get(i))).get(1) + "'";
                 }
                 if ("search".equals(list.get(i))) {
-                    result += " content LIKE '%" + params.get(list.get(i)) + "%'";
+                    result += " ( content LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or serialnumber LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or operator LIKE '%" + params.get(list.get(i)) + "%' ) ";
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.cmaple.honeycomb.tools;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -173,11 +174,25 @@ public class FormatTime {
      * 异    常：无
      * 创建人：CMAPLE
      * 创建日期：2018-10-08
-     * 修改人：
-     * 级别：NULL
-     * 修改日期：
      */
     public String formatH_M_SToString(Date date) {
         return getFA_H_M_S().format(date);
+    }
+
+    /**
+     * 函数名：格式化日期函数-格式化传入时间为HH:mm:ss当前格式 - formatH_M_SToString（）
+     * 功能描述：格式化传入时间为HH:mm:ss当前格式
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * 返回值：String
+     * 异    常：无
+     * 创建人：CMAPLE
+     * 创建日期：2018-10-08
+     */
+    public String formatY_M_DToBefor(int brfor) {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -brfor);
+        Date time = c.getTime();
+        return getFA_Y_M_D().format(time);
     }
 }

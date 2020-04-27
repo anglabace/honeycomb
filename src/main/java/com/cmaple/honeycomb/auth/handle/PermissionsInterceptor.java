@@ -7,11 +7,10 @@ import com.cmaple.honeycomb.Interface.PassToken;
 import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.OperationLog;
 import com.cmaple.honeycomb.model.User;
+import com.cmaple.honeycomb.service.EmailService;
 import com.cmaple.honeycomb.service.OperationLogService;
 import com.cmaple.honeycomb.service.UserService;
-import com.cmaple.honeycomb.tools.FormatTime;
-import com.cmaple.honeycomb.tools.HttpServletRequestTool;
-import com.cmaple.honeycomb.tools.RandomData;
+import com.cmaple.honeycomb.tools.*;
 import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
@@ -49,6 +48,11 @@ public class PermissionsInterceptor implements HandlerInterceptor {
      */
     @Autowired
     private OperationLogService operationLogService;
+    /**
+     * 引入EmailTool
+     */
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
@@ -62,6 +66,58 @@ public class PermissionsInterceptor implements HandlerInterceptor {
                 "访问 [" + HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(httpServletRequest) + "]服务，" +
                 "请求类型[" + HttpServletRequestTool.getHttpServletRequestToolExample().getMethod(httpServletRequest) + "]，" +
                 "请求参数[" + HttpServletRequestTool.getHttpServletRequestToolExample().getQueryString(httpServletRequest) + "]"));
+
+        if ("/user/login".equals(HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(httpServletRequest))) {
+            String telephonenumber = httpServletRequest.getParameter("telephonenumber");
+            User user = userService.selectByTelephonenumber(telephonenumber);
+            //登录检查用户状态
+            if ("lock".equals(user.getUseraffairs())) {
+                //发送邮件提醒
+                emailService.sendMessage(
+                        configurationFile.getSMTP()
+                        , configurationFile.getLOGPRINT()
+                        , configurationFile.getPERSONAL()
+                        , configurationFile.getADDRESS()
+                        , configurationFile.getPASSWORD()
+                        , user.getPetname()
+                        , user.getUseremail()
+                        , "账户风险·账户锁定通知"
+                        , null
+                        , configurationFile.getRETURNURL() + "?token=" + Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), user)
+                        , 3
+                );
+                throw new Exception("账户已锁定，解锁邮件已发送到您的绑定邮箱！");
+            } else if ("del".equals(user.getUseraffairs())) {
+                throw new Exception("账户已删除，请发送邮件到 cmaple@aliyun.com 申诉可恢复！");
+            } else if ("normal".equals(user.getUseraffairs())) {
+                //状态正确无特殊处理
+            } else {
+                throw new Exception("账户状态异常，请联系管理员处理！");
+            }
+            //检查用户本次登录与上次登录是否一致
+            if (!user.getCommonip().equals(httpServletRequest.getParameter("uip"))) {
+                //发送邮件提醒
+                emailService.sendMessage(
+                        configurationFile.getSMTP()
+                        , configurationFile.getLOGPRINT()
+                        , configurationFile.getPERSONAL()
+                        , configurationFile.getADDRESS()
+                        , configurationFile.getPASSWORD()
+                        , user.getPetname()
+                        , user.getUseremail()
+                        , "账户风险·账户锁定通知"
+                        , null
+                        , configurationFile.getRETURNURL() + "?token=" + Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), user)
+                        , 3
+                );
+                //更新常用登录地点
+                user.setUseraffairs("lock");
+                user.setCommonip(httpServletRequest.getParameter("uip"));
+                user.setLastplace(httpServletRequest.getParameter("lastplace"));
+                userService.update(user);
+                throw new Exception("账户当前登录地点非上一次登录地点，为了您的账户安全您的账户已锁定！");
+            }
+        }
         // 从 http 请求头中取出 token
         String token = httpServletRequest.getHeader("token");
         // 如果不是映射到方法直接通过
@@ -107,7 +163,6 @@ public class PermissionsInterceptor implements HandlerInterceptor {
             }
 
         }
-        //日志记录
         return true;
     }
 
@@ -115,14 +170,32 @@ public class PermissionsInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest httpServletRequest,
                            HttpServletResponse httpServletResponse,
                            Object o, ModelAndView modelAndView) throws Exception {
+        //账户锁定状态的用户发送邮件进行提醒
+//        if ("/user/login".equals(HttpServletRequestTool.getHttpServletRequestToolExample().getRequestURI(httpServletRequest))) {
+//            String telephonenumber = httpServletRequest.getParameter("telephonenumber");
+//            User user = userService.selectByTelephonenumber(telephonenumber);
+//            if ("lock".equals(user.getUseraffairs())) {
+//                emailService.sendMessage(
+//                        configurationFile.getSMTP()
+//                        , configurationFile.getLOGPRINT()
+//                        , configurationFile.getPERSONAL()
+//                        , configurationFile.getADDRESS()
+//                        , configurationFile.getPASSWORD()
+//                        , user.getPetname()
+//                        , user.getUseremail()
+//                        , "账户风险·账户锁定通知"
+//                        , null
+//                        , configurationFile.getRETURNURL() + "?token=" + Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), user)
+//                        , 3
+//                );
+//            }
+//        }
         //日志结束记录
-
     }
 
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest,
                                 HttpServletResponse httpServletResponse,
                                 Object o, Exception e) throws Exception {
-
     }
 }

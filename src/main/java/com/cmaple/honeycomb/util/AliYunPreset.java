@@ -68,4 +68,32 @@ public class AliYunPreset {
      **/
     @Value("${aliyun.method}")
     private String METHOD;
+    /**
+     * 阿里云accessKeyId
+     * 长度：3
+     * 是否为null：N/S
+     **/
+    @Value("${aliyun.accessKeyId}")
+    private String ACCESSKEYID;
+    /**
+     * 阿里云accessSecret
+     * 长度：3
+     * 是否为null：N/S
+     **/
+    @Value("${aliyun.accessSecret}")
+    private String ACCESSSECRET;
+    /**
+     * 阿里云accessSecret
+     * 长度：3
+     * 是否为null：N/S
+     **/
+    @Value("${aliyun.SignName}")
+    private String SIGNNAME;
+    /**
+     * 阿里云accessSecret
+     * 长度：3
+     * 是否为null：N/S
+     **/
+    @Value("${aliyun.templateCode}")
+    private String TEMPLATECODE;
 }

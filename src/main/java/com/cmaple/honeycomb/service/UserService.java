@@ -163,4 +163,16 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return userMapper.update(user, new QueryWrapper<User>().lambda().eq(User::getTelephonenumber, user.getTelephonenumber()));
     }
 
+    /**
+     * 函数名：select函数-查询注册用户数量 - selectUserCount（）
+     * 功能描述： 查询注册用户数量
+     * <p>
+     * 返回值：int
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2020-04-24
+     */
+    public int selectUserCount() {
+        return userMapper.selectCount(null);
+    }
 }

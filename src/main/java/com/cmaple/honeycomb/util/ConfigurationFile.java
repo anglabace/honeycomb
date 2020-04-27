@@ -63,4 +63,46 @@ public class ConfigurationFile {
      **/
     @Value("${config.token.key}")
     private String CONFIGTOKENKEY;
+    /**
+     * SMTP 服务器地址
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.smtp}")
+    private String SMTP;
+    /**
+     * 日志开关
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.log}")
+    private String LOGPRINT;
+    /**
+     * 发件人昵称
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.personal}")
+    private String PERSONAL;
+    /**
+     * 发件人邮箱地址
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.address}")
+    private String ADDRESS;
+    /**
+     * 发件人邮箱地址
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.password}")
+    private String PASSWORD;
+    /**
+     * 发件人邮箱地址
+     * 长度：0
+     * 是否为null：N/S
+     **/
+    @Value("${config.email.returnurl}")
+    private String RETURNURL;
 }

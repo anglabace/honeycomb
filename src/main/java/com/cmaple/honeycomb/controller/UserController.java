@@ -5,10 +5,10 @@ import com.auth0.jwt.JWT;
 import com.cmaple.honeycomb.Interface.PassToken;
 import com.cmaple.honeycomb.Interface.UserLoginToken;
 import com.cmaple.honeycomb.model.User;
+import com.cmaple.honeycomb.service.EmailService;
 import com.cmaple.honeycomb.service.UserService;
-import com.cmaple.honeycomb.tools.Enciphered;
-import com.cmaple.honeycomb.tools.ParamsTools;
-import com.cmaple.honeycomb.tools.Token;
+import com.cmaple.honeycomb.tools.*;
+import com.cmaple.honeycomb.util.AliYunPreset;
 import com.cmaple.honeycomb.util.ConfigurationFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +45,23 @@ public class UserController {
     private ConfigurationFile configurationFile;
 
     /**
+     * 引入AliYunPreset
+     */
+    @Autowired
+    private AliYunPreset aliYunPreset;
+
+    /**
+     * 引入EmailTool
+     */
+    @Autowired
+    private EmailService emailService;
+
+    /**
+     * 短信验证码存储集合
+     */
+    public static final Map<String, Object> VER_CODE = new HashMap<String, Object>();
+
+    /**
      * 函数名：登录函数- - login（）
      * 功能描述： 根据账户名 密码查询数据库中是否存在此用户,并返回登录用户的非敏感信息
      * 输入参数：<按照参数定义顺序>
@@ -62,7 +79,9 @@ public class UserController {
     public Map<String, Object> login(
             @RequestParam(value = "telephonenumber", required = true) String telephonenumber
             , @RequestParam(value = "password", required = true) String password
-    ) {
+            , @RequestParam(value = "uip", required = false) String uip
+            , @RequestParam(value = "lastplace", required = false) String lastplace
+    ) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         //获取用户信息
         User user = userService.selectByTelephonenumber(telephonenumber);
@@ -82,47 +101,29 @@ public class UserController {
                     userService.update(user);
                 }
                 map.put("RTCODE", "error");
-                map.put("RTMSG", "账户已锁定，请进行账号申诉解锁！");
+                map.put("RTMSG", "账户已锁定，解锁邮件已发送到您的绑定邮箱！");
                 map.put("RTDATA", null);
             }
             return map;
         } else {
             //密码正确执行
-            if ("lock".equals(user.getUseraffairs())) {
-                //账户锁定状态返回
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "账户已锁定，请进行账号申诉解锁！");
-                map.put("RTDATA", null);
-            } else if ("del".equals(user.getUseraffairs())) {
-                //账户删除状态返回
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "账户已删除，请进行账号申诉恢复！");
-                map.put("RTDATA", null);
-            } else if ("normal".equals(user.getUseraffairs())) {
-                //账户正常状态
-                if (0 != user.getErrortry()) {
-                    //登录成功重写错误记录数
-                    user.setErrortry(0);
-                    userService.update(user);
-                }
-                User returnuser = new User(user.getId(), null, user.getUsertype(), "normal", user.getUserbalance(), Enciphered.getEnciphered().idCardEncoder(user.getIdcard()), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
-                //生成token
-                String token = Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), returnuser);
-                //设置返回信息
-                map.put("RTCODE", "success");
-                map.put("RTMSG", "登录成功！");
-                map.put("RTDATA", token);
-            } else {
-                //账户其他异常状态返回
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "账户状态异常，请联系管理员！");
-                map.put("RTDATA", null);
+            if (0 != user.getErrortry()) {
+                //登录成功重写错误记录数
+                user.setErrortry(0);
+                userService.update(user);
             }
+            User returnuser = new User(user.getId(), null, user.getUsertype(), "normal", user.getUserbalance(), Enciphered.getEnciphered().idCardEncoder(user.getIdcard()), user.getName(), user.getUseraddress(), user.getTelephonenumber(), user.getUseremail(), user.getCreatetime(), user.getUsersign(), user.getPetname(), user.getErrortry(), user.getCommonip(), user.getLastplace(), user.getPermissions());
+            //生成token
+            String token = Token.getTokenExample().getToken(configurationFile.getCONFIGTOKENKEY(), returnuser);
+            //设置返回信息
+            map.put("RTCODE", "success");
+            map.put("RTMSG", "登录成功！");
+            map.put("RTDATA", token);
+            //删除强引用，释放相应内存空间，减少内存溢出风险
+            user = null;
+            //返回消息
+            return map;
         }
-        //删除强引用，释放相应内存空间，减少内存溢出风险
-        user = null;
-        //返回消息
-        return map;
     }
 
     /**
@@ -184,6 +185,7 @@ public class UserController {
         Map<String, Object> map = new HashMap<String, Object>();
         List<String> list = new ArrayList<String>();
         Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
         //条件整理
         list.add("usertype");
         params.put("usertype", usertype);
@@ -199,11 +201,12 @@ public class UserController {
             list.add("timeaxisdate");
             params.put("timeaxisdate", timeaxisdate);
         }
-
         List<User> returnusers = null;
+        int total;
         try {
             //根据条件查询
             returnusers = userService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            total = userService.selectCountByCriteria(list, params);
             //加密电话及身份证，防止信息泄漏
             for (int i = 0; i < returnusers.size(); i++) {
                 returnusers.get(i).setTelephonenumber(Enciphered.getEnciphered().telephonenumberEncoder(returnusers.get(i).getTelephonenumber()));
@@ -216,10 +219,12 @@ public class UserController {
             map.put("RTDATA", e.getMessage());
             return map;
         }
+        data.put("data", returnusers);
+        data.put("total", total);
         //返回成功信息
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取用户信息成功！");
-        map.put("RTDATA", returnusers);
+        map.put("RTDATA", data);
         return map;
     }
 
@@ -234,6 +239,7 @@ public class UserController {
      * @param telephonenumber String类型的电话好吗
      * @param petname         String类型的昵称
      * @param commonip        String类型的常用ip
+     * @param securitycode    String类型的手机验证码
      * @param lastplace       String类型的最后登录地址
      *                        <p>
      *                        返回值：map
@@ -248,9 +254,11 @@ public class UserController {
             , @RequestParam(value = "name", required = true) String name
             , @RequestParam(value = "idcard", required = true) String idcard
             , @RequestParam(value = "telephonenumber", required = true) String telephonenumber
+            , @RequestParam(value = "securitycode", required = true) String securitycode
             , @RequestParam(value = "petname", required = true) String petname
             , @RequestParam(value = "commonip", required = true) String commonip
             , @RequestParam(value = "lastplace", required = true) String lastplace
+            , HttpServletRequest request
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         //检查电话号码是否被注册
@@ -271,6 +279,22 @@ public class UserController {
                 return map;
             }
         }
+        //验证电话短信验证码
+        if (!VER_CODE.get(telephonenumber).equals(securitycode)) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "验证码错误,请重新获取验证码！");
+            map.put("RTDATA", null);
+            VER_CODE.remove(telephonenumber);
+            return map;
+        }
+        //验证实名
+        if ("error".equals(Aliyun.getAliyun().aliyun_Idcard_Name(name, idcard, aliYunPreset.getAPPCODE(), aliYunPreset.getUSERID(), aliYunPreset.getVERIFYKEY(), aliYunPreset.getHOST(), aliYunPreset.getPATH(), aliYunPreset.getMETHOD()).get("RTCODE"))) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "实名验证失败，请输入正确的实名信息！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        //检查昵称是否重复
         int insertreturn = userService.insert(new User(0, password, "member", "normal", 0.00, idcard, name, null, telephonenumber, null, new Date(), null, petname, 0, commonip, lastplace, "0,0,0,1,1"));
         if (1 == insertreturn) {
             map.put("RTCODE", "success");
@@ -442,5 +466,257 @@ public class UserController {
         map.put("RTDATA", null);
         return map;
     }
+
+    /**
+     * 函数名：update函数 - 更改用户密码 - updateUserPassword（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param httpServletRequest HttpServletRequest类型的请求
+     * @param password           String类型的密码
+     *                           返回值：map
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           创建日期：2020-03-05
+     */
+    @UserLoginToken
+    @RequestMapping(value = "/updateUserPassword", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> updateUserPassword(HttpServletRequest
+                                                          httpServletRequest, @RequestParam(value = "password", required = true) String password) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        //获取用户名
+        String telephonenumber = HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest);
+        User user = userService.selectByTelephonenumber(telephonenumber);
+        //更新登录信息
+        if (1 != userService.update(new User(
+                user.getId()                         //用户编号
+                , password                 //用户登录密码
+                , user.getUsertype()                 //用户类型
+                , user.getUseraffairs()              //用户状态
+                , user.getUserbalance()             //用户余额
+                , user.getIdcard()                   //用户身份证号码
+                , user.getName()                     //用户真实姓名
+                , user.getUseraddress()              //用户地址
+                , telephonenumber          //用户电话
+                , user.getUseremail()                //用户电子邮箱
+                , user.getCreatetime()     //用户创建时间
+                , user.getUsersign()                 //用户签名
+                , user.getPetname()                  //用户昵称
+                , user.getErrortry()    //用户密码连续输入错误次数
+                , user.getCommonip()                 //常用ip
+                , user.getLastplace()                //最后登录地点
+                , user.getPermissions()              //权限列表
+        ))) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "用户密码修改失败！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "用户密码修改成功！");
+        map.put("RTDATA", null);
+        return map;
+    }
+
+    /**
+     * 函数名：验证函数 - 发送手机验证码 - sendSMS（）
+     * 功能描述：发送手机验证码到手机号
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param telephonenumber HttpServletRequest类型的请求
+     *                        返回值：map
+     *                        异    常：NULL
+     *                        创建人：CMAPLE
+     *                        创建日期：2020-03-06
+     */
+    @PassToken
+    @RequestMapping(value = "/sendSMS", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> sendSMS(
+            HttpServletRequest request
+            , @RequestParam(value = "telephonenumber", required = true) String telephonenumber
+    ) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        //生成验证码
+        String code = RandomData.getRandomData().getRandomNHData(6);
+        //request.getSession().setAttribute(telephonenumber, code);
+        //System.out.println(aliYunPreset.getSIGNNAME() + "/" + aliYunPreset.getTEMPLATECODE() + "/" + aliYunPreset.getACCESSKEYID() + "/" + aliYunPreset.getACCESSSECRET());
+        VER_CODE.put(telephonenumber, code);
+        map = Aliyun.getAliyun().aliyun_SendSms(telephonenumber, code, aliYunPreset.getSIGNNAME(), aliYunPreset.getTEMPLATECODE(), aliYunPreset.getACCESSKEYID(), aliYunPreset.getACCESSSECRET());
+        return map;
+    }
+
+    /**
+     * 函数名：验证函数 - 验证码验证函数 - MessageVerification（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     * <p>
+     * param httpServletRequest HttpServletRequest类型的请求
+     *
+     * @param request         String类型的密码
+     * @param telephonenumber String类型的密码
+     * @param ver_code        String类型的密码
+     *                        返回值：map
+     *                        异    常：NULL
+     *                        创建人：CMAPLE
+     *                        创建日期：2020-03-05
+     */
+    @PassToken
+    @RequestMapping(value = "/MessageVerification", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> MessageVerification(
+            HttpServletRequest request
+            , @RequestParam(value = "telephonenumber", required = true) String telephonenumber
+            , @RequestParam(value = "ver_code", required = true) String ver_code
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        //String sessionCode = (String) request.getSession().getAttribute(telephonenumber);
+        if (!VER_CODE.get(telephonenumber).equals(ver_code)) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "验证码错误，请稍稍后新验证！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "验证码验证成功！");
+        map.put("RTDATA", null);
+        return map;
+    }
+
+
+    /**
+     * 函数名：update函数 - 更改绑定电话 - updateUserPassword（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param httpServletRequest HttpServletRequest类型的请求
+     * @param password           String类型的密码
+     *                           返回值：map
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           创建日期：2020-03-05
+     */
+
+    /**
+     * 函数名：验证函数 - 发送电子邮件验证 - sendEmail（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param httpServletRequest     HttpServletRequest类型的请求
+     * @param receivetelephonenumber String类型的收件人
+     * @param emailheader            String类型的邮箱标题头
+     * @param emailcontent           String类型的邮件内容
+     *                               <p>
+     *                               返回值：map
+     *                               异    常：NULL
+     *                               创建人：CMAPLE
+     *                               创建日期：2020-03-06
+     */
+    @UserLoginToken
+    @RequestMapping(value = "/sendEmail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> sendEmail(
+            HttpServletRequest httpServletRequest
+            , @RequestParam(value = "receivetelephonenumber", required = true) String receivetelephonenumber
+            , @RequestParam(value = "emailheader", required = true) String emailheader
+            , @RequestParam(value = "emailcontent", required = true) String emailcontent
+            , @RequestParam(value = "emailtype", required = true) int emailtype
+    ) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        //获取用户信息
+        String telephonenumber = HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest);
+        User loginuser = userService.selectByTelephonenumber(telephonenumber);
+        //权限验证
+        if ("member".equals(loginuser.getUsertype())) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "您没有权限发送邮件！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        //获取收件人信息
+        User receiveuser = userService.selectByTelephonenumber(receivetelephonenumber);
+        //发送邮件
+        emailService.sendMessage(
+                configurationFile.getSMTP()
+                , configurationFile.getLOGPRINT()
+                , configurationFile.getPERSONAL()
+                , configurationFile.getADDRESS()
+                , configurationFile.getPASSWORD()
+                , receiveuser.getPetname()
+                , receiveuser.getUseremail()
+                , emailheader
+                , emailcontent
+                , configurationFile.getRETURNURL() + "?token=" + httpServletRequest.getHeader("token")
+                , emailtype
+        );
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "发送电子邮件完成！");
+        map.put("RTDATA", null);
+        return map;
+    }
+
+    /**
+     * 函数名：update函数 - 更新账户电子邮件 - updateUserEmail（）
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param httpServletRequest HttpServletRequest类型的请求
+     * @param email              String类型的密码
+     *                           返回值：map
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           创建日期：2020-03-06
+     */
+    @PassToken
+    @RequestMapping(value = "/updateUserEmail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public Map<String, Object> updateUserEmail(
+            HttpServletRequest httpServletRequest
+            , @RequestParam(value = "email", required = true) String email
+            , @RequestParam(value = "token", required = true) String token
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        //获取用户名
+        String telephonenumber = HttpServletRequestTool.getHttpServletRequestToolExample().getIpAddgetRequestUser(httpServletRequest);
+        User user = userService.selectByTelephonenumber(telephonenumber);
+        //更新登录信息
+        if (1 != userService.update(new User(
+                user.getId()                         //用户编号
+                , user.getPassword()                 //用户登录密码
+                , user.getUsertype()                 //用户类型
+                , user.getUseraffairs()              //用户状态
+                , user.getUserbalance()             //用户余额
+                , user.getIdcard()                   //用户身份证号码
+                , user.getName()                     //用户真实姓名
+                , user.getUseraddress()              //用户地址
+                , telephonenumber          //用户电话
+                , email                //用户电子邮箱
+                , user.getCreatetime()     //用户创建时间
+                , user.getUsersign()                 //用户签名
+                , user.getPetname()                  //用户昵称
+                , user.getErrortry()    //用户密码连续输入错误次数
+                , user.getCommonip()                 //常用ip
+                , user.getLastplace()                //最后登录地点
+                , user.getPermissions()              //权限列表
+        ))) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "用户电子邮箱修改失败！");
+            map.put("RTDATA", null);
+            return map;
+        }
+        map.put("RTCODE", "success");
+        map.put("RTMSG", "用户电子邮箱修改成功！");
+        map.put("RTDATA", null);
+        return map;
+    }
+
+    /**
+     * 函数名：update函数 - 账户充值 - updateUserPassword（）- 暂时无法实现
+     * 功能描述：根据传入的用户信息条件修改用户信息
+     * 输入参数：<按照参数定义顺序>
+     *
+     * @param httpServletRequest HttpServletRequest类型的请求
+     * @param password           String类型的密码
+     *                           返回值：map
+     *                           异    常：NULL
+     *                           创建人：CMAPLE
+     *                           创建日期：2020-03-05
+     */
 
 }

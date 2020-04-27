@@ -46,7 +46,7 @@ public class OperationLogService {
 
 
     /**
-     * 函数名：select函数-根据条件查询用户数量 - selectCountByCriteria（）
+     * 函数名：select函数-根据条件查询日志数量 - selectCountByCriteria（）
      * 功能描述： 根据条件查询用户数量
      *
      * @param list   List类型的条件列表

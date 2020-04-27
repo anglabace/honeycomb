@@ -1,13 +1,81 @@
 package com.cmaple.honeycomb;
 
-import com.cmaple.honeycomb.tools.Aliyun;
+import com.cmaple.honeycomb.tools.FormatTime;
 
 import java.io.IOException;
-import java.util.Map;
+import java.security.NoSuchAlgorithmException;
 
 public class test {
+//    public static String byteToHexString(byte[] by){
+//        StringBuffer SB = new StringBuffer();
+//        int i = 0;
+//        while(i < by.length){
+//            int k = by[i];
+//            int j = k;
+//            if(k < 0){
+//                j = k + 256;
+//            }
+//            if(j < 16){
+//                SB.append("0");
+//            }
+//            SB.append(Integer.toHexString(j));
+//            i += 1;
+//        }
+//        return SB.toString();
+//    }
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        System.out.println(FormatTime.getFormatTime().formatY_M_DToBefor(1));
 
-    public static void main(String[] args) throws IOException {
+
+//        // 要抓取的网站
+//        String url = "http://top.baidu.com/buzz?b=1";
+//        // 使用爬虫获取
+//        Document document = Jsoup.connect(url).get();
+//        getElmentAndInsert(document,baiduNewsMapper,"实时热点");
+//        // 获取新闻列表
+//        Elements lis = document.select("#flist li");
+//        for (int i = 2; i < lis.size(); i++) {
+//            Element li = lis.get(i);
+//            String title = li.select("a").attr("title");
+//            String href = "http://top.baidu.com" + li.select("a").attr("href").substring(1);
+//            document = Jsoup.connect(href).get();
+//            getElmentAndInsert(document,baiduNewsMapper,title);
+//        }
+
+
+
+        //        AliYunPreset aliYunPreset = new AliYunPreset();
+//        System.out.println(aliYunPreset.getSIGNNAME());
+//        try {
+//            Properties props = new Properties();                    // 参数配置
+//            props.setProperty("mail.transport.protocol", "smtp");   // 使用的协议（JavaMail规范要求）
+//            props.setProperty("mail.smtp.host", "smtp.aliyun.com");   // 发件人的邮箱的 SMTP 服务器地址
+//            props.setProperty("mail.smtp.auth", "true");            // 需要请求认证
+//            // 2. 根据配置创建会话对象, 用于和邮件服务器交互
+//            Session session = Session.getInstance(props);
+//            session.setDebug(true);                                 // 设置为debug模式, 可以查看详细的发送 log
+//            // 3. 创建一封邮件
+//            MimeMessage message = createMimeMessage(session, "cmaple@aliyun.com", "congfeng12@163.com");
+//            // 4. 根据 Session 获取邮件传输对象
+//            Transport transport = session.getTransport();
+//            transport.connect("cmaple@aliyun.com", "B^!Rn#wxhPx24q8i");
+//            // 6. 发送邮件, 发到所有的收件地址, message.getAllRecipients() 获取到的是在创建邮件对象时添加的所有收件人, 抄送人, 密送人
+//            transport.sendMessage(message, message.getAllRecipients());
+//            // 7. 关闭连接
+//            transport.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+
+//        File input = new File("/Users/congfeng/IDEA_Programe/honeycomb/src/main/resources/static/" + "account_error.html");
+//        Document doc = Jsoup.parse(input, "UTF-8");
+//        String[] splitemail = doc.toString().split("-p-");
+//        for (int i = 0;i<splitemail.length;i++){
+//            System.out.println(splitemail[i]);
+//        }
+//        System.out.println(Boolean.parseBoolean("fales1"));
+
 //        OperationLogService operationLogService = null;
 //        operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), "18368080269", "normal", "account", "用户：[ 18368080269 ] 使用 iP - 61.164.40.82 ｜ 登录地点 - 浙江省杭州市  进行登录操作！"));
 //        //operationLogService.insert(new OperationLog(0, "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6), new Date(), user.getTelephonenumber(), "normal", "account", "用户：[ " + user.getTelephonenumber() + " ] 使用 iP - " + commonip + " ｜ 登录地点 - " + lastplace + "  进行登录操作！"));
@@ -43,8 +111,13 @@ public class test {
 
         //System.out.println("152223199312260014".replaceAll("(?<=[\\d]{6})\\d(?=[\\d]{4})", "*"));
 ////
-        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程涛", "330481200502233019", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
-        System.out.println(map1);
+//        Map<String, String> map1 = Aliyun.getAliyun().aliyun_Idcard_Name("谈程晨", "330481199401073225", "ff7fd118f90848a992600745e96844d5", "1929109414356087", "IVYrWyJDu5B6kU", "https://safrvcert.market.alicloudapi.com", "/safrv_2meta_id_name/", "GET");
+//        System.out.println(map1);
+
+//        Map<String, String> map2 = AliTool.getAliyun().aliyun_SendSms("18368080269","29065","CMAPLE蜂巢","SMS_184826653","LTAI4FtZoNunQCMEyCSDodB7","QEh265EHuaBIqHwSooKQh3wIhAhitV");
+//        System.out.println(map2);
+
+        //{"Message":"OK","RequestId":"3D1BD085-9951-4F95-B116-F6740CC988E6","BizId":"317021683399456001^0","Code":"OK"}
 
 
         //按钮组
@@ -422,7 +495,6 @@ public class test {
 //            System.out.println(cfg.getName() + "网卡描述信息:" + cfg.getDescription());// 网卡描述信息
 //            System.out.println(cfg.getName() + "网卡类型" + cfg.getType());//
 //        }
-
 
 
 }

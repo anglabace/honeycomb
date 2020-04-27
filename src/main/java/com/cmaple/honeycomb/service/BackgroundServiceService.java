@@ -113,4 +113,17 @@ public class BackgroundServiceService {
     public int update(BackgroundService backgroundService) {
         return backgroundServiceMapper.update(backgroundService, new QueryWrapper<BackgroundService>().lambda().eq(BackgroundService::getId, backgroundService.getId()));
     }
+
+    /**
+     * 函数名：select函数-查询所有后台服务数量 - selectBSCount（）
+     * 功能描述： 查询所有后台服务数量
+     * <p>
+     * 返回值：int
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2020-04-24
+     */
+    public int selectBSCount() {
+        return backgroundServiceMapper.selectCount(null);
+    }
 }

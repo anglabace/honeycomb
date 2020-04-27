@@ -6,10 +6,9 @@ import com.cmaple.honeycomb.tools.FormatTime;
 import com.cmaple.honeycomb.tools.HttpServletRequestTool;
 import com.cmaple.honeycomb.tools.RandomData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -34,7 +33,8 @@ public class ExceptionConfig {
     private OperationLogService operationLogService;
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> globaException(HttpServletRequest request, Exception exception) {
+    @ResponseBody
+    public Map<String, Object> globaException(HttpServletRequest request, Exception exception) {
         //记录异常日志
         operationLogService.insert(new OperationLog(0
                 , "HC" + FormatTime.getFormatTime().formatYMDToString(new Date()) + "-" + RandomData.getRandomData().getRandomNHData(6)
@@ -47,12 +47,10 @@ public class ExceptionConfig {
                 "请求参数[" + HttpServletRequestTool.getHttpServletRequestToolExample().getQueryString(request) + "]，" +
                 "错误信息[" + exception.getMessage() + "]"));
         //返回异常信息
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("RTCODE", "error");
         map.put("RTMSG", "请求异常，请联系管理员！");
         map.put("RTDATA", exception.getMessage());
-        return new ResponseEntity<Map<String, String>>(map, HttpStatus.OK);
+        return map;
     }
-
-
 }

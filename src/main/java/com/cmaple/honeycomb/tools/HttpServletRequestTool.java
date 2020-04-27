@@ -83,7 +83,7 @@ public class HttpServletRequestTool {
 
     /**
      * 函数名：请求处理函数-根据请求头取出请求用户名 - getRequestUser（）
-     * 功能描述：根据请求取出相应请求的ip地址
+     * 功能描述：根据请求取出相应请求的ip用户
      * 输入参数：<按照参数定义顺序>
      *
      * @param request HttpServletRequest类型的http请求
@@ -95,11 +95,13 @@ public class HttpServletRequestTool {
      *                级别：NULL
      *                修改日期：
      */
-    public String getIpAddgetRequestUser(HttpServletRequest request) throws Exception {
+    public String getIpAddgetRequestUser(HttpServletRequest request) {
         String user = "";
         String token = request.getHeader("token");
         if (null != token) {
             user = JWT.decode(token).getAudience().get(0);
+        } else {
+            user = request.getParameter("telephonenumber");
         }
         return user;
     }

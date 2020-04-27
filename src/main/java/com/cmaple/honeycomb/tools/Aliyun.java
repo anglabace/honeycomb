@@ -1,18 +1,24 @@
 package com.cmaple.honeycomb.tools;
 
 import com.alibaba.fastjson.JSON;
+import com.aliyuncs.CommonRequest;
+import com.aliyuncs.CommonResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.exceptions.ServerException;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.DefaultProfile;
 import com.cmaple.honeycomb.model.AliyunIDName;
-import com.cmaple.honeycomb.service.OperationLogService;
+import com.cmaple.honeycomb.model.AliyunSMS;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 类名：阿里云工具类 - Aliyun
+ * 类名：阿系工具类 - AliTool
  * 功能描述： 阿里云工具类；进行阿里云相关接口调用；
  * 输入参数：NULL
  * 返回值：NULL
@@ -24,11 +30,6 @@ import java.util.Map;
  * 修改日期：
  */
 public class Aliyun {
-    //引入其他服务类
-    @Autowired
-    private OperationLogService operationLogService;
-    @Autowired
-    private HttpServletRequest request;
 
     //私有化的构造函数
     private Aliyun() {
@@ -36,19 +37,18 @@ public class Aliyun {
 
     //内部类实现实例的创建
     private static class AliyunInternal {
-        private static Aliyun aliyun = new Aliyun();
+        private static Aliyun aliTool = new Aliyun();
     }
 
     //重写readResolve()方法，防止序列化及反序列化破坏单利模式
     private Object readResolve() {
-        return AliyunInternal.aliyun;
+        return AliyunInternal.aliTool;
     }
 
     //返回实例的方法
     public static Aliyun getAliyun() {
-        return AliyunInternal.aliyun;
+        return AliyunInternal.aliTool;
     }
-
 
     /**
      * 函数名：阿里云工具函数 - 云盾身份认证（二要素） - aliyun_Idcard_Name（）
@@ -104,7 +104,7 @@ public class Aliyun {
                 map.put("RTDATA", aliyunIDName.getCode() + " - " + aliyunIDName.getMessage());
             }
         } catch (Exception e) {
-           //拼接返回信息
+            //拼接返回信息
             map.put("RTCODE", "error");
             map.put("RTMSG", "实名认证异常，验证过程出现异常，请联系管理员进行处理！");
             map.put("RTDATA", e.getMessage());
@@ -118,15 +118,57 @@ public class Aliyun {
      * 功能描述： 短信服务，发送短信进行信息通知
      * 输入参数：<按照参数定义顺序>
      *
-     * @param name   String类型字符串
-     * @param idcard String类型字符串
-     *               返回值：String
-     *               异    常：无
-     *               创建人：CMAPLE
-     *               创建日期：2019-09-26
-     *               修改人：
-     *               级别：NULL
-     *               修改日期：
+     * @param PhoneNumbers String类型字符串
+     * @param SignName     String类型字符串
+     * @param TemplateCode String类型字符串
+     * @param accessKeyId  String类型字符串
+     * @param accessSecret String类型字符串
+     *                     返回值：String
+     *                     异    常：无
+     *                     创建人：CMAPLE
+     *                     创建日期：2020-03-05
+     *                     修改人：
+     *                     级别：NULL
+     *                     修改日期：
      */
+    public Map<String, Object> aliyun_SendSms(String PhoneNumbers, String code, String SignName, String TemplateCode, String accessKeyId, String accessSecret) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessSecret);
+        IAcsClient client = new DefaultAcsClient(profile);
+        CommonRequest request = new CommonRequest();
+        request.setSysMethod(MethodType.POST);
+        request.setSysDomain("dysmsapi.aliyuncs.com");
+        request.setSysVersion("2017-05-25");//FormatTime.getFormatTime().formatYMDToString(new Date())
+        request.setSysAction("SendSms");
+        request.putQueryParameter("RegionId", "cn-hangzhou");
+        request.putQueryParameter("PhoneNumbers", PhoneNumbers);
+        request.putQueryParameter("SignName", SignName);
+        request.putQueryParameter("TemplateCode", TemplateCode);
+        request.putQueryParameter("TemplateParam", "{\"code\":\"" + code + "\"}");
+        try {
+            CommonResponse response = client.getCommonResponse(request);
 
+            AliyunSMS aliyunSMS = JSON.parseObject(response.getData(), AliyunSMS.class);
+            if ("OK".equals(aliyunSMS.getCode())) {
+                map.put("RTCODE", "success");
+                map.put("RTMSG", "给用户：" + PhoneNumbers + " 发送验证码成功！");
+                map.put("RTDATA", "回执信息：" + aliyunSMS.getBizId() + "/" + aliyunSMS.getMessage() + "/" + aliyunSMS.getRequestId());
+            } else {
+                map.put("RTCODE", "error");
+                map.put("RTMSG", "给用户: " + PhoneNumbers + " 发送验证码失败！");
+                map.put("RTDATA", "回执信息：" + aliyunSMS.getBizId() + "/" + aliyunSMS.getMessage() + "/" + aliyunSMS.getRequestId());
+            }
+        } catch (ServerException e) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "给用户: " + PhoneNumbers + " 发送验证码失败！");
+            map.put("RTDATA", e.getMessage());
+            e.printStackTrace();
+        } catch (ClientException e) {
+            map.put("RTCODE", "error");
+            map.put("RTMSG", "给用户: " + PhoneNumbers + " 发送验证码失败！");
+            map.put("RTDATA", e.getMessage());
+            e.printStackTrace();
+        }
+        return map;
+    }
 }
