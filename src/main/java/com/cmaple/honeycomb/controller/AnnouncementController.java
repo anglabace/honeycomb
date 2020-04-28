@@ -7,7 +7,6 @@ import com.cmaple.honeycomb.model.Announcement;
 import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.AnnouncementService;
 import com.cmaple.honeycomb.service.UserService;
-import com.cmaple.honeycomb.tools.FileSelect;
 import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +66,7 @@ public class AnnouncementController {
         Map<String, Object> map = new HashMap<String, Object>();
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
         //拼接条件
         if (0 != timeaxisdate.size()) {
             list.add("timeaxisdate");
@@ -77,9 +77,13 @@ public class AnnouncementController {
             params.put("search", search);
         }
         List<Announcement> returnannouncement = null;
+        int a_count = 0;
         try {
             //查询公告信息
             returnannouncement = announcementService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            a_count = announcementService.selectCountByCriteria(list,params);
+            data.put("data",returnannouncement);
+            data.put("total",a_count);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -90,7 +94,7 @@ public class AnnouncementController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取公告信息成功！");
-        map.put("RTDATA", returnannouncement);
+        map.put("RTDATA", data);
         return map;
     }
 
@@ -196,16 +200,6 @@ public class AnnouncementController {
             //处理公告信息
             User user = userService.selectByTelephonenumber(returnannouncement.getAuthor());
             returnannouncement.setAuthor(user.getPetname());
-            Map<String, Object> upmap = FileSelect.getFileSelect().readFile(returnannouncement.getFilepath(), returnannouncement.getFilename());
-            if (upmap.get("RTCODE").equals("success")) {
-                datamap.put("content", upmap.get("RTDATA"));
-                datamap.put("data", returnannouncement);
-            } else {
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "根据ID号查询里程碑内容 - 读取文件内容异常！");
-                map.put("RTDATA", upmap.get("RTDATA"));
-                return map;
-            }
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -216,7 +210,7 @@ public class AnnouncementController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取公告信息成功！");
-        map.put("RTDATA", datamap);
+        map.put("RTDATA", returnannouncement);
         return map;
     }
 
@@ -225,26 +219,24 @@ public class AnnouncementController {
      * 功能描述：创建新的公告信息
      * 输入参数：<按照参数定义顺序>
      *
-     * @param title    String类型的标题
-     * @param synopsis String类型的简介
-     * @param filename String类型的文件名
-     * @param filepath String类型的文件路径
-     * @param file     MultipartFile类型的文件
-     * @param readtime String类型的阅读时间
-     *                 返回值：Map
-     *                 异    常：NULL
-     *                 创建人：CMAPLE
-     *                 创建日期：2019-11-18
+     * @param title          String类型的标题
+     * @param synopsis       String类型的简介
+     * @param announcementid String类型的文件名
+     * @param content        MultipartFile类型的文件
+     * @param readtime       String类型的阅读时间
+     *                       返回值：Map
+     *                       异    常：NULL
+     *                       创建人：CMAPLE
+     *                       创建日期：2019-11-18
      */
     @UserLoginToken
     @RequestMapping(value = "/insert", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> insert(
             @RequestParam(value = "title", required = true) String title
             , @RequestParam(value = "synopsis", required = true) String synopsis
-            , @RequestParam(value = "filename", required = true) String filename
-            , @RequestParam(value = "filepath", required = true) String filepath
-            , @RequestParam(value = "file", required = true) MultipartFile file
+            , @RequestParam(value = "filename", required = true) String announcementid
             , @RequestParam(value = "readtime", required = true) String readtime
+            , @RequestParam(value = "readtime", required = true) String content
             , HttpServletRequest httpServletRequest
     ) {
         //初始化参数
@@ -252,22 +244,7 @@ public class AnnouncementController {
         String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
         String telephonenumber = JWT.decode(token).getAudience().get(0);
         Date insertdate = new Date();
-        //上传公告文件
-        if ("success".equals(FileSelect.getFileSelect().checkFileExists(filepath, filename).get("RTCODE"))) {
-            Map<String, Object> upmap = FileSelect.getFileSelect().uploadFile(file, filepath, filename);
-            if (!"success".equals(upmap.get("RTCODE"))) {
-                map.put("RTCODE", "error");
-                map.put("RTMSG", "上传公告文件失败！请检查相关参数！");
-                map.put("RTDATA", upmap.toString());
-                return map;
-            }
-        } else {
-            map.put("RTCODE", "error");
-            map.put("RTMSG", "存在同名的里程碑文件！更改文件名或者删除同名文件方可继续！");
-            map.put("RTDATA", "文件名：【" + filepath + "/" + filename + "】");
-            return map;
-        }
-        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, telephonenumber, insertdate, readtime);
+        Announcement announcement = new Announcement(0, "", "", "", "", "", insertdate);
         try {
             int returnannouncement = announcementService.insert(announcement);
             if (1 == returnannouncement) {
@@ -323,7 +300,7 @@ public class AnnouncementController {
         Map<String, Object> map = new HashMap<String, Object>();
         String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
         String telephonenumber = JWT.decode(token).getAudience().get(0);
-        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, telephonenumber, null, readtime);
+        Announcement announcement = new Announcement(0, title, synopsis, filename, filepath, telephonenumber, null);
         try {
             int returnannouncement = announcementService.update(announcement);
             if (1 == returnannouncement) {

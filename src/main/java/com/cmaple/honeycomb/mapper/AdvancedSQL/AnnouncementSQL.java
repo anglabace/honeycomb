@@ -34,7 +34,7 @@ public class AnnouncementSQL {
     public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,title ,synopsis ,filename ,filepath ,author ,createtime ,readtime ");
+                SELECT("id ,announcementid ,title ,synopsis ,content ,author ,createtime ");
                 FROM("CS_Announcement ");
             }
         }.toString();
@@ -90,7 +90,7 @@ public class AnnouncementSQL {
     public String selectDescOrderByTime(@Param("page") int page, @Param("num") int num) {
         String result = new SQL() {
             {
-                SELECT("id ,title ,synopsis ,createtime ,readtime ");
+                SELECT("id ,announcementid ,title ,synopsis ,createtime ");
                 FROM("CS_Announcement ");
             }
         }.toString();
@@ -153,8 +153,8 @@ public class AnnouncementSQL {
                 //全文搜索
                 if ("search".equals(list.get(i))) {
                     result += " ( title LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or filename LIKE '%" + params.get(list.get(i)) + "%' " +
-                            "or filepath LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or content LIKE '%" + params.get(list.get(i)) + "%' " +
+                            "or announcementid LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or synopsis LIKE '%" + params.get(list.get(i)) + "%' " +
                             "or author LIKE '%" + params.get(list.get(i)) + "%' ) ";
                 }
