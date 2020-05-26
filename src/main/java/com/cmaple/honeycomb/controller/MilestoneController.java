@@ -150,6 +150,7 @@ public class MilestoneController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
         List list = new ArrayList();
         Map<String, Object> params = new HashMap<String, Object>();
         //拼接条件
@@ -162,9 +163,13 @@ public class MilestoneController {
             params.put("search", search);
         }
         List<Milestone> returnmilestone = null;
+        int total = 0;
         try {
             //查询公告信息
             returnmilestone = milestoneService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            total = milestoneService.selectCountByCriteria(list,params);
+            data.put("data",returnmilestone);
+            data.put("total",total);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -175,7 +180,7 @@ public class MilestoneController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取里程碑信息成功！");
-        map.put("RTDATA", returnmilestone);
+        map.put("RTDATA", data);
         return map;
     }
 
