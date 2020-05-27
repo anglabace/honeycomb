@@ -108,6 +108,7 @@ public class WorkController {
             , @RequestParam(value = "num", required = true) int num
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
         Map<String, Object> params = new HashMap<String, Object>();
         List list = new ArrayList();
         //拼接条件
@@ -120,9 +121,13 @@ public class WorkController {
             params.put("search", search);
         }
         List<Work> returnWork = null;
+        int total = 0;
         try {
             //查询公告信息
             returnWork = workService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            total = workService.selectCountByCriteria(list, params);
+            data.put("data", returnWork);
+            data.put("total", total);
         } catch (Exception e) {
             e.printStackTrace();
             //报错信息，错误信息插入日志表
@@ -133,7 +138,7 @@ public class WorkController {
         }
         map.put("RTCODE", "success");
         map.put("RTMSG", "获取调查报告信息成功！");
-        map.put("RTDATA", returnWork);
+        map.put("RTDATA", data);
         return map;
     }
 
