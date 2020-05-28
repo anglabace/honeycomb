@@ -45,7 +45,7 @@ public class ServiceVersionLogController {
     @UserLoginToken
     @RequestMapping(value = "/getServiceVersionLogById", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public Map<String, Object> getServiceVersionLogById(
-            @RequestParam(value = "serviceid", required = true) int serviceid
+            @RequestParam(value = "serviceid", required = true) String serviceid
     ) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<ServiceVersionLog> ServiceVersionLoglist = null;

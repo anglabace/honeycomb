@@ -31,6 +31,6 @@ public interface ServiceVersionLogMapper extends BaseMapper<ServiceVersionLog> {
      *                  日期：2019-11-11
      */
     @SelectProvider(type = ServiceVersionLogSQL.class, method = "queryServiceVersionLogById")
-    List<ServiceVersionLog> queryServiceVersionLogById(@Param("serviceid") int serviceid);
+    List<ServiceVersionLog> queryServiceVersionLogById(@Param("serviceid") String serviceid);
 
 }

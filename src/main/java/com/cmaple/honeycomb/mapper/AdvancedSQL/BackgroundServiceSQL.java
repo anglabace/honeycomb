@@ -1,7 +1,6 @@
 package com.cmaple.honeycomb.mapper.AdvancedSQL;
 
 import com.cmaple.honeycomb.tools.SqlTool;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
 import java.util.List;
@@ -21,31 +20,21 @@ public class BackgroundServiceSQL {
      * 函数名：select函数-根据条件查询后台服务列表- selectByCriteria（）
      * 功能描述： 根据条件查询后台服务列表
      * 输入参数：<按照参数定义顺序>
-     *
-     * @param list   List类型的条件列表
-     * @param params Map类型的字段及数值集合
-     * @param page   int类型的页数
-     * @param num    int类型的数量
-     *               返回值：String
-     *               异    常：NULL
-     *               创建人：CMAPLE
-     *               日期：2019-09-30
+     * <p>
+     * 返回值：String
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2019-09-30
      */
-    public String selectByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params, @Param("page") int page, @Param("num") int num) {
+    public String selectByCriteria() {
         String result = new SQL() {
             {
                 SELECT("id ,serviceid ,name ,synopsis ,version ,path ,route ,size ,proglanguage ,receivetype ,author ,upusername ,createtime ,serverid ,servicestate ,annexepath ");
                 FROM("CS_BackgroundService ");
             }
         }.toString();
-        //判断添加请求条件
-        if (0 != list.size()) {
-            result = sqlPutAnd(result, list, params);
-        }
         //添加排序
         result = SqlTool.getSqlTool().sqlPutOrderBy(result, "id");
-        //添加分页
-        result = SqlTool.getSqlTool().sqlPutLimit(result, page, num);
         return result;
     }
 
@@ -53,25 +42,19 @@ public class BackgroundServiceSQL {
      * 函数名：select函数-根据条件查询后台服务总数- selectCountByCriteria（）
      * 功能描述： 根据条件查询后台服务总数
      * 输入参数：<按照参数定义顺序>
-     *
-     * @param list   List类型的条件列表
-     * @param params Map类型的字段及数值集合
-     *               返回值：String
-     *               异    常：NULL
-     *               创建人：CMAPLE
-     *               日期：2019-12-31
+     * <p>
+     * 返回值：String
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2019-12-31
      */
-    public String selectCountByCriteria(@Param("list") List<String> list, @Param("params") Map<String, Object> params) {
+    public String selectCountByCriteria() {
         String result = new SQL() {
             {
                 SELECT("COUNT(*) ");
                 FROM("CS_BackgroundService ");
             }
         }.toString();
-        //判断添加请求条件
-        if (0 != list.size()) {
-            result = sqlPutAnd(result, list, params);
-        }
         return result;
     }
 

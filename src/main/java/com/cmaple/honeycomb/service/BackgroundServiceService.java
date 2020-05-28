@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 类名：后台服务相关服务功能类业务组件 - BackgroundServiceService
@@ -30,34 +29,28 @@ public class BackgroundServiceService {
     /**
      * 函数名：select函数-根据条件查询后台服务列表 - selectByCriteria（）
      * 功能描述： 根据条件查询后台服务列表
-     *
-     * @param list   List类型的条件列表
-     * @param params Map类型的字段及数值集合
-     * @param page   int类型的页数
-     * @param num    int类型的数量
-     *               返回值：List<BackgroundService>
-     *               异    常：NULL
-     *               创建人：CMAPLE
-     *               日期：2019-09-30
+     * <p>
+     * 返回值：List<BackgroundService>
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2019-09-30
      */
-    public List<BackgroundService> selectByCriteria(List<String> list, Map<String, Object> params, int page, int num) {
-        return backgroundServiceMapper.selectByCriteria(list, params, page, num);
+    public List<BackgroundService> selectByCriteria() {
+        return backgroundServiceMapper.selectByCriteria();
     }
 
     /**
      * 函数名：select函数-根据条件查询后台服务总数 - selectCountByCriteria（）
      * 功能描述： 根据条件查询后台服务总数
      * 输入参数：<按照参数定义顺序>
-     *
-     * @param list   List类型的条件列表
-     * @param params Map类型的字段及数值集合
-     *               返回值：int
-     *               异    常：NULL
-     *               创建人：CMAPLE
-     *               日期：2019-12-31
+     * <p>
+     * 返回值：int
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 日期：2019-12-31
      */
-    public int selectCountByCriteria(List<String> list, Map<String, Object> params) {
-        return backgroundServiceMapper.selectCountByCriteria(list, params);
+    public int selectCountByCriteria() {
+        return backgroundServiceMapper.selectCountByCriteria();
     }
 
     /**

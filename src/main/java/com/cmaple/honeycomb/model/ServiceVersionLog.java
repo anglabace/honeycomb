@@ -45,7 +45,7 @@ public class ServiceVersionLog {
      * 是否为null：N
      * 主键
      **/
-    private int serviceid;
+    private String serviceid;
     /**
      * 服务版本号
      * 长度：16

@@ -9,7 +9,6 @@ import com.cmaple.honeycomb.model.User;
 import com.cmaple.honeycomb.service.BackgroundServiceService;
 import com.cmaple.honeycomb.service.UserService;
 import com.cmaple.honeycomb.tools.FileSelect;
-import com.cmaple.honeycomb.tools.ParamsTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,46 +46,21 @@ public class BackgroundServiceController {
      * 函数名：select函数 - 根据条件获取后台服务列表 - selectByCriteria（）
      * 功能描述：根据条件获取后台服务列表
      * 输入参数：<按照参数定义顺序>
-     *
-     * @param servicestate String类型的服务状态
-     * @param proglanguage String类型的服务语言
-     * @param search       String类型的搜索内容
-     * @param page         int类型的页数
-     * @param num          int类型的展示数量
-     *                     返回值：map
-     *                     异    常：NULL
-     *                     创建人：CMAPLE
-     *                     创建日期：2019-09-30
+     * <p>
+     * 返回值：map
+     * 异    常：NULL
+     * 创建人：CMAPLE
+     * 创建日期：2019-09-30
      */
     @UserLoginToken
     @RequestMapping(value = "/selectByCriteria", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public Map<String, Object> selectByCriteria(
-            @RequestParam(value = "servicestate", required = true) String servicestate
-            , @RequestParam(value = "proglanguage", required = true) String proglanguage
-            , @RequestParam(value = "search", required = true) String search
-            , @RequestParam(value = "page", required = true) int page
-            , @RequestParam(value = "num", required = true) int num
-    ) {
+    public Map<String, Object> selectByCriteria() {
         Map<String, Object> map = new HashMap<String, Object>();
-        List<String> list = new ArrayList<String>();
-        Map<String, Object> params = new HashMap<String, Object>();
-        //条件整理
-        if (!"all".equals(servicestate)) {
-            list.add("servicestate");
-            params.put("servicestate", servicestate);
-        }
-        if (!"all".equals(proglanguage)) {
-            list.add("proglanguage");
-            params.put("proglanguage", proglanguage);
-        }
-        if (!"".equals(search)) {
-            list.add("search");
-            params.put("search", search);
-        }
         List<BackgroundService> returnBackgroundService = null;
+        int total = 0;
         try {
             //根据条件查询
-            returnBackgroundService = backgroundService.selectByCriteria(list, params, ParamsTools.getPageTools().getPageByNum(page, num), num);
+            returnBackgroundService = backgroundService.selectByCriteria();
         } catch (Exception e) {
             //报错信息，错误信息插入日志表
             map.put("RTCODE", "error");

@@ -26,13 +26,15 @@ public class ServiceVersionLogSQL {
      *                  创建人：CMAPLE
      *                  日期：2019-11-11
      */
-    public String queryServiceVersionLogById(@Param("serviceid") int serviceid) {
+    public String queryServiceVersionLogById(@Param("serviceid") String serviceid) {
         String result = new SQL() {
             {
-                SELECT("id version ,updatetime ,operator ,content ");
+                SELECT("id ,serviceid ,version ,updatetime ,operator ,content ");
                 FROM("CS_ServiceVersionLog ");
             }
         }.toString();
+        //添加条件
+        result += "WHERE serviceid = '" + serviceid + "'";
         //添加排序
         result = SqlTool.getSqlTool().sqlPutDescOrderBy(result, "updatetime");
         return result;

@@ -35,7 +35,7 @@ public class ServiceVersionLogService {
      *                  创建人：CMAPLE
      *                  创建日期：2019-11-11
      */
-    public List<ServiceVersionLog> getBackgroundServices(int serviceid) {
+    public List<ServiceVersionLog> getBackgroundServices(String serviceid) {
         return serviceVersionLogMapper.queryServiceVersionLogById(serviceid);
     }
 
