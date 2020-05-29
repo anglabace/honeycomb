@@ -155,7 +155,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>honeycomb</finalName>
+        <finalName>MAIN_SERVICE</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

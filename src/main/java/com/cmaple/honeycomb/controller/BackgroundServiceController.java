@@ -113,7 +113,7 @@ public class BackgroundServiceController {
                 datamap.put("data", returnBackgroundService);
             } else {
                 map.put("RTCODE", "error");
-                map.put("RTMSG", "根据ID号查询里程碑内容 - 读取文件内容异常！");
+                map.put("RTMSG", "根据ID号查询后台服务 - 读取文件内容异常！");
                 map.put("RTDATA", upmap.get("RTDATA"));
                 return map;
             }
